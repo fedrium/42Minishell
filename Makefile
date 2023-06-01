@@ -14,15 +14,23 @@ RM			= rm -rf
 
 all:		${NAME}
 
-${NAME}:	${OBJS}
-				${CC} ${CFLAGS} ${OBJS} -o ${NAME} -lreadline
+${NAME}:		${OBJS}
+				make libft
+				${CC} libft.a ${CFLAGS} ${OBJS} -o ${NAME} -lreadline
+
+libft:		
+				make -C libft
+				cp libft/libft.a .
 
 clean:		
 				${RM} ${OBJS}
+				make clean -C libft
 
 fclean:		clean
 				${RM} ${NAME} ${BNAME}
+				make fclean -C libft
 
 re:			clean all
+			make re -C libft
 
 .PHONY:		all clean fclean re

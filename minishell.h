@@ -7,6 +7,13 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+typedef struct s_node
+{
+	char			*key;
+	char			*content;
+	struct s_node 	*next;
+}				t_node;
+
 void	echo(char *line);
 void	ft_putstr_fd(char *s, int fd);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);

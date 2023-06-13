@@ -25,22 +25,6 @@ int	main(int argc, char **argv, char **env)
 	(void)argv;
 }
 
-t_node	*transfer(t_node node, char **env)
-{
-	int		i;
-	char	**arr;
-	t_node	head;
-	t_node	*node;
-
-	i = 0;
-	node = head;
-	while (env[i])
-	{
-		arr = ft_split(env[i], '=');
-		node->
-	}
-}
-
 void	pr_env(char **env)
 {
 	int	i;

@@ -3,9 +3,9 @@
 int	main(int argc, char **argv, char **env)
 {
 	char *line;
-	t_node node;
+	t_list	*head;
 
-	
+	head = env_init(env);
 	while (1)
 	{
 		line = readline("Minishell$ ");
@@ -18,38 +18,51 @@ int	main(int argc, char **argv, char **env)
 		if (ft_strncmp(line, "pwd", 3) == 0)
 			pwd();
 		if (ft_strncmp(line, "env", 3) == 0)
-			pr_env(env);
+			pr_env(head);
 		free(line);
 	}
 	(void)argc;
 	(void)argv;
 }
 
-t_node	*transfer(t_node node, char **env)
+t_env	*new_env(char	**splitted_env)
 {
-	int		i;
-	char	**arr;
-	t_node	head;
-	t_node	*node;
+	t_env	*env;
 
-	i = 0;
-	node = head;
-	while (env[i])
-	{
-		arr = ft_split(env[i], '=');
-		node->
-	}
+	env = malloc(sizeof(t_env));
+	env->key = ft_strdup(splitted_env[0]);
+	env->value = ft_strdup(splitted_env[1]);
+	return (env);
 }
 
-void	pr_env(char **env)
+t_list	*env_init(char	**env)
 {
-	int	i;
+	t_list	*head;
+	t_list	*node;
+	int		i;
+	char	**splitted_env;
 
-	i = 0;
-	while (env[i] != 0)
+	i = 1;
+	splitted_env = ft_split(env[0], '=');
+	node = ft_lstnew((void *)new_env(splitted_env));
+	head = node;
+	while (env[i])
 	{
-		printf("%s\n", env[i]);
+		splitted_env = ft_split(env[i], '=');
+		node->next = ft_lstnew((void *)new_env(splitted_env));
+		node = node->next;
 		i++;
+	}
+	return (head);
+}
+
+void	pr_env(t_list	*head)
+{
+	while (head->next != NULL)
+	{
+		t_env *temp = (t_env *)head->content;
+		printf("%s=%s\n", temp->key, temp->value);
+		head = head->next;
 	}
 }
 
@@ -91,4 +104,23 @@ void	echo(char *line)
 	}
 	if (array[1] != 0 && ft_strncmp(array[1], "-n", 2) != 0)
 		printf("\n");
+}
+
+void	export(t_list	*head)
+{
+	t_list	*node;
+	t_env	temp_env;
+	int		printed;
+	int		cmp_num;
+
+	node = head;
+	printed = 0;
+	while (printed < ft_lstsize(head))
+	{
+		node = head;
+		while (node->next != NULL)
+		{
+			
+		}
+	}
 }

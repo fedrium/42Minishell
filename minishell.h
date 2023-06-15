@@ -6,21 +6,25 @@
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include "libft/libft.h"
 
-typedef struct s_node
+typedef struct s_env
 {
 	char			*key;
-	char			*content;
-	struct s_node 	*next;
-}				t_node;
+	char			*value;
+}				t_env;
+
+typedef	struct s_variables
+{
+	int	temp1;
+	int	temp2;
+	int	temp3;
+};
 
 void	echo(char *line);
-void	ft_putstr_fd(char *s, int fd);
-int		ft_strncmp(const char *s1, const char *s2, size_t n);
-int		ft_strlen(const char *str);
-char	**ft_split(char const *s, char c);
 void	cd(char *line);
 void	pwd(void);
-void	pr_env(char **env);
+void	pr_env(t_list	*head);
+t_list *env_init(char **env);
 
 #endif

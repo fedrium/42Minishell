@@ -57,7 +57,9 @@ SRCS        :=      libft/ft_atoi.c \
                           libft/ft_substr.c \
                           libft/ft_tolower.c \
                           libft/ft_toupper.c \
+                          libft/ft_strcmp.c \
                           main.c \
+                          export.c \
                           
 OBJS        := $(SRCS:.c=.o)
 

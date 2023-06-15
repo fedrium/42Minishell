@@ -1,12 +1,12 @@
 #ifndef MINISHELL
 # define MINISHELL
 
+#include "libft/libft.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include "libft/libft.h"
 
 typedef struct s_env
 {
@@ -14,17 +14,12 @@ typedef struct s_env
 	char			*value;
 }				t_env;
 
-typedef	struct s_variables
-{
-	int	temp1;
-	int	temp2;
-	int	temp3;
-};
-
 void	echo(char *line);
 void	cd(char *line);
 void	pwd(void);
 void	pr_env(t_list	*head);
 t_list *env_init(char **env);
+void export(t_list *head);
+char *find_smallest_key(t_list *head, char *smallest_key);
 
 #endif

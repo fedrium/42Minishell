@@ -19,6 +19,8 @@ int	main(int argc, char **argv, char **env)
 			pwd();
 		if (ft_strncmp(line, "env", 3) == 0)
 			pr_env(head);
+		if	(ft_strncmp(line, "export", 6) == 0)
+			export(head);
 		free(line);
 	}
 	(void)argc;
@@ -104,23 +106,4 @@ void	echo(char *line)
 	}
 	if (array[1] != 0 && ft_strncmp(array[1], "-n", 2) != 0)
 		printf("\n");
-}
-
-void	export(t_list	*head)
-{
-	t_list	*node;
-	t_env	temp_env;
-	int		printed;
-	int		cmp_num;
-
-	node = head;
-	printed = 0;
-	while (printed < ft_lstsize(head))
-	{
-		node = head;
-		while (node->next != NULL)
-		{
-			
-		}
-	}
 }

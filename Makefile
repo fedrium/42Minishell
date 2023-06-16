@@ -60,6 +60,8 @@ SRCS        :=      libft/ft_atoi.c \
                           libft/ft_strcmp.c \
                           main.c \
                           export.c \
+                          env_init.c \
+                          unset.c \
                           
 OBJS        := $(SRCS:.c=.o)
 

@@ -15,11 +15,12 @@ typedef struct s_env
 }				t_env;
 
 void	echo(char *line);
-void	cd(char *line);
+void	cd(char *line, t_list *head);
 void	pwd(void);
 void	pr_env(t_list	*head);
 t_list *env_init(char **env);
-void export(t_list *head);
-char *find_smallest_key(t_list *head, char *smallest_key);
+void 	export(t_list *head);
+char 	*find_smallest_key(t_list *head, char *smallest_key);
+void	unset(char *line, t_list *head);
 
 #endif

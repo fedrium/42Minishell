@@ -22,18 +22,19 @@ int	main(int argc, char **argv, char **env)
 		if (ft_strncmp(line, "env", 3) == 0)
 			pr_env(head_env);
 		if	(ft_strncmp(line, "export", 6) == 0)
-			export(head_env);
-		if (ft_strcmp((char *)head_tokens->content, "test") == 0)
-		{
-			printf("%s\n", (char *)head_tokens->content);
-			t_list *node;
-			node = head_tokens;
-			while (node->next != NULL)
+			export(head_env, head_tokens);
+		if (ft_strcmp((char *)head_tokens->content, "export") == 0)
+			if (ft_strcmp((char *)head_tokens->content, "test") == 0)
 			{
-				printf("%s\n", (char *)node->next->content);
-				node = node->next;
+				printf("%s\n", (char *)head_tokens->content);
+				t_list *node;
+				node = head_tokens;
+				while (node->next != NULL)
+				{
+					printf("%s\n", (char *)node->next->content);
+					node = node->next;
+				}
 			}
-		}
 		free(line);
 	}
 	(void)argc;

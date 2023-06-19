@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 10:24:54 by yalee             #+#    #+#             */
-/*   Updated: 2023/06/19 10:25:23 by yalee            ###   ########.fr       */
+/*   Updated: 2023/06/19 16:42:29 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ t_env *new_env(char **splitted_env)
 	t_env *env;
 
 	env = malloc(sizeof(t_env));
-	env->key = ft_strdup(splitted_env[0]);
-	env->value = ft_strdup(splitted_env[1]);
+	env->key = splitted_env[0];
+	env->value = splitted_env[1];
 	return (env);
 }
 

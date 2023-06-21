@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/15 17:32:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/06/20 02:00:32 by yalee            ###   ########.fr       */
+/*   Updated: 2023/06/20 02:35:35 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,23 @@ void export(t_list *head_env, t_list *head_tokens)
 			printed += print_output(head_env, smallest_key);
 		}
 	}
-// 	else
+	// else
+	// 	add_env(head_env, head_tokens);
+}
+
+// void	add_env(t_list *head_env, t_list *head_tokens)
+// {
+// 	t_list	*node_e;
+// 	t_list	*node_t;
+
+// 	node_t = head_tokens;
+// 	node_e = head_env;
+// 	while (node_t->next != NULL)
 // 	{
-		
+// 		while (node_e->next != NULL)
+// 		{
+// 			if (ft_strcmp((char *)node_t->next->content, (char *)node_e->content) )
+// 		}
 // 	}
 // }
 

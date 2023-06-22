@@ -1,5 +1,36 @@
 #include "minishell.h"
 
+void	expand_tokens(t_list *head_tokens)
+{
+	t_list	*node;
+
+	
+}
+
+int	is_valid_lst(t_list *head_tokens)
+{
+	t_list *node;
+
+	expand_tokens(head_tokens);
+	node = head_tokens;
+	if (((t_token *)head_tokens->content)->priority == -1)
+	{
+		printf("Syntax error!\n");
+		return (0);
+	}
+	while (node->next != NULL)
+	{
+		if (((t_token *)node->next->content)->priority == -1)
+		{
+			printf("Syntax error!\n");
+			return (0);
+		}
+		if (node->next != NULL)
+			node = node->next;
+	}
+	return (1);
+}
+
 int	main(int argc, char **argv, char **env)
 {
 	char *line;
@@ -11,32 +42,34 @@ int	main(int argc, char **argv, char **env)
 	{
 		line = readline("Minishell$ ");
 		head_tokens = tokenize(line);
-		if (line && *line)
-			add_history(line);
-		if (ft_strncmp(line, "echo", 4) == 0)
-			echo(head_tokens);
-		// if (ft_strncmp(line, "cd", 2) == 0)
-		// 	cd(line);
-		// if (ft_strncmp(line, "pwd", 3) == 0)
-		// 	pwd();
-		// if (ft_strncmp(line, "env", 3) == 0)
-		// 	pr_env(head_env);
-		// if	(ft_strncmp(line, "export", 6) == 0)
-		// 	export(head_env, head_tokens);
-		if (ft_strncmp((char *)head_tokens->content, "export", 6) == 0)
-			export(head_env, head_tokens);
-		if (ft_strcmp(((t_token *)head_tokens->content)->token, "test") == 0)
+		if (line[0] != '\0' && is_valid_lst(head_tokens))
 		{
-			t_list *node;
-			node = head_tokens;
-			printf("%s\n", ((t_token *)node->content)->token);
-			printf("%s\n", ((t_token *)node->next->content)->token);
-			// while (node->next != NULL)
-			// {
-			// 	printf("%s\n", ((t_token *)node->content)->token);
-			// 	if (node->next != NULL)
-			// 		node = node->next;
-			// }
+			if (line && *line)
+				add_history(line);
+			if (ft_strncmp(line, "echo", 4) == 0)
+				echo(head_tokens);
+			// if (ft_strncmp(line, "cd", 2) == 0)
+			// 	cd(line);
+			// if (ft_strncmp(line, "pwd", 3) == 0)
+			// 	pwd();
+			// if (ft_strncmp(line, "env", 3) == 0)
+			// 	pr_env(head_env);
+			// if	(ft_strncmp(line, "export", 6) == 0)
+			// 	export(head_env, head_tokens);
+			if (ft_strncmp(((t_token *)head_tokens->content)->token, "export", 6) == 0)
+				export(head_env, head_tokens);
+			if (ft_strncmp(((t_token *)head_tokens->content)->token, "test", 4) == 0)
+			{
+				t_list *node;
+				node = head_tokens;
+				printf("%s\n", ((t_token *)node->content)->token);
+				while (node->next != NULL)
+				{
+					printf("%s\n", ((t_token *)node->next->content)->token);
+					if (node->next != NULL)
+						node = node->next;
+				}
+			}
 		}
 		free(line);
 	}

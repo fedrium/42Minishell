@@ -57,12 +57,16 @@ SRCS        :=      libft/ft_atoi.c \
                           libft/ft_substr.c \
                           libft/ft_tolower.c \
                           libft/ft_toupper.c \
+                          libft/ft_strcmp.c \
                           main.c \
+                          export.c \
+                          lexer.c \
+                          env.c \
                           
 OBJS        := $(SRCS:.c=.o)
 
 .c.o:
-	${CC} ${FLAGS} -c $< -o ${<:.c=.o}
+	@${CC} ${FLAGS} -c $< -o ${<:.c=.o}
 
 ################################################################################
 #                                  Makefile  objs                              #

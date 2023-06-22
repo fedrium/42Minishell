@@ -3,67 +3,47 @@
 int	main(int argc, char **argv, char **env)
 {
 	char *line;
-	t_list	*head;
+	t_list	*head_env;
+	t_list	*head_tokens;
 
-	head = env_init(env);
+	head_env = env_init(env);
 	while (1)
 	{
 		line = readline("Minishell$ ");
-		if (line && *line)
-			add_history(line);
-		if (ft_strncmp(line, "echo", 4) == 0)
-			echo(line);
-		if (ft_strncmp(line, "cd", 2) == 0)
-			cd(line);
-		if (ft_strncmp(line, "pwd", 3) == 0)
-			pwd();
-		if (ft_strncmp(line, "env", 3) == 0)
-			pr_env(head);
+		head_tokens = tokenize(line);
+		if (line[0] != '\0' && is_valid_lst(head_tokens, head_env))
+		{
+			if (line && *line)
+				add_history(line);
+			if (ft_strncmp(line, "echo", 4) == 0)
+				echo(head_tokens);
+			// if (ft_strncmp(line, "cd", 2) == 0)
+			// 	cd(line);
+			// if (ft_strncmp(line, "pwd", 3) == 0)
+			// 	pwd();
+			if (ft_strncmp(line, "env", 3) == 0)
+				pr_env(head_env);
+			// if	(ft_strncmp(line, "export", 6) == 0)
+			// 	export(head_env, head_tokens);
+			if (ft_strncmp(((t_token *)head_tokens->content)->token, "export", 6) == 0)
+				export(head_env, head_tokens);
+			if (ft_strncmp(((t_token *)head_tokens->content)->token, "test", 4) == 0)
+			{
+				t_list *node;
+				node = head_tokens;
+				printf("%s\n", ((t_token *)node->content)->token);
+				while (node->next != NULL)
+				{
+					printf("%s\n", ((t_token *)node->next->content)->token);
+					if (node->next != NULL)
+						node = node->next;
+				}
+			}
+		}
 		free(line);
 	}
 	(void)argc;
 	(void)argv;
-}
-
-t_env	*new_env(char	**splitted_env)
-{
-	t_env	*env;
-
-	env = malloc(sizeof(t_env));
-	env->key = ft_strdup(splitted_env[0]);
-	env->value = ft_strdup(splitted_env[1]);
-	return (env);
-}
-
-t_list	*env_init(char	**env)
-{
-	t_list	*head;
-	t_list	*node;
-	int		i;
-	char	**splitted_env;
-
-	i = 1;
-	splitted_env = ft_split(env[0], '=');
-	node = ft_lstnew((void *)new_env(splitted_env));
-	head = node;
-	while (env[i])
-	{
-		splitted_env = ft_split(env[i], '=');
-		node->next = ft_lstnew((void *)new_env(splitted_env));
-		node = node->next;
-		i++;
-	}
-	return (head);
-}
-
-void	pr_env(t_list	*head)
-{
-	while (head->next != NULL)
-	{
-		t_env *temp = (t_env *)head->content;
-		printf("%s=%s\n", temp->key, temp->value);
-		head = head->next;
-	}
 }
 
 void	pwd(void)
@@ -88,39 +68,16 @@ void	cd(char *line)
 	chdir(array[1]);
 }
 
-void	echo(char *line)
-{
-	char 	**array;
-	int		i;
-
-	array = ft_split(line, ' ');
-	i = 1;
-	if (array[1] != 0 && ft_strncmp(array[1], "-n", 2) == 0)
-		i = 2;
-	while (array[i] != 0)
-	{
-		ft_putstr_fd(array[i], 0);
-		i++;
-	}
-	if (array[1] != 0 && ft_strncmp(array[1], "-n", 2) != 0)
-		printf("\n");
-}
-
-void	export(t_list	*head)
+void	echo(t_list *line)
 {
 	t_list	*node;
-	t_env	temp_env;
-	int		printed;
-	int		cmp_num;
 
-	node = head;
-	printed = 0;
-	while (printed < ft_lstsize(head))
+	node = line;
+	while(node->next != NULL)
 	{
-		node = head;
-		while (node->next != NULL)
-		{
-			
-		}
+		printf("%s ", (char *)node->next->content);
+		if (node->next != NULL)
+			node = node->next;
 	}
+	printf("\n");
 }

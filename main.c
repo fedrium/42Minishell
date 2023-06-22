@@ -1,36 +1,5 @@
 #include "minishell.h"
 
-void	expand_tokens(t_list *head_tokens)
-{
-	t_list	*node;
-
-	
-}
-
-int	is_valid_lst(t_list *head_tokens)
-{
-	t_list *node;
-
-	expand_tokens(head_tokens);
-	node = head_tokens;
-	if (((t_token *)head_tokens->content)->priority == -1)
-	{
-		printf("Syntax error!\n");
-		return (0);
-	}
-	while (node->next != NULL)
-	{
-		if (((t_token *)node->next->content)->priority == -1)
-		{
-			printf("Syntax error!\n");
-			return (0);
-		}
-		if (node->next != NULL)
-			node = node->next;
-	}
-	return (1);
-}
-
 int	main(int argc, char **argv, char **env)
 {
 	char *line;
@@ -42,7 +11,7 @@ int	main(int argc, char **argv, char **env)
 	{
 		line = readline("Minishell$ ");
 		head_tokens = tokenize(line);
-		if (line[0] != '\0' && is_valid_lst(head_tokens))
+		if (line[0] != '\0' && is_valid_lst(head_tokens, head_env))
 		{
 			if (line && *line)
 				add_history(line);
@@ -52,8 +21,8 @@ int	main(int argc, char **argv, char **env)
 			// 	cd(line);
 			// if (ft_strncmp(line, "pwd", 3) == 0)
 			// 	pwd();
-			// if (ft_strncmp(line, "env", 3) == 0)
-			// 	pr_env(head_env);
+			if (ft_strncmp(line, "env", 3) == 0)
+				pr_env(head_env);
 			// if	(ft_strncmp(line, "export", 6) == 0)
 			// 	export(head_env, head_tokens);
 			if (ft_strncmp(((t_token *)head_tokens->content)->token, "export", 6) == 0)

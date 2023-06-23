@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/15 17:32:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/06/23 01:25:01 by yalee            ###   ########.fr       */
+/*   Updated: 2023/06/23 15:33:38 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,37 +27,37 @@ void export(t_list *head_env, t_list *head_tokens)
 			printed += print_output(head_env, smallest_key);
 		}
 	}
-	else
-		add_env(head_env, head_tokens);
+	// else
+	// 	add_env(head_env, head_tokens);
 }
 
-void	add_env(t_list *head_env, t_list *head_tokens)
-{
-	t_list	*node_e;
-	t_list	*node_t;
-	int		i;
-	int		j;
+// void	add_env(t_list *head_env, t_list *head_tokens)
+// {
+// 	t_list	*node_e;
+// 	t_list	*node_t;
+// 	int		i;
+// 	int		j;
 
-	i = 0;
-	node_t = head_tokens->next;
-	node_e = head_env;
-	while (i < ft_lstsize(node_t))
-	{
-		j = 0;
-		node_e = head_env;
-		while (j < ft_lstsize(head_env))
-		{
-			if (same_key(node_t, node_e))
-				add_env_value(node_t, node_e);
-			node_e = node_e->next;
-			j++;
-		}
-		add_env_key(ft_lstlast(node_e), node_t);
-		add_env_value(ft_lstlast(node_e), node_t);
-		node_t = node_t->next;
-		i++;
-	}
-}
+// 	i = 0;
+// 	node_t = head_tokens->next;
+// 	node_e = head_env;
+// 	while (i < ft_lstsize(node_t))
+// 	{
+// 		j = 0;
+// 		node_e = head_env;
+// 		while (j < ft_lstsize(head_env))
+// 		{
+// 			if (same_key(node_t, node_e))
+// 				add_env_value(node_t, node_e);
+// 			node_e = node_e->next;
+// 			j++;
+// 		}
+// 		add_env_key(ft_lstlast(node_e), node_t);
+// 		add_env_value(ft_lstlast(node_e), node_t);
+// 		node_t = node_t->next;
+// 		i++;
+// 	}
+// }
 
 char	*find_smallest_key(t_list *head, char *smallest_key)
 {

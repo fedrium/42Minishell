@@ -17,12 +17,14 @@ int	main(int argc, char **argv, char **env)
 				add_history(line);
 			if (ft_strncmp(line, "echo", 4) == 0)
 				echo(head_tokens);
-			// if (ft_strncmp(line, "cd", 2) == 0)
-			// 	cd(line);
-			// if (ft_strncmp(line, "pwd", 3) == 0)
-			// 	pwd();
+			if (ft_strncmp(line, "cd", 2) == 0)
+				cd(head_env, ((t_token *)head_tokens->next->content)->token);
+			if (ft_strncmp(line, "pwd", 3) == 0)
+				pwd();
 			if (ft_strncmp(line, "env", 3) == 0)
 				pr_env(head_env);
+			if (ft_strncmp(line, "unset", 5) == 0)
+				unset(head_env, ((t_token *)head_tokens->next->content)->token);
 			// if	(ft_strncmp(line, "export", 6) == 0)
 			// 	export(head_env, head_tokens);
 			if (ft_strncmp(((t_token *)head_tokens->content)->token, "export", 6) == 0)
@@ -55,17 +57,21 @@ void	pwd(void)
 	free(res);
 }
 
-void	cd(char *line)
+void	cd(t_list *env, char *line)
 {
-	char	**array;
+	t_env	*temp;
+	char	*res;
 
-	array = ft_split(line, ' ');
-	if (array[2] != 0)
+	printf("line: %s\n", line);	
+	chdir(line);
+	res = getcwd(NULL, 1024);
+	while (env->next != NULL)
 	{
-		printf("Too many arguments\n");
-		return;
+		temp = (t_env *)env->content;
+		if (ft_strncmp("PWD", temp->key, 3) == 0)
+			temp->value = res;
+		env = env->next;
 	}
-	chdir(array[1]);
 }
 
 void	echo(t_list *line)
@@ -73,11 +79,27 @@ void	echo(t_list *line)
 	t_list	*node;
 
 	node = line;
-	while(node->next != NULL)
+	while (node->next != NULL)
 	{
-		printf("%s ", (char *)node->next->content);
+		printf("%s ", ((t_token *)node->next->content)->token);
 		if (node->next != NULL)
 			node = node->next;
 	}
 	printf("\n");
+}
+
+void	unset(t_list *env, char *line)
+{
+	t_env *temp;
+
+	while (env->next != NULL)
+	{
+		temp = (t_env *)env->content;
+		if (ft_strncmp(line, temp->key, 3) == 0)
+		{
+			free(temp->key);
+			free(temp->value);
+		}
+		env = env->next;
+	}
 }

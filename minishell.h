@@ -23,7 +23,7 @@ typedef	struct s_token
 
 
 void	echo(t_list *line);
-void	cd(char *line);
+void	cd(t_list *env, char *line);
 void	pwd(void);
 void	pr_env(t_list	*head);
 t_list *env_init(char **env);
@@ -37,5 +37,7 @@ int morph_cacoon(char *cacoon, t_list *head_env, t_list *node);
 int morph(t_list *node, t_list *head_env);
 void expand_tokens(t_list *head_tokens, t_list *head_env);
 int is_valid_lst(t_list *head_tokens, t_list *head_env);
+void	add_env(t_list *head_env, t_list *head_tokens);
+void	unset(t_list *env, char *line);
 
 #endif

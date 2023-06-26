@@ -2,7 +2,8 @@
 
 int	main(int argc, char **argv, char **env)
 {
-	char *line;
+	char	*line;
+	int		size;
 	t_list	*head_env;
 	t_list	*head_tokens;
 
@@ -11,6 +12,7 @@ int	main(int argc, char **argv, char **env)
 	{
 		line = readline("Minishell$ ");
 		head_tokens = tokenize(line);
+		size = ft_lstsize(head_tokens);
 		if (line[0] != '\0' && is_valid_lst(head_tokens, head_env))
 		{
 			if (line && *line)
@@ -18,7 +20,7 @@ int	main(int argc, char **argv, char **env)
 			if (ft_strncmp(line, "echo", 4) == 0)
 				echo(head_tokens);
 			if (ft_strncmp(line, "cd", 2) == 0)
-				cd(head_env, ((t_token *)head_tokens->next->content)->token);
+				cd(head_env, ((t_token *)head_tokens->next->content)->token, size);
 			if (ft_strncmp(line, "pwd", 3) == 0)
 				pwd();
 			if (ft_strncmp(line, "env", 3) == 0)
@@ -57,19 +59,45 @@ void	pwd(void)
 	free(res);
 }
 
-void	cd(t_list *env, char *line)
+char	*get_env(t_list *env, char *line)
 {
 	t_env	*temp;
-	char	*res;
 
-	printf("line: %s\n", line);	
-	chdir(line);
-	res = getcwd(NULL, 1024);
+	while (env->next != NULL)
+	{
+		temp = (t_env *)env->content;
+		if (ft_strncmp(temp->key, line, ft_strlen(line) + 1) == 0)
+			return (temp->value);
+		env = env->next;
+	}
+	return (0);
+}
+
+void	cd(t_list *env, char *line, int size)
+{
+	t_env	*temp;
+	char	*now;
+	char	*old;
+
+	if (size == 1)
+	{
+		chdir(get_env(env, "HOME"));
+		return;
+	}	
+	printf("line: %s\n", line);
+	old = getcwd(NULL, 1024);
+	if (line[0] == '~')
+		chdir(get_env(env, "HOME"));
+	else if (chdir(line) == -1)
+		printf("bash: cd: %s: No such file or directory\n", line);
+	now = getcwd(NULL, 1024);
 	while (env->next != NULL)
 	{
 		temp = (t_env *)env->content;
 		if (ft_strncmp("PWD", temp->key, 3) == 0)
-			temp->value = res;
+			temp->value = now;
+		if (ft_strncmp("OLDPWD", temp->key, 6) == 0)
+			temp->value = old;
 		env = env->next;
 	}
 }

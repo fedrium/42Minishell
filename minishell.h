@@ -23,7 +23,7 @@ typedef	struct s_token
 
 
 void	echo(t_list *line);
-void	cd(t_list *env, char *line);
+void	cd(t_list *env, char *line, int size);
 void	pwd(void);
 void	pr_env(t_list	*head);
 t_list *env_init(char **env);
@@ -39,5 +39,6 @@ void expand_tokens(t_list *head_tokens, t_list *head_env);
 int is_valid_lst(t_list *head_tokens, t_list *head_env);
 void	add_env(t_list *head_env, t_list *head_tokens);
 void	unset(t_list *env, char *line);
+char	*get_env(t_list *env, char *line);
 
 #endif

@@ -32,8 +32,8 @@ typedef	struct s_lexrvar
 }			t_lexrvar;
 
 void	echo(t_list *line);
-void	cd(char *line);
-void	pwd(void);
+void cd(t_list *env, t_list *token, int size);
+void pwd(void);
 void	pr_env(t_list	*head);
 t_list *env_init(char **env);
 t_env *new_env(char **splitted_env);

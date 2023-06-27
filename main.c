@@ -82,7 +82,18 @@ void cd(t_list *env, t_list *token, int size)
 
 	if (size == 1)
 	{
+		old = getcwd(NULL, 1024);
 		chdir(get_env(env, "HOME"));
+		now = getcwd(NULL, 1024);
+		while (env->next != NULL)
+		{
+			temp = (t_env *)env->content;
+			if (ft_strncmp("PWD", temp->key, 3) == 0)
+				temp->value = now;
+			if (ft_strncmp("OLDPWD", temp->key, 6) == 0)
+				temp->value = old;
+			env = env->next;
+		}
 		return;
 	}
 	line = ((t_token *)token->next->content)->token;

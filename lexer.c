@@ -23,6 +23,8 @@ t_list	*tokenize(char *line)
 	p = 0;
 	head = ft_lstnew((void *)get_token(line, &p));
 	node = head;
+	while (line[p] == ' ')
+		p++;
 	while (line[p])
 	{
 		while (line[p] == ' ')

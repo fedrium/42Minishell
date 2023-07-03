@@ -59,7 +59,7 @@ void	exiting(t_list *token, int size)
 	int		i;
 
 	i = 0;
-	if (size == 1)
+	if (size <= 2)
 	{
 		printf("exit\n");
 		exit (0);

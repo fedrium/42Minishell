@@ -63,7 +63,7 @@ SRCS        :=      libft/ft_atoi.c \
                           lexer.c \
                           env.c \
                           
-OBJS        := $(SRCS:.c=.o)
+OBJS        := $(SRCS:.c=.o) -lreadline
 
 .c.o:
 	@${CC} ${FLAGS} -c $< -o ${<:.c=.o}

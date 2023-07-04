@@ -28,9 +28,31 @@ t_list	*tokenize(char *line)
 		while (line[p] == ' ')
 			p++;
 		node->next = ft_lstnew((void *)get_token(line, &p));
+		cleanse(node->next);
 		node = node->next;
 	}
 	return (head);
+}
+
+void	cleanse(t_list *node)
+{
+	char	*temp;
+	int		i;
+	int		in_squote;
+	int		in_dquote;
+
+	i = 0;
+	in_dquote = -1;
+	in_squote = -1;
+	temp = ((t_token *)node->content)->token;
+	while (temp[i])
+	{
+		if (temp[i] == '"' && in_squote < 0)
+			in_dquote *= -1;
+		if (temp[i] == 39 && in_dquote < 0)
+			in_squote *= -1;
+		//use strjoin
+	}
 }
 
 t_token	*get_token(char *line, int *p)
@@ -62,80 +84,6 @@ t_token	*get_token(char *line, int *p)
 		token->priority = -1;
 	}
 	return (token);
-}
-
-int	morph_cacoon(char *cacoon, t_list *head_env, t_list *node)
-{
-	t_list	*env;
-	t_env	*temp;
-	int		i;
-	int		lst_len;
-	
-	env = head_env;
-	i = 0;
-	lst_len = ft_lstsize(env);
-	cacoon++;
-	// pr_env(env);
-	while (i < lst_len)
-	{
-		temp = (t_env *)env->content;
-		if (ft_strncmp(cacoon, temp->key, (ft_strlen(cacoon) + 1)) == 0)
-		{
-			free(((t_token *)node->content)->token);
-			((t_token *)node->content)->token = ft_strdup(temp->value);
-			return (1);
-		}
-		env = env->next;
-		i++;
-	}
-	return (0);
-}
-
-int	morph(t_list *node, t_list *head_env)
-{
-	int		i;
-	char	*cacoon;
-	char	key[2];
-
-	i = 0;
-	key[1] = '\0';
-	cacoon = (char *)malloc(sizeof(char));
-	cacoon[0] = '\0';
-	while (((t_token *)node->content)->token[i] != '$' && ((t_token *)node->content)->token[i])
-		i++;
-	if (((t_token *)node->content)->token[i] == '\0')
-		return (1);
-	while (((t_token *)node->content)->token[i] && ((t_token *)node->content)->token[i] != '"')
-	{
-		key[0] = ((t_token *)node->content)->token[i];
-		cacoon = ft_strjoin(cacoon, key);
-		i++;
-	}
-	if (!morph_cacoon(cacoon, head_env, node))
-	{
-		free(cacoon);
-		return (0);
-	}
-	free(cacoon);
-	return (1);
-}
-
-void expand_tokens(t_list *head_tokens, t_list *head_env)
-{
-	t_list *node;
-	int i;
-	int size;
-
-	node = head_tokens;
-	i = 0;
-	size = ft_lstsize(head_tokens);
-	while (i < size)
-	{
-		morph(node, head_env);
-		node = node->next;
-		i++;
-	}
-	return;
 }
 
 int	check_invalid(t_list *head_tokens)

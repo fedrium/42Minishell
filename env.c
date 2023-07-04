@@ -45,7 +45,7 @@ t_list *env_init(char **env)
 
 void pr_env(t_list *head)
 {
-	while (head->next != NULL)
+	while (head->next != NULL && head->content != NULL)
 	{
 		t_env *temp = (t_env *)head->content;
 		printf("%s=%s\n", temp->key, temp->value);

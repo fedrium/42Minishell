@@ -27,8 +27,8 @@ int main(int argc, char **argv, char **env)
 				pr_env(head_env);
 			if (ft_strncmp(((t_token *)head_tokens->content)->token, "exit", 4) == 0)
 				exiting(head_tokens, size);
-			// if (ft_strncmp(line, "unset", 5) == 0)
-			// 	unset(head_env, ((t_token *)head_tokens->next->content)->token);
+			if (ft_strncmp(line, "unset", 5) == 0)
+				unset(head_env, head_tokens);
 			// if	(ft_strncmp(line, "export", 6) == 0)
 			// 	export(head_env, head_tokens);
 			if (ft_strncmp(((t_token *)head_tokens->content)->token, "export", 6) == 0)
@@ -148,18 +148,30 @@ void echo(t_list *line)
 	printf("\n");
 }
 
-void unset(t_list *env, char *line)
+void unset(t_list *env, t_list *token)
 {
-	t_env *temp;
+	t_list	*temp;
+	t_list	*envt;
+	char	*line;
 
+	envt = NULL;
+	line = ((t_token *)token->next->content)->token;
 	while (env->next != NULL)
 	{
-		temp = (t_env *)env->content;
+		temp = env->next;
 		if (ft_strncmp(line, temp->key, 3) == 0)
 		{
 			free(temp->key);
 			free(temp->value);
+			if (envt == NULL)
+			{
+				env = env->next;
+				printf("in\n");
+				return;
+			}
+			envt->next = env->next;
 		}
+		envt = env;
 		env = env->next;
 	}
 }

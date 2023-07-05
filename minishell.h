@@ -35,5 +35,6 @@ int print_output(t_list *head, char *smallest_key);
 void	cleanse(t_list *node, t_list *head_env);
 int	check_invalid(t_list *head_tokens, int mute);
 void	expand_n_join(char **temp, char **new, int *i,t_list *head_env);
+int	can_move(char c, int *i, int *isq, int *idq);
 
 #endif

@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-t_list	*tokenize(char *line)
+t_list	*tokenize(char *line, t_list *head_env)
 {
 	t_list	*head;
 	t_list	*node;
@@ -22,21 +22,26 @@ t_list	*tokenize(char *line)
 		return (ft_lstnew("\0"));
 	p = 0;
 	head = ft_lstnew((void *)get_token(line, &p));
+	if (!check_invalid(head, 1))
+		cleanse(head, head_env);
 	node = head;
 	while (line[p])
 	{
 		while (line[p] == ' ')
 			p++;
 		node->next = ft_lstnew((void *)get_token(line, &p));
-		cleanse(node->next);
+		if (!check_invalid(node, 1))
+			cleanse(node->next, head_env);
 		node = node->next;
 	}
 	return (head);
 }
 
-void	cleanse(t_list *node)
+void	cleanse(t_list *node, t_list *head_env)
 {
 	char	*temp;
+	char	*new;
+	char	join[2];
 	int		i;
 	int		in_squote;
 	int		in_dquote;
@@ -45,14 +50,67 @@ void	cleanse(t_list *node)
 	in_dquote = -1;
 	in_squote = -1;
 	temp = ((t_token *)node->content)->token;
+	new = malloc(sizeof(char));
+	join[1] = '\0';
+	new[0] = '\0';
 	while (temp[i])
 	{
 		if (temp[i] == '"' && in_squote < 0)
+		{
+			i++;
 			in_dquote *= -1;
+		}
 		if (temp[i] == 39 && in_dquote < 0)
+		{
+			i++;
 			in_squote *= -1;
-		//use strjoin
+		}
+		if (temp[i] == '$' && in_squote < 0)
+			expand_n_join(&temp, &new, &i, head_env);
+		else
+		{
+			join[0] = temp[i];
+			i++;
+			new = ft_strjoin(new, join);
+		}
 	}
+	if (in_dquote > 0 || in_squote > 0)
+		((t_token *)node->content)->priority = -1;
+	((t_token *)node->content)->token = ft_strdup(new);
+}
+
+void	expand_n_join(char **temp, char **new, int *i, t_list *head_env)
+{
+	char	*key;
+	char	*value;
+	// char	*temp_env;
+	char	buffer[2];
+	t_list	*node_env;
+
+	node_env = head_env;
+	key = malloc(sizeof(char));
+	key[0] = '\0';
+	buffer[1] = '\0';
+	value = NULL;
+	while ((*temp)[(*i)] != ' ' && (*temp)[(*i)] != '\0' && (*temp)[(*i)] != '"')
+	{
+		buffer[0] = (*temp)[(*i)];
+		key = ft_strjoin(key, buffer);
+		(*i)++;
+	}
+	key++;
+	while (node_env->next != NULL)
+	{
+		if (strncmp(key, ((t_env *)node_env->content)->key, ft_strlen(key) + 1) == 0)
+		{
+			value = ft_strdup(((t_env *)node_env->content)->value);
+			break;
+		}
+		if (node_env->next != NULL)
+			node_env = node_env->next;
+	}
+	if (value)
+		*new = ft_strjoin(*new, value);
 }
 
 t_token	*get_token(char *line, int *p)
@@ -86,35 +144,27 @@ t_token	*get_token(char *line, int *p)
 	return (token);
 }
 
-int	check_invalid(t_list *head_tokens)
+int	check_invalid(t_list *head_tokens, int mute)
 {
 	t_list *node;
 
 	node = head_tokens;
 	if (((t_token *)head_tokens->content)->priority == -1)
 	{
-		printf("Syntax error!\n");
+		if (!mute)
+			printf("error: %s\nSyntax error!\n", ((t_token *)head_tokens->content)->token);
 		return (1);
 	}
 	while (node->next != NULL)
 	{
 		if (((t_token *)node->next->content)->priority == -1)
 		{
-			printf("Syntax error!\n");
+			if (!mute)
+				printf("error: %s\nSyntax error!\n", ((t_token *)node->next->content)->token);
 			return (1);
 		}
 		if (node->next != NULL)
 			node = node->next;
 	}
 	return (0);
-}
-
-int is_valid_lst(t_list *head_tokens, t_list *head_env)
-{
-	if (check_invalid(head_tokens))
-		return (0);
-	expand_tokens(head_tokens, head_env);
-	if (check_invalid(head_tokens))
-		return (0);
-	return (1);
 }

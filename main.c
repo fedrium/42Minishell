@@ -11,9 +11,9 @@ int main(int argc, char **argv, char **env)
 	while (1)
 	{
 		line = readline("Minishell$ ");
-		head_tokens = tokenize(line);
+		head_tokens = tokenize(line, head_env);
 		size = ft_lstsize(head_tokens);
-		if (line[0] != '\0' && is_valid_lst(head_tokens, head_env))
+		if (line[0] != '\0' && !check_invalid(head_tokens, 0))
 		{
 			if (line && *line)
 				add_history(line);
@@ -35,10 +35,10 @@ int main(int argc, char **argv, char **env)
 			{
 				t_list *node;
 				node = head_tokens;
-				printf("%s\n", ((t_token *)node->content)->token);
+				printf("tout: %s\n", ((t_token *)node->content)->token);
 				while (node->next != NULL)
 				{
-					printf("%s\n", ((t_token *)node->next->content)->token);
+					printf("tout: %s\n", ((t_token *)node->next->content)->token);
 					if (node->next != NULL)
 						node = node->next;
 				}

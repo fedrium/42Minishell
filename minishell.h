@@ -21,6 +21,13 @@ typedef	struct s_token
 	int		priority;
 }			t_token;
 
+typedef struct s_pipe
+{
+	t_list	*tokens;
+	char	*output;
+	char	*input;
+}			t_pipe;
+
 void	echo(t_list *line);
 void cd(t_list *env, t_list *token, int size);
 void pwd(void);

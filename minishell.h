@@ -47,6 +47,7 @@ int		morph(t_list *node, t_list *head_env);
 void	expand_tokens(t_list *head_tokens, t_list *head_env);
 int		is_valid_lst(t_list *head_tokens, t_list *head_env);
 void	exiting(t_list *token, int size);
-void	unset(t_list *env, t_list *head_token);
+void	unset(t_list **env, t_list *head_token);
+void	tlistmover(t_list **env);
 
 #endif

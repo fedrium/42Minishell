@@ -11,6 +11,8 @@ int main(int argc, char **argv, char **env)
 	while (1)
 	{
 		line = readline("Minishell$ ");
+		if (line[0] == '\n')
+			exit (0);
 		head_tokens = tokenize(line);
 		size = ft_lstsize(head_tokens);
 		if (line[0] != '\0' && is_valid_lst(head_tokens, head_env))
@@ -19,21 +21,21 @@ int main(int argc, char **argv, char **env)
 				add_history(line);
 			if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 4) == 0)
 				echo(head_tokens);
-			if (ft_strncmp(((t_token *)head_tokens->content)->token, "cd", 2) == 0)
+			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "cd", 2) == 0)
 				cd(head_env, head_tokens, size);
-			if (ft_strncmp(((t_token *)head_tokens->content)->token, "pwd", 3) == 0)
+			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "pwd", 3) == 0)
 				pwd();
-			if (ft_strncmp(((t_token *)head_tokens->content)->token, "env", 3) == 0)
+			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "env", 3) == 0)
 				pr_env(head_env);
-			if (ft_strncmp(((t_token *)head_tokens->content)->token, "exit", 4) == 0)
+			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "exit", 4) == 0)
 				exiting(head_tokens, size);
-			if (ft_strncmp(line, "unset", 5) == 0)
-				unset(&head_env, head_tokens);
+			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "unset", 5) == 0)
+				unset(&head_env, head_tokens, size);
 			// if	(ft_strncmp(line, "export", 6) == 0)
 			// 	export(head_env, head_tokens);
-			if (ft_strncmp(((t_token *)head_tokens->content)->token, "export", 6) == 0)
+			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "export", 6) == 0)
 				export(head_env, head_tokens);
-			if (ft_strncmp(((t_token *)head_tokens->content)->token, "test", 4) == 0)
+			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "test", 4) == 0)
 			{
 				t_list *node;
 				node = head_tokens;
@@ -45,6 +47,10 @@ int main(int argc, char **argv, char **env)
 						node = node->next;
 				}
 			}
+			else if (ft_strncmp(line, "\n", 1))
+				exit (0);
+			else
+				printf("zsh: command not found: %s\n", line);
 		}
 		free(line);
 	}
@@ -109,15 +115,23 @@ void cd(t_list *env, t_list *token, int size)
 	char *line;
 	char *old;
 
-	printf("size: %i\n", size);
+	old = getcwd(NULL, 1024);
 	if (size == 1)
 	{
 		chdir(get_env(env, "HOME"));
+		now = getcwd(NULL, 1024);
+		while (env->next != NULL)
+		{
+			temp = (t_env *)env->content;
+			if (ft_strncmp("PWD", temp->key, 3) == 0)
+				temp->value = now;
+			if (ft_strncmp("OLDPWD", temp->key, 6) == 0)
+				temp->value = old;
+			env = env->next;
+		}
 		return;
 	}
 	line = ((t_token *)token->next->content)->token;
-	printf("line: %s\n", line);
-	old = getcwd(NULL, 1024);
 	if (line[0] == '~')
 		chdir(get_env(env, "HOME"));
 	else if (chdir(line) == -1)
@@ -148,13 +162,18 @@ void echo(t_list *line)
 	printf("\n");
 }
 
-void unset(t_list **env, t_list *token)
+void unset(t_list **env, t_list *token, int size)
 {
 	t_env	*temp;
 	t_list	*envt;
 	t_list	*head;
 	char	*line;
 
+	if (size == 1)
+	{
+		printf("unset: not enough arguments\n");
+		return;
+	}
 	envt = NULL;
 	line = ((t_token *)token->next->content)->token;
 	head = *env;
@@ -176,11 +195,3 @@ void unset(t_list **env, t_list *token)
 		head = head->next;
 	}
 }
-
-// void	tlistmover(t_list **env)
-// {
-// 	t_list	*cur;
-
-// 	cur = *env;
-// 	cur = cur->next;
-// }

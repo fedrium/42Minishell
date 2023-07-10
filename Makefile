@@ -62,11 +62,12 @@ SRCS        :=      libft/ft_atoi.c \
                           export.c \
                           lexer.c \
                           env.c \
+                          signal.c \
                           
 OBJS        := $(SRCS:.c=.o)
 
 .c.o:
-	@${CC} ${FLAGS} -c $< -o ${<:.c=.o}
+	@${CC} ${FLAGS} -I/usr/local/opt/readline/include -c $< -o ${<:.c=.o}
 
 ################################################################################
 #                                  Makefile  objs                              #
@@ -83,7 +84,7 @@ RM		    := rm -f
 
 ${NAME}:	${OBJS}
 			@echo "$(GREEN)Compilation ${CLR_RMV}of ${YELLOW}$(NAME) ${CLR_RMV}..."
-			${CC} ${FLAGS} -o ${NAME} ${OBJS} -lreadline 
+			${CC} ${FLAGS} -o ${NAME} ${OBJS}  -L/usr/local/opt/readline/lib -lreadline 
 			@echo "$(GREEN)$(NAME) created[0m ✔️"
 
 all:		${NAME}

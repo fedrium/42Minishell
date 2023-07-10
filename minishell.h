@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <termios.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -50,7 +51,8 @@ int		is_valid_lst(t_list *head_tokens, t_list *head_env);
 void	exiting(t_list *token, int size);
 void	unset(t_list **env, t_list *head_token, int size);
 void	tlistmover(t_list **env);
-void	sig(int signal);
 void	signal_handler(int signal);
+void	sig(void);
+void	setatt();
 
 #endif

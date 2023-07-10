@@ -10,8 +10,8 @@ int main(int argc, char **argv, char **env)
 	head_env = env_init(env);
 	while (1)
 	{
-		line = readline("Minishell$ ");
-		if (line[0] == '\n')
+		sig();
+		if ((line = readline("Minishell$ ")) == 0)
 			exit (0);
 		head_tokens = tokenize(line);
 		size = ft_lstsize(head_tokens);
@@ -47,8 +47,8 @@ int main(int argc, char **argv, char **env)
 						node = node->next;
 				}
 			}
-			else if (ft_strncmp(line, "\n", 1))
-				exit (0);
+			// else if (ft_strncmp(line, "\n", 1))
+			// 	exit (0);
 			else
 				printf("zsh: command not found: %s\n", line);
 		}

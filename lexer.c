@@ -126,27 +126,37 @@ t_token	*get_token(char *line, int *p)
 	t_token	*token;
 	char	*join;
 	int		quote;
+	int		squote;
 
 	quote = -1;
+	squote = -1;
 	join = (char *)malloc(sizeof(char) * 2);
 	token = (t_token *)malloc(sizeof(t_token));
 	token->token = (char *)malloc(sizeof(char));
 	token->token[0] = '\0';
 	join[1] = '\0';
-	while (line[*p] != ' '|| quote > 0)
+	while (line[*p] != ' '|| quote > 0 || squote > 0)
 	{
 		if (!line[*p])
 			break;
-		if (line[*p] == 39 || line[*p] == '"')
+		if (line[*p] == 39 && quote < 0)
+		{
+			// printf("here\n");
+			squote *= -1;
+		}
+		if (line[*p] == '"' && squote < 0)
+		{
+			// printf("here2\n");
 			quote *= -1;
+		}
 		join[0] = line[*p];
 		token->token = ft_strjoin(token->token, join);
 		(*p) += 1;
 	}
 	token->token[*p] = '\0';
-	if (quote > 0)
+	if (quote > 0 || squote > 0)
 	{
-		token->token = NULL;
+		// token->token = NULL;
 		token->priority = -1;
 	}
 	return (token);

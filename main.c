@@ -6,13 +6,19 @@ int main(int argc, char **argv, char **env)
 	int size;
 	t_list *head_env;
 	t_list *head_tokens;
+	struct termios saved;
 
+	execve("../a.out", NULL, env);
 	head_env = env_init(env);
+	tcgetattr(STDIN_FILENO, &saved);
 	while (1)
 	{
 		sig();
 		if ((line = readline("Minishell$ ")) == 0)
+		{
+			tcsetattr(STDIN_FILENO, TCSANOW, &saved);
 			exit (0);
+		}
 		head_tokens = tokenize(line);
 		size = ft_lstsize(head_tokens);
 		if (line[0] != '\0' && is_valid_lst(head_tokens, head_env))

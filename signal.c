@@ -15,15 +15,14 @@ void	sig()
 {
 	setatt();
 	signal(SIGINT, signal_handler);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 void	setatt()
 {
-	struct termios attributes;
+	struct termios att;
 
-	tcgetattr(STDIN_FILENO, &saved);
-
-	tcgetattr(STDIN_FILENO, &attributes);
-    attributes.c_lflag &= ~ ECHOK;
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &attributes);
+	tcgetattr(STDIN_FILENO, &att);
+    att.c_lflag &= ~ ECHOCTL;
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &att);
 }

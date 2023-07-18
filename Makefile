@@ -63,6 +63,7 @@ SRCS        :=      libft/ft_atoi.c \
                           lexer.c \
                           env.c \
                           signal.c \
+                          execve.c \
                           
 OBJS        := $(SRCS:.c=.o)
 

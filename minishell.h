@@ -54,5 +54,6 @@ void	tlistmover(t_list **env);
 void	signal_handler(int signal);
 void	sig(void);
 void	setatt();
+char	**env_arr(t_list *env);
 
 #endif

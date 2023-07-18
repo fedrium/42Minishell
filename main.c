@@ -8,7 +8,6 @@ int main(int argc, char **argv, char **env)
 	t_list *head_tokens;
 	struct termios saved;
 
-	execve("../a.out", NULL, env);
 	head_env = env_init(env);
 	tcgetattr(STDIN_FILENO, &saved);
 	while (1)
@@ -23,6 +22,7 @@ int main(int argc, char **argv, char **env)
 		size = ft_lstsize(head_tokens);
 		if (line[0] != '\0' && is_valid_lst(head_tokens, head_env))
 		{
+			env_arr(head_env);
 			if (line && *line)
 				add_history(line);
 			if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 4) == 0)

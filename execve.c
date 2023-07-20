@@ -1,5 +1,20 @@
 #include "minishell.h"
 
+char	*getvalue(t_list *env, char *key)
+{
+	t_env *temp;
+
+	while (env->next != NULL)
+	{
+		temp = (t_env *)env->content;
+		if (temp->key == key)
+			return (temp->value);
+		else
+			env = env->next;
+	}
+	return NULL;
+}
+
 char	**env_arr(t_list *env)
 {
 	int		size;
@@ -21,7 +36,19 @@ char	**env_arr(t_list *env)
 	return array;
 }
 
-void	extra_bi(t_list *env, t_list *head_tokens)
+void	exe(t_list *env, t_list *head_tokens)
 {
-	
+	char	**array;
+	int		pid;	
+
+	char *args[2];
+	args[0] = "/bin/ls";
+	args[1] = NULL;
+	array = env_arr(env);
+	pid = fork();
+	if (pid == 0)
+	{
+		execve(args[0], args, array);
+	}
+	waitpid(pid, NULL, 0);
 }

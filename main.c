@@ -20,9 +20,10 @@ int main(int argc, char **argv, char **env)
 		}
 		head_tokens = tokenize(line);
 		size = ft_lstsize(head_tokens);
+		printf("test: %s\n", getvalue(head_env, "PWD"));
 		if (line[0] != '\0' && is_valid_lst(head_tokens, head_env))
 		{
-			env_arr(head_env);
+			// exe(head_env, head_tokens);
 			if (line && *line)
 				add_history(line);
 			if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 4) == 0)

@@ -55,5 +55,7 @@ void	signal_handler(int signal);
 void	sig(void);
 void	setatt();
 char	**env_arr(t_list *env);
+void	exe(t_list *env, t_list *head_tokens);
+char	*getvalue(t_list *env, char *key);
 
 #endif

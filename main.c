@@ -23,7 +23,7 @@ int main(int argc, char **argv, char **env)
 		printf("test: %s\n", getvalue(head_env, "PWD"));
 		if (line[0] != '\0' && is_valid_lst(head_tokens, head_env))
 		{
-			// exe(head_env, head_tokens);
+			exe(head_env, head_tokens);
 			if (line && *line)
 				add_history(line);
 			if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 4) == 0)

@@ -7,7 +7,7 @@ char	*getvalue(t_list *env, char *key)
 	while (env->next != NULL)
 	{
 		temp = (t_env *)env->content;
-		if (temp->key == key)
+		if (ft_strncmp(temp->key, key, ft_strlen(key)) == 0)
 			return (temp->value);
 		else
 			env = env->next;

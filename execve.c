@@ -36,6 +36,42 @@ char	**env_arr(t_list *env)
 	return array;
 }
 
+char	**path_format(t_list *env)
+{
+	char	**temp;
+	char	*str;
+	int		i = 0;
+
+	str = getvalue(env, "PATH");
+	temp = ft_split(str, ':');
+	while (temp[i])
+	{
+		printf("str: %s\n", temp[i]);
+		i++;
+	}
+	return (temp);
+}
+
+//make a function for running through dir
+
+int		get_file(char *dir, char *cmd, t_list *env)
+{
+	DIR		*cur_dir;
+	struct	dirent *cur_file;
+	char	**path;
+
+	cur_dir = opendir(dir);
+	path = path_format(env);
+	if (cur_dir == NULL)
+		printf("error");
+	while ((cur_file = readdir(cur_dir)))
+	{
+		if (ft_strncmp(cur_file->d_name, cmd, ft_strlen(cmd)) == 0)
+			printf("working");
+	}
+	return (0);
+}
+
 void	exe(t_list *env, t_list *head_tokens)
 {
 	char	**array;

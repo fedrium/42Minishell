@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <termios.h>
+#include <dirent.h>
+#include <sys/types.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -57,5 +59,7 @@ void	setatt();
 char	**env_arr(t_list *env);
 void	exe(t_list *env, t_list *head_tokens);
 char	*getvalue(t_list *env, char *key);
+int		get_file(char *dir, char *cmd, t_list *env);
+char	**path_format(t_list *env);
 
 #endif

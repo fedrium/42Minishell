@@ -40,51 +40,63 @@ char	**path_format(t_list *env)
 {
 	char	**temp;
 	char	*str;
-	int		i = 0;
 
 	str = getvalue(env, "PATH");
 	temp = ft_split(str, ':');
-	while (temp[i])
-	{
-		printf("str: %s\n", temp[i]);
-		i++;
-	}
 	return (temp);
 }
 
 //make a function for running through dir
 
-int		get_file(char *dir, char *cmd, t_list *env)
+char	*strjoin_helper(char *path, char *cmd)
+{
+	char	*res;
+
+	res = ft_strjoin(path, "/");
+	res = ft_strjoin(res, cmd);
+	return (res);
+}
+
+int		get_file(char *cmd, t_list *env)
 {
 	DIR		*cur_dir;
 	struct	dirent *cur_file;
 	char	**path;
+	char	**cmd_arr;
+	int		i;
 
-	cur_dir = opendir(dir);
+	i = 0;
 	path = path_format(env);
-	if (cur_dir == NULL)
-		printf("error");
-	while ((cur_file = readdir(cur_dir)))
+	cmd_arr = ft_split(cmd, ' ');
+	while (path[i] != NULL)
 	{
-		if (ft_strncmp(cur_file->d_name, cmd, ft_strlen(cmd)) == 0)
-			printf("working");
+		cur_dir = opendir(path[i]);
+		if (cur_dir == NULL)
+			printf("error");
+		while ((cur_file = readdir(cur_dir)))
+		{
+			if (access(strjoin_helper(path[i], cmd_arr[0]), X_OK) == 0)
+			{
+				exe(env, cmd, strjoin_helper(path[i], cmd_arr[0]));
+				return (0);
+			}
+		}
+		i++;
+		closedir(cur_dir);
 	}
-	return (0);
+	return (1);
 }
 
-void	exe(t_list *env, t_list *head_tokens)
+void	exe(t_list *env, char *cmd, char *path)
 {
 	char	**array;
-	int		pid;	
+	char	**cmd_arr;
+	int		pid;
 
-	char *args[2];
-	args[0] = "/bin/ls";
-	args[1] = NULL;
 	array = env_arr(env);
+	cmd_arr = ft_split(cmd, ' ');
 	pid = fork();
 	if (pid == 0)
-	{
-		execve(args[0], args, array);
-	}
+		execve(path, cmd_arr, array);
 	waitpid(pid, NULL, 0);
 }

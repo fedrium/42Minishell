@@ -22,10 +22,11 @@ int main(int argc, char **argv, char **env)
 		size = ft_lstsize(head_tokens);
 		if (line[0] != '\0' && is_valid_lst(head_tokens, head_env))
 		{
-			get_file("/usr/bin", "ls");
 			if (line && *line)
 				add_history(line);
-			if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 4) == 0)
+			if (get_file(line, head_env) == 0)
+				continue;
+			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 4) == 0)
 				echo(head_tokens);
 			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "cd", 2) == 0)
 				cd(head_env, head_tokens, size);

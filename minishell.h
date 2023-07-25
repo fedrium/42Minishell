@@ -57,9 +57,9 @@ void	signal_handler(int signal);
 void	sig(void);
 void	setatt();
 char	**env_arr(t_list *env);
-void	exe(t_list *env, t_list *head_tokens);
+void	exe(t_list *env, char *cmd, char *path);
 char	*getvalue(t_list *env, char *key);
-int		get_file(char *dir, char *cmd, t_list *env);
+int		get_file(char *cmd, t_list *env);
 char	**path_format(t_list *env);
 
 #endif

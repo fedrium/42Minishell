@@ -11,6 +11,7 @@
 #include <sys/types.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <sys/wait.h>
 
 typedef struct s_env
 {
@@ -61,5 +62,7 @@ void	exe(t_list *env, char *cmd, char *path);
 char	*getvalue(t_list *env, char *key);
 int		get_file(char *cmd, t_list *env);
 char	**path_format(t_list *env);
+void	freeing(char **array);
+
 
 #endif

@@ -51,10 +51,13 @@ char	**path_format(t_list *env)
 char	*strjoin_helper(char *path, char *cmd)
 {
 	char	*res;
+	char	*temp;
 
 	res = ft_strjoin(path, "/");
 	res = ft_strjoin(res, cmd);
-	return (res);
+	temp = res;
+	free(res);
+	return (temp);
 }
 
 int		get_file(char *cmd, t_list *env)
@@ -84,6 +87,7 @@ int		get_file(char *cmd, t_list *env)
 		i++;
 		closedir(cur_dir);
 	}
+	freeing(cmd_arr);
 	return (1);
 }
 

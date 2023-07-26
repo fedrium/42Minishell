@@ -84,7 +84,7 @@ RM		    := rm -f
 
 ${NAME}:	${OBJS}
 			@echo "$(GREEN)Compilation ${CLR_RMV}of ${YELLOW}$(NAME) ${CLR_RMV}..."
-			${CC} ${FLAGS} -o ${NAME} -lreadline ${OBJS} -fsanitize=address -g
+			${CC} ${FLAGS} -o ${NAME} -lreadline ${OBJS} -fsanitize=address -g3
 			@echo "$(GREEN)$(NAME) created[0m ✔️"
 
 all:		${NAME}

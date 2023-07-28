@@ -18,15 +18,17 @@ int main(int argc, char **argv, char **env)
 			tcsetattr(STDIN_FILENO, TCSANOW, &saved);
 			exit (0);
 		}
-		head_tokens = tokenize(line);
+		head_tokens = tokenize(line, head_env);
 		size = ft_lstsize(head_tokens);
-		if (line[0] != '\0' && is_valid_lst(head_tokens, head_env))
+		if (line[0] != '\0' && !check_invalid(head_tokens, 0))
 		{
-			if (line && *line)
-				add_history(line);
+			// printf("in\n");
+			// printf("%s\n", ((t_token *)head_tokens->content)->token);
+			// if (line && *line)
+			// 	add_history(line);
 			if (get_file(line, head_env) == 0)
 				continue;
-			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 4) == 0)
+			if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 4) == 0)
 				echo(head_tokens);
 			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "cd", 2) == 0)
 				cd(head_env, head_tokens, size);

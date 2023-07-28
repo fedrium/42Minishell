@@ -37,37 +37,33 @@ t_list	*tokenize(char *line, t_list *head_env)
 	return (head);
 }
 
-void	cleanse(t_list *node, t_list *head_env)
-{
-	char	*temp;
-	char	*new;
-	char	join[2];
-	int		i;
-	int		in_squote;
-	int		in_dquote;
+void cleanse(t_list *node, t_list *head_env) {
+    char *temp;
+    char *new;
+    char join[2];
+    int i;
+    int in_squote;
+    int in_dquote;
 
-	i = 0;
-	in_dquote = -1;
-	in_squote = -1;
-	temp = ((t_token *)node->content)->token;
-	new = malloc(sizeof(char));
-	join[1] = '\0';
-	new[0] = '\0';
-	while (temp[i])
-	{
-		
-		if (temp[i] == '$' && in_squote < 0)
-			expand_n_join(&temp, &new, &i, head_env);
-		if (can_move(temp[i], &i, &in_squote, &in_dquote))
-		{
-			join[0] = temp[i];
-			i++;
-			new = ft_strjoin(new, join);
-		}
-	}
-	if (in_dquote > 0 || in_squote > 0)
-		((t_token *)node->content)->priority = -1;
-	((t_token *)node->content)->token = ft_strdup(new);
+    i = 0;
+    in_dquote = -1;
+    in_squote = -1;
+    temp = ((t_token *)node->content)->token;
+    join[1] = '\0';
+    new = ft_strdup(""); // Initialize 'new' with an empty string
+    while (temp[i]) {
+        if (temp[i] == '$' && in_squote < 0)
+            expand_n_join(&temp, &new, &i, head_env);
+        if (can_move(temp[i], &i, &in_squote, &in_dquote)) {
+            join[0] = temp[i];
+            i++;
+            new = ft_strjoin(new, join);
+        }
+    }
+    if (in_dquote > 0 || in_squote > 0)
+        ((t_token *)node->content)->priority = -1;
+    free(((t_token *)node->content)->token); // Free the old token
+    ((t_token *)node->content)->token = new; // Update the token with the new value
 }
 
 int	can_move(char c, int *i, int *isq, int *idq)
@@ -96,15 +92,16 @@ void	expand_n_join(char **temp, char **new, int *i, t_list *head_env)
 	t_list	*node_env;
 
 	node_env = head_env;
-	key = malloc(sizeof(char));
-	key[0] = '\0';
 	buffer[1] = '\0';
 	value = NULL;
 	while ((*temp)[(*i)] != ' ' && (*temp)[(*i)] != '\0' && ((*temp)[(*i)] != '"' && (*temp)[(*i)] != 39))
 	{
+		key = malloc(sizeof(char));
+		key[0] = '\0';
 		buffer[0] = (*temp)[(*i)];
 		key = ft_strjoin(key, buffer);
 		(*i)++;
+		free(key);
 	}
 	key++;
 	while (node_env->next != NULL)
@@ -153,7 +150,7 @@ t_token	*get_token(char *line, int *p)
 		token->token = ft_strjoin(token->token, join);
 		(*p) += 1;
 	}
-	token->token[*p] = '\0';
+	// token->token[*p] = '\0';
 	if (quote > 0 || squote > 0)
 	{
 		// token->token = NULL;

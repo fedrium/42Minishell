@@ -12,6 +12,7 @@
 
 #include "minishell.h"
 
+//crreate linked list and put tokens into the linked list, use get tokens to process the input.
 t_list	*tokenize(char *line)
 {
 	t_list	*head;
@@ -35,6 +36,9 @@ t_list	*tokenize(char *line)
 	return (head);
 }
 
+// use strjoin and malloc to allocate memory put tokens into the linked list. Includes NUll termination
+// deals with unclosed quotes and syntax errors, but does not expand metacharacters.
+// flags the nodes that has a incorrect syntax.
 t_token	*get_token(char *line, int *p)
 {
 	t_token	*token;
@@ -66,6 +70,7 @@ t_token	*get_token(char *line, int *p)
 	return (token);
 }
 
+//gets and append the nodes
 int	morph_cacoon(char *cacoon, t_list *head_env, t_list *node)
 {
 	t_list	*env;
@@ -93,6 +98,7 @@ int	morph_cacoon(char *cacoon, t_list *head_env, t_list *node)
 	return (0);
 }
 
+//check for metacharacters and expand them, while allocating new memory
 int	morph(t_list *node, t_list *head_env)
 {
 	int		i;
@@ -122,6 +128,7 @@ int	morph(t_list *node, t_list *head_env)
 	return (1);
 }
 
+// check if each node has to be expanded
 void expand_tokens(t_list *head_tokens, t_list *head_env)
 {
 	t_list *node;
@@ -140,6 +147,7 @@ void expand_tokens(t_list *head_tokens, t_list *head_env)
 	return;
 }
 
+//invalid flag check
 int	check_invalid(t_list *head_tokens)
 {
 	t_list *node;
@@ -163,6 +171,7 @@ int	check_invalid(t_list *head_tokens)
 	return (0);
 }
 
+// checks for invalid syntax and expand meta characters.
 int is_valid_lst(t_list *head_tokens, t_list *head_env)
 {
 	if (check_invalid(head_tokens))

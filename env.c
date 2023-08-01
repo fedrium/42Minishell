@@ -33,14 +33,16 @@ t_list *env_init(char **env)
 	splitted_env = ft_split(env[0], '=');
 	node = ft_lstnew((void *)new_env(splitted_env));
 	head = node;
-	freeing(splitted_env);
+	free(splitted_env);
+	// freeing(splitted_env);
 	while (env[i])
 	{
 		splitted_env = ft_split(env[i], '=');
 		node->next = ft_lstnew((void *)new_env(splitted_env));
 		node = node->next;
 		i++;
-		freeing(splitted_env);
+		free(splitted_env);
+		// freeing(splitted_env);
 	}
 	return (head);
 }

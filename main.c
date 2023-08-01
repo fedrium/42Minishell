@@ -16,10 +16,13 @@ int main(int argc, char **argv, char **env)
 		if ((line = readline("Minishell$ ")) == 0)
 		{
 			tcsetattr(STDIN_FILENO, TCSANOW, &saved);
+			ll_free(head_env);
+			system("leaks minishell");
 			exit (0);
 		}
 		head_tokens = tokenize(line);
 		size = ft_lstsize(head_tokens);
+		// check for invalid syntax by going trought the flags in the linked list as well expanding metacharacters.
 		if (line[0] != '\0' && is_valid_lst(head_tokens, head_env))
 		{
 			if (line && *line)
@@ -42,18 +45,18 @@ int main(int argc, char **argv, char **env)
 			// 	export(head_env, head_tokens);
 			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "export", 6) == 0)
 				export(head_env, head_tokens);
-			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "test", 4) == 0)
-			{
-				t_list *node;
-				node = head_tokens;
-				printf("%s\n", ((t_token *)node->content)->token);
-				while (node->next != NULL)
-				{
-					printf("%s\n", ((t_token *)node->next->content)->token);
-					if (node->next != NULL)
-						node = node->next;
-				}
-			}
+			// else if (ft_strncmp(((t_token *)head_tokens->content)->token, "test", 4) == 0)
+			// {
+			// 	t_list *node;
+			// 	node = head_tokens;
+			// 	printf("%s\n", ((t_token *)node->content)->token);
+			// 	while (node->next != NULL)
+			// 	{
+			// 		printf("%s\n", ((t_token *)node->next->content)->token);
+			// 		if (node->next != NULL)
+			// 			node = node->next;
+			// 	}
+			// }
 			// else if (ft_strncmp(line, "\n", 1))
 			// 	exit (0);
 			else

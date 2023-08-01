@@ -12,3 +12,16 @@ void	freeing(char **array)
 	}
 	free(array);
 }
+
+void	ll_free(t_list *ll)
+{
+	t_env	*ll_temp;
+
+	while (ll)
+	{
+		ll_temp = (t_env *)ll;
+		free(ll_temp->key);
+		free(ll_temp->value);
+		ll = ll->next;
+	}
+}

@@ -63,6 +63,6 @@ char	*getvalue(t_list *env, char *key);
 int		get_file(char *cmd, t_list *env);
 char	**path_format(t_list *env);
 void	freeing(char **array);
-
+void	ll_free(t_list *ll);
 
 #endif

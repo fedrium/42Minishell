@@ -4,9 +4,10 @@ char	*getvalue(t_list *env, char *key)
 {
 	t_env *temp;
 
-	while (env->next != NULL)
+	while (env)
 	{
 		temp = (t_env *)env->content;
+		printf("strlen: %s\n", temp->key);
 		if (ft_strncmp(temp->key, key, ft_strlen(key)) == 0)
 			return (temp->value);
 		else
@@ -55,7 +56,7 @@ char	*strjoin_helper(char *path, char *cmd)
 
 	res = ft_strjoin(path, "/");
 	res = ft_strjoin(res, cmd);
-	temp = res;
+	temp = ft_strdup(res);
 	free(res);
 	return (temp);
 }
@@ -87,7 +88,7 @@ int		get_file(char *cmd, t_list *env)
 		i++;
 		closedir(cur_dir);
 	}
-	freeing(cmd_arr);
+	// freeing(cmd_arr);
 	return (1);
 }
 

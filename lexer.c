@@ -50,16 +50,28 @@ void cleanse(t_list *node, t_list *head_env) {
     in_squote = -1;
     temp = ((t_token *)node->content)->token;
     join[1] = '\0';
+	// printf("%s, len: %li\n", temp, ft_strlen(temp));
     new = ft_strdup(""); // Initialize 'new' with an empty string
-    while (temp[i]) {
+    while (temp[i])
+	{
         if (temp[i] == '$' && in_squote < 0)
+		{
+			// printf("b4 ex: %s\n", temp);
+			i++;
             expand_n_join(&temp, &new, &i, head_env);
-        if (can_move(temp[i], &i, &in_squote, &in_dquote)) {
+			// printf("%s\n", temp);
+		}
+		if (!temp[i])
+			break;
+        if (can_move(temp[i], &i, &in_squote, &in_dquote))
+		{
             join[0] = temp[i];
             i++;
             new = ft_strjoin(new, join);
+			// printf("%c\n", temp[i]);
         }
     }
+	// printf("%s\n", new);
     if (in_dquote > 0 || in_squote > 0)
         ((t_token *)node->content)->priority = -1;
     free(((t_token *)node->content)->token); // Free the old token
@@ -83,39 +95,43 @@ int	can_move(char c, int *i, int *isq, int *idq)
 	return (1);
 }
 
-void	expand_n_join(char **temp, char **new, int *i, t_list *head_env)
+void expand_n_join(char **temp, char **new, int *i, t_list *head_env) 
 {
 	char	*key;
 	char	*value;
-	// char	*temp_env;
 	char	buffer[2];
-	t_list	*node_env;
+	t_list	*tenv;
 
-	node_env = head_env;
 	buffer[1] = '\0';
-	value = NULL;
-	while ((*temp)[(*i)] != ' ' && (*temp)[(*i)] != '\0' && ((*temp)[(*i)] != '"' && (*temp)[(*i)] != 39))
+	key = ft_strdup("");
+	tenv = head_env;
+	// printf("%s, tlen: %li\n", (*temp), ft_strlen((*temp)));
+	// printf("in ex: %s\n", (*temp));
+	while ((*temp)[(*i)] != 0 && ((*temp)[(*i)] != ' ' || (*temp)[(*i)] != '"' || (*temp)[(*i)] != '$'))
 	{
-		key = malloc(sizeof(char));
-		key[0] = '\0';
+		if ((*temp)[(*i)] == ' ' || (*temp)[(*i)] == '"' || (*temp)[(*i)] == '$')
+			break;
 		buffer[0] = (*temp)[(*i)];
 		key = ft_strjoin(key, buffer);
+		// printf("key: %s\n", key);
 		(*i)++;
-		free(key);
 	}
-	key++;
-	while (node_env->next != NULL)
+	// printf("key: %s\n", key);
+	while (tenv != NULL)
 	{
-		if (strncmp(key, ((t_env *)node_env->content)->key, ft_strlen(key) + 1) == 0)
+		if (ft_strncmp(key, ((t_env *)tenv->content)->key, ft_strlen(key)) == 0)
 		{
-			value = ft_strdup(((t_env *)node_env->content)->value);
+			value = ft_strdup(((t_env *)tenv->content)->value);
 			break;
 		}
-		if (node_env->next != NULL)
-			node_env = node_env->next;
+		tenv = tenv->next;
 	}
 	if (value)
-		*new = ft_strjoin(*new, value);
+	{
+		(*new) = ft_strjoin((*new), value);
+		free(value);
+	}
+	free(key);
 }
 
 t_token	*get_token(char *line, int *p)
@@ -150,12 +166,13 @@ t_token	*get_token(char *line, int *p)
 		token->token = ft_strjoin(token->token, join);
 		(*p) += 1;
 	}
-	// token->token[*p] = '\0';
 	if (quote > 0 || squote > 0)
 	{
+		// printf("%i, %i\n", quote, squote);
 		// token->token = NULL;
 		token->priority = -1;
 	}
+	// printf("%s, len: %li\n", token->token, ft_strlen(token->token));
 	return (token);
 }
 

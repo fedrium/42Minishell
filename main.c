@@ -16,7 +16,10 @@ int main(int argc, char **argv, char **env)
 		if ((line = readline("Minishell$ ")) == 0)
 		{
 			tcsetattr(STDIN_FILENO, TCSANOW, &saved);
-			ll_free(head_env);
+			ll_free(&head_env);
+			printf("wokring\n");
+			free(line);
+			rl_clear_history();
 			system("leaks minishell");
 			exit (0);
 		}
@@ -27,9 +30,7 @@ int main(int argc, char **argv, char **env)
 		{
 			if (line && *line)
 				add_history(line);
-			if (get_file(line, head_env) == 0)
-				continue;
-			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 4) == 0)
+			if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 4) == 0)
 				echo(head_tokens);
 			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "cd", 2) == 0)
 				cd(head_env, head_tokens, size);
@@ -41,10 +42,14 @@ int main(int argc, char **argv, char **env)
 				exiting(head_tokens, size);
 			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "unset", 5) == 0)
 				unset(&head_env, head_tokens, size);
-			// if	(ft_strncmp(line, "export", 6) == 0)
-			// 	export(head_env, head_tokens);
 			else if (ft_strncmp(((t_token *)head_tokens->content)->token, "export", 6) == 0)
 				export(head_env, head_tokens);
+			if (get_file(line, head_env) == 0)
+			{
+				printf("wokring\n");
+				free (line);
+				continue;
+			}
 			// else if (ft_strncmp(((t_token *)head_tokens->content)->token, "test", 4) == 0)
 			// {
 			// 	t_list *node;
@@ -62,6 +67,7 @@ int main(int argc, char **argv, char **env)
 			else
 				printf("zsh: command not found: %s\n", line);
 		}
+		printf("wokring\n");
 		free(line);
 	}
 	(void)argc;
@@ -77,6 +83,7 @@ void	exiting(t_list *token, int size)
 	i = 0;
 	if (size <= 2)
 	{
+		system("leaks minishell");
 		printf("exit\n");
 		exit (0);
 	}
@@ -92,6 +99,7 @@ void	exiting(t_list *token, int size)
 	}
 	code = ft_atoi(line);
 	printf("exit\n");
+	system("leaks minishell");
 	exit (code);
 }
 

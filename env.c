@@ -34,7 +34,6 @@ t_list *env_init(char **env)
 	node = ft_lstnew((void *)new_env(splitted_env));
 	head = node;
 	free(splitted_env);
-	// freeing(splitted_env);
 	while (env[i])
 	{
 		splitted_env = ft_split(env[i], '=');
@@ -42,14 +41,13 @@ t_list *env_init(char **env)
 		node = node->next;
 		i++;
 		free(splitted_env);
-		// freeing(splitted_env);
 	}
 	return (head);
 }
 
 void pr_env(t_list *head)
 {
-	while (head->next != NULL && head->content != NULL)
+	while (head != NULL)
 	{
 		t_env *temp = (t_env *)head->content;
 		printf("%s=%s\n", temp->key, temp->value);

@@ -32,19 +32,20 @@ char	**env_arr(t_list *env)
 		temp = (t_env *)env->content;
 		str = ft_strjoin(temp->key, "=");
 		array[i] = ft_strjoin(str, temp->value);
+		free(str);
 		env = env->next;
 	}
-	return array;
+	return (array);
 }
 
 char	**path_format(t_list *env)
 {
-	char	**temp;
+	char	**array;
 	char	*str;
 
 	str = getvalue(env, "PATH");
-	temp = ft_split(str, ':');
-	return (temp);
+	array = ft_split(str, ':');
+	return (array);
 }
 
 //make a function for running through dir
@@ -52,13 +53,17 @@ char	**path_format(t_list *env)
 char	*strjoin_helper(char *path, char *cmd)
 {
 	char	*res;
-	char	*temp;
+	char	*temp1;
+	char	*temp2;
 
 	res = ft_strjoin(path, "/");
-	res = ft_strjoin(res, cmd);
-	temp = ft_strdup(res);
+	temp1 = ft_strdup(res);
 	free(res);
-	return (temp);
+	res = ft_strjoin(temp1, cmd);
+	free(temp1);
+	temp2 = ft_strdup(res);
+	free(res);
+	return (temp2);
 }
 
 int		get_file(char *cmd, t_list *env)
@@ -79,16 +84,39 @@ int		get_file(char *cmd, t_list *env)
 			printf("error");
 		while ((cur_file = readdir(cur_dir)))
 		{
-			if (access(strjoin_helper(path[i], cmd_arr[0]), X_OK) == 0)
+			if (get_file_helper(path[i], cmd_arr[0], cmd, env) == 0)
 			{
-				exe(env, cmd, strjoin_helper(path[i], cmd_arr[0]));
+				freeing(cmd_arr);
+				freeing(path);
 				return (0);
 			}
+			// if (access(strjoin_helper(path[i], cmd_arr[0]), X_OK) == 0)
+			// {
+			// 	exe(env, cmd, strjoin_helper(path[i], cmd_arr[0]));
+			// 	return (0);
+			// }
 		}
 		i++;
 		closedir(cur_dir);
 	}
-	// freeing(cmd_arr);
+	freeing(cmd_arr);
+	freeing(path);
+	return (1);
+}
+
+#//jp = joined path
+int	get_file_helper(char *path, char *cmd_arr, char *cmd, t_list *env)
+{
+	char	*jp;
+
+	jp = strjoin_helper(path, cmd_arr);
+	if (access(jp, X_OK) == 0)
+	{
+		exe(env, cmd, strjoin_helper(path, cmd_arr));
+		free(jp);
+		return (0);
+	}
+	free(jp);
 	return (1);
 }
 
@@ -103,5 +131,7 @@ void	exe(t_list *env, char *cmd, char *path)
 	pid = fork();
 	if (pid == 0)
 		execve(path, cmd_arr, array);
+	freeing(array);
+	freeing(cmd_arr);
 	waitpid(pid, NULL, 0);
 }

@@ -13,15 +13,36 @@ void	freeing(char **array)
 	free(array);
 }
 
-void	ll_free(t_list *ll)
+void	ll_free(t_list **ll)
 {
-	t_env	*ll_temp;
+	// t_env	*ll_temp;
+	t_list	*head;
+	// t_list	*envt;
+	int i = 0;
 
-	while (ll)
+	head = *ll;
+	// envt = NULL;
+	while (head != NULL)
 	{
-		ll_temp = (t_env *)ll;
-		free(ll_temp->key);
-		free(ll_temp->value);
-		ll = ll->next;
+		// printf("i: %i\n", i);
+		// printf("%s\n", ((t_env *)head->content)->key);
+		// if (((t_env *)head->content)->key)
+			free(((t_env *)head->content)->key);
+		// if (((t_env *)head->content)->value)
+			free(((t_env *)head->content)->value);
+		// envt->next = head->next;
+		// envt = head;
+		if (head != NULL)
+			head = head->next;
+		i++;
 	}
+}
+
+char	*str(char *str)
+{
+	char	*temp;
+
+	temp = ft_strdup(str);
+	free(str);
+	return (temp);
 }

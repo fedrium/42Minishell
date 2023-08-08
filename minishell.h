@@ -19,6 +19,7 @@ typedef	struct s_token
 	char	*token;
 	char	*expansion;
 	int		priority;
+	char	*input;
 }			t_token;
 
 typedef struct s_pipe

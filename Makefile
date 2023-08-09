@@ -62,7 +62,11 @@ SRCS        :=      libft/ft_atoi.c \
                           export.c \
                           lexer.c \
                           env.c \
+                          misc.c \
+                          # execve.c \
+
                         #   piping.c \
+                          
                           
 OBJS        := $(SRCS:.c=.o) -lreadline
 

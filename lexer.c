@@ -73,7 +73,10 @@ void cleanse(t_list *node, t_list *head_env) {
     }
 	// printf("%s\n", new);
     if (in_dquote > 0 || in_squote > 0)
+	{
+		printf("flag\n");
         ((t_token *)node->content)->priority = -1;
+	}
     free(((t_token *)node->content)->token); // Free the old token
     ((t_token *)node->content)->token = new; // Update the token with the new value
 }
@@ -143,8 +146,8 @@ t_token	*get_token(char *line, int *p)
 
 	quote = -1;
 	squote = -1;
-	join = (char *)malloc(sizeof(char) * 2);
 	token = (t_token *)malloc(sizeof(t_token));
+	join = (char *)malloc(sizeof(char) * 2);
 	token->token = (char *)malloc(sizeof(char));
 	token->token[0] = '\0';
 	join[1] = '\0';
@@ -170,6 +173,7 @@ t_token	*get_token(char *line, int *p)
 	{
 		// printf("%i, %i\n", quote, squote);
 		// token->token = NULL;
+		// printf("flag1\n");
 		token->priority = -1;
 	}
 	// printf("%s, len: %li\n", token->token, ft_strlen(token->token));
@@ -181,22 +185,43 @@ int	check_invalid(t_list *head_tokens, int mute)
 	t_list *node;
 
 	node = head_tokens;
-	if (((t_token *)head_tokens->content)->priority == -1)
+	// if (((t_token *)head_tokens->content)->priority == -1)
+	// {
+	// 	if (!mute)
+	// 		printf("error: %s\nSyntax error!\n", ((t_token *)head_tokens->content)->token);
+	// 	return (1);
+	// }
+	while (node != NULL)
 	{
-		if (!mute)
-			printf("error: %s\nSyntax error!\n", ((t_token *)head_tokens->content)->token);
-		return (1);
-	}
-	while (node->next != NULL)
-	{
-		if (((t_token *)node->next->content)->priority == -1)
+		if (((t_token *)node->content)->priority == -1)
 		{
 			if (!mute)
-				printf("error: %s\nSyntax error!\n", ((t_token *)node->next->content)->token);
+				printf("error: %s\nSyntax error!\n", ((t_token *)node->content)->token);
 			return (1);
 		}
-		if (node->next != NULL)
-			node = node->next;
+		node = node->next;
 	}
 	return (0);
+}
+
+void	check_head_tokens(t_list *node, char *line)
+{
+	if (line[0] == '\0')
+		return;
+	if (ft_strncmp(get_tl_str(node), "|", 2) == 0)
+		((t_token *)node->content)->priority = -1;
+	if (ft_strncmp(get_tl_str(node), ">", 2) == 0)
+		((t_token *)node->content)->priority = -1;
+	if (ft_strncmp(get_tl_str(node), "<", 2) == 0)
+		((t_token *)node->content)->priority = -1;
+	if (ft_strncmp(get_tl_str(node), ">>", 3) == 0)
+		((t_token *)node->content)->priority = -1;
+	if (ft_strncmp(get_tl_str(node), "<<", 3) == 0)
+		((t_token *)node->content)->priority = -1;
+	if (ft_strncmp(get_tl_str(node), "&", 2) == 0)
+		((t_token *)node->content)->priority = -1;
+	if (ft_strncmp(get_tl_str(node), "||", 3) == 0)
+		((t_token *)node->content)->priority = -1;
+	if (ft_strncmp(get_tl_str(node), "&&", 3) == 0)
+		((t_token *)node->content)->priority = -1;
 }

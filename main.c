@@ -13,6 +13,7 @@ int main(int argc, char **argv, char **env)
 		line = readline("Minishell$ ");
 		head_tokens = tokenize(line, head_env);
 		size = ft_lstsize(head_tokens);
+		check_head_tokens(head_tokens, line);
 		if (line[0] != '\0' && !check_invalid(head_tokens, 0))
 		{
 			if (line && *line)

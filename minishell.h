@@ -22,9 +22,10 @@ typedef struct s_env
 typedef	struct s_token
 {
 	char	*token;
-	char	*expansion;
+	// char	*expansion;
 	int		priority;
-	char	*input;
+	s_token *next;
+	// char	*input;
 }			t_token;
 
 typedef struct s_pipe
@@ -59,4 +60,5 @@ int		get_file(char *cmd, t_list *env);
 void	exe(t_list *env, char *cmd, char *path);
 void	freeing(char **array);
 int	get_file_helper(char *path, char *cmd_arr, char *cmd, t_list *env);
+int execute_args(t_list *head_tokens, t_list *head_env);
 #endif

@@ -5,11 +5,59 @@
 int execute_args(t_list *head_tokens, t_list *head_env)
 {
     t_list  *temp;
+    t_list  *temp_head;
     int     pid;
     int     fd[2];
     int     original_stdout;
 
-    
+    pipe(fd);
+    original_stdout = dup(stdout);
+    temp_head = head_tokens;
+    while (head_tokens != NULL)
+    {
+        split_args(temp, head_tokens);
+        create_pipes_and_forks(temp, fd, original_stdout, is_last_args(temp_head));
+    }
+}
+
+void    create_pipes_and_forks(t_list *temp, int original_stdout, int *fd, int flag)
+{
+    int pid;
+
+    pid = fork()
+}
+
+void    split_args(t_list *temp, t_list *temp_head)
+{
+    t_list  *node;
+
+    node = temp_head;
+    while (node != NULL && strcncmp(((t_token *)node->content)->token, "|", 2) != 0)
+        node = node->next;
+    temp = node;
+    temp_head = node->next;
+}
+
+int is_last_srgs(t_list *head_tokens)
+{
+    t_list  *node;
+
+    node = head_tokens;
+    while (node != NULL)
+    {
+        if (strncmp(((t_token *)node->content)->token, "|", 2) == 0)
+            return (0);
+        node = node->next;
+    }
+    return (1);
+}
+
+void    create_pipes_and_forks(t_list *temp, int *fd, int backup_stdout, int flag)
+{
+    dup2(fd[1], stdout);
+    fork();
+    if (flag == 1)
+        dup2(backup_stdout, 1);
 }
 
 void    run_functions(t_list *head_tokens, t_list *head_env)

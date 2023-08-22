@@ -39,7 +39,7 @@ int is_last_arg(t_list *head_tokens)
     while (p != NULL)
     {
         printf("%s\n", ((t_token *)p->content)->token);
-        if (strncmp(((t_token *)p->content)->token, "|", 1) == 0 && p->next != NULL)
+        if (ft_strncmp(((t_token *)p->content)->token, "|", 1) == 0 && p->next != NULL)
             return (0);
         p = p->next;
     }
@@ -48,7 +48,7 @@ int is_last_arg(t_list *head_tokens)
 
 char    is_special(t_list *node)
 {
-    if (strncmp(((t_token *)node->content)->token, "|", 2) == 0)
+    if (ft_strncmp(((t_token *)node->content)->token, "|", 2) == 0)
         return ('|');
     else
         return (0);

@@ -23,8 +23,11 @@ void     execute_args(t_list *head_tokens, t_list *head_env)
     pid_t     pid;
     int     fd[2];
     int     original_stdout;
+    int     last;
+    int     child_num;
 
     pipe(fd);
+    child_num = 0;
     original_stdout = dup(1);
     pid = 1;
     segment = NULL;
@@ -32,30 +35,34 @@ void     execute_args(t_list *head_tokens, t_list *head_env)
     // (void)head_env;
     while (head_tokens != NULL)
     {
+        last = is_last_arg(head_tokens);
         split_args(&segment, &head_tokens);
         seg_addr = &segment;
         if (pid > 0)
         {
+            child_num++;
             pid = fork();
             if (pid > 0)
                 lst_free_all(segment);
         }
         if (pid == 0)
         {
-            if (is_last_arg(head_tokens))
+            if (last)
                 dup2(original_stdout, 1);
-            // printf("%s\n", ((t_token *)segment->content)->token);
+            printf("%d\n", last);
             run_functions(segment, head_env);
             // printf("out\n");
             free(*seg_addr);
-            close(fd[0]);
-            close(fd[1]);
-            break;
+            exit(0);
         }
     }
     if (pid > 0)
     {
-        waitpid(0, NULL, 0);
+        while(child_num > 0)
+        {
+            waitpid(0, NULL, 0);
+            child_num--;
+        }
         // lst_free_all(segment);
         dup2(original_stdout, 1);
     }
@@ -83,6 +90,7 @@ void    run_functions(t_list *head_tokens, t_list *head_env)
 {
     int size;
 
+    // print_args(head_tokens);
     size = ft_lstsize(head_tokens);
     if (ft_strncmp(((t_token *)head_tokens)->token, "echo", 4) == 0)
         echo(head_tokens);

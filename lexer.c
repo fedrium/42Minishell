@@ -108,6 +108,7 @@ void expand_n_join(char **temp, char **new, int *i, t_list *head_env)
 	buffer[1] = '\0';
 	key = ft_strdup("");
 	tenv = head_env;
+	value = NULL;
 	// printf("%s, tlen: %li\n", (*temp), ft_strlen((*temp)));
 	// printf("in ex: %s\n", (*temp));
 	while ((*temp)[(*i)] != 0 && ((*temp)[(*i)] != ' ' || (*temp)[(*i)] != '"' || (*temp)[(*i)] != '$'))

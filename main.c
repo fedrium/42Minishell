@@ -3,7 +3,6 @@
 int main(int argc, char **argv, char **env)
 {
 	char *line;
-	int size;
 	t_list *head_env;
 	t_list *head_tokens;
 
@@ -12,71 +11,17 @@ int main(int argc, char **argv, char **env)
 	{
 		line = readline("Minishell$ ");
 		head_tokens = tokenize(line, head_env);
-		size = ft_lstsize(head_tokens);
+		check_head_tokens(head_tokens, line);
 		if (line[0] != '\0' && !check_invalid(head_tokens, 0))
 		{
+			execute_args(head_tokens, head_env);
 			if (line && *line)
-				add_history(line);
-			if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 4) == 0)
-				echo(head_tokens);
-			if (ft_strncmp(((t_token *)head_tokens->content)->token, "cd", 2) == 0)
-				cd(head_env, head_tokens, size);
-			if (ft_strncmp(((t_token *)head_tokens->content)->token, "pwd", 3) == 0)
-				pwd();
-			if (ft_strncmp(((t_token *)head_tokens->content)->token, "env", 3) == 0)
-				pr_env(head_env);
-			if (ft_strncmp(((t_token *)head_tokens->content)->token, "exit", 4) == 0)
-				exiting(head_tokens, size);
-			// if (ft_strncmp(line, "unset", 5) == 0)
-			// 	unset(head_env, ((t_token *)head_tokens->next->content)->token);
-			// if	(ft_strncmp(line, "export", 6) == 0)
-			// 	export(head_env, head_tokens);
-			if (ft_strncmp(((t_token *)head_tokens->content)->token, "export", 6) == 0)
-				export(head_env, head_tokens);
-			if (ft_strncmp(((t_token *)head_tokens->content)->token, "test", 4) == 0)
-			{
-				t_list *node;
-				node = head_tokens;
-				printf("tout: %s\n", ((t_token *)node->content)->token);
-				while (node->next != NULL)
-				{
-					printf("tout: %s\n", ((t_token *)node->next->content)->token);
-					if (node->next != NULL)
-						node = node->next;
-				}
-			}
+        		add_history(line);
 		}
 		free(line);
 	}
 	(void)argc;
 	(void)argv;
-}
-
-void	exiting(t_list *token, int size)
-{
-	char 	*line;
-	int		code;
-	int		i;
-
-	i = 0;
-	if (size == 1)
-	{
-		printf("exit\n");
-		exit (0);
-	}
-	line = ((t_token *)token->next->content)->token;
-	while (line[i] != '\0')
-	{
-		if (ft_isdigit(line[i]) == 0)
-		{
-			printf("exit\n");
-			printf("bash: exit: %s: numeric argument required\n", line);
-		}
-		i++;
-	}
-	code = ft_atoi(line);
-	printf("exit\n");
-	exit (code);
 }
 
 void pwd(void)
@@ -109,7 +54,6 @@ void cd(t_list *env, t_list *token, int size)
 	char *line;
 	char *old;
 
-	printf("size: %i\n", size);
 	if (size == 1)
 	{
 		chdir(get_env(env, "HOME"));

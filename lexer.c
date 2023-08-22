@@ -37,37 +37,48 @@ t_list	*tokenize(char *line, t_list *head_env)
 	return (head);
 }
 
-void	cleanse(t_list *node, t_list *head_env)
-{
-	char	*temp;
-	char	*new;
-	char	join[2];
-	int		i;
-	int		in_squote;
-	int		in_dquote;
+void cleanse(t_list *node, t_list *head_env) {
+    char *temp;
+    char *new;
+    char join[2];
+    int i;
+    int in_squote;
+    int in_dquote;
 
-	i = 0;
-	in_dquote = -1;
-	in_squote = -1;
-	temp = ((t_token *)node->content)->token;
-	new = malloc(sizeof(char));
-	join[1] = '\0';
-	new[0] = '\0';
-	while (temp[i])
+    i = 0;
+    in_dquote = -1;
+    in_squote = -1;
+    temp = ((t_token *)node->content)->token;
+    join[1] = '\0';
+	// printf("%s, len: %li\n", temp, ft_strlen(temp));
+    new = ft_strdup(""); // Initialize 'new' with an empty string
+    while (temp[i])
 	{
-		
-		if (temp[i] == '$' && in_squote < 0)
-			expand_n_join(&temp, &new, &i, head_env);
-		if (can_move(temp[i], &i, &in_squote, &in_dquote))
+        if (temp[i] == '$' && in_squote < 0)
 		{
-			join[0] = temp[i];
+			// printf("b4 ex: %s\n", temp);
 			i++;
-			new = ft_strjoin(new, join);
+            expand_n_join(&temp, &new, &i, head_env);
+			// printf("%s\n", temp);
 		}
+		if (!temp[i])
+			break;
+        if (can_move(temp[i], &i, &in_squote, &in_dquote))
+		{
+            join[0] = temp[i];
+            i++;
+            new = ft_strjoin(new, join);
+			// printf("%c\n", temp[i]);
+        }
+    }
+	// printf("%s\n", new);
+    if (in_dquote > 0 || in_squote > 0)
+	{
+		printf("flag\n");
+        ((t_token *)node->content)->priority = -1;
 	}
-	if (in_dquote > 0 || in_squote > 0)
-		((t_token *)node->content)->priority = -1;
-	((t_token *)node->content)->token = ft_strdup(new);
+    free(((t_token *)node->content)->token); // Free the old token
+    ((t_token *)node->content)->token = new; // Update the token with the new value
 }
 
 int	can_move(char c, int *i, int *isq, int *idq)
@@ -87,38 +98,44 @@ int	can_move(char c, int *i, int *isq, int *idq)
 	return (1);
 }
 
-void	expand_n_join(char **temp, char **new, int *i, t_list *head_env)
+void expand_n_join(char **temp, char **new, int *i, t_list *head_env) 
 {
 	char	*key;
 	char	*value;
-	// char	*temp_env;
 	char	buffer[2];
-	t_list	*node_env;
+	t_list	*tenv;
 
-	node_env = head_env;
-	key = malloc(sizeof(char));
-	key[0] = '\0';
 	buffer[1] = '\0';
+	key = ft_strdup("");
+	tenv = head_env;
 	value = NULL;
-	while ((*temp)[(*i)] != ' ' && (*temp)[(*i)] != '\0' && ((*temp)[(*i)] != '"' && (*temp)[(*i)] != 39))
+	// printf("%s, tlen: %li\n", (*temp), ft_strlen((*temp)));
+	// printf("in ex: %s\n", (*temp));
+	while ((*temp)[(*i)] != 0 && ((*temp)[(*i)] != ' ' || (*temp)[(*i)] != '"' || (*temp)[(*i)] != '$'))
 	{
+		if ((*temp)[(*i)] == ' ' || (*temp)[(*i)] == '"' || (*temp)[(*i)] == '$')
+			break;
 		buffer[0] = (*temp)[(*i)];
 		key = ft_strjoin(key, buffer);
+		// printf("key: %s\n", key);
 		(*i)++;
 	}
-	key++;
-	while (node_env->next != NULL)
+	// printf("key: %s\n", key);
+	while (tenv != NULL)
 	{
-		if (strncmp(key, ((t_env *)node_env->content)->key, ft_strlen(key) + 1) == 0)
+		if (ft_strncmp(key, ((t_env *)tenv->content)->key, ft_strlen(key)) == 0)
 		{
-			value = ft_strdup(((t_env *)node_env->content)->value);
+			value = ft_strdup(((t_env *)tenv->content)->value);
 			break;
 		}
-		if (node_env->next != NULL)
-			node_env = node_env->next;
+		tenv = tenv->next;
 	}
 	if (value)
-		*new = ft_strjoin(*new, value);
+	{
+		(*new) = ft_strjoin((*new), value);
+		free(value);
+	}
+	free(key);
 }
 
 t_token	*get_token(char *line, int *p)
@@ -126,29 +143,41 @@ t_token	*get_token(char *line, int *p)
 	t_token	*token;
 	char	*join;
 	int		quote;
+	int		squote;
 
 	quote = -1;
-	join = (char *)malloc(sizeof(char) * 2);
+	squote = -1;
 	token = (t_token *)malloc(sizeof(t_token));
+	join = (char *)malloc(sizeof(char) * 2);
 	token->token = (char *)malloc(sizeof(char));
 	token->token[0] = '\0';
 	join[1] = '\0';
-	while (line[*p] != ' '|| quote > 0)
+	while (line[*p] != ' '|| quote > 0 || squote > 0)
 	{
 		if (!line[*p])
 			break;
-		if (line[*p] == 39 || line[*p] == '"')
+		if (line[*p] == 39 && quote < 0)
+		{
+			// printf("here\n");
+			squote *= -1;
+		}
+		if (line[*p] == '"' && squote < 0)
+		{
+			// printf("here2\n");
 			quote *= -1;
+		}
 		join[0] = line[*p];
 		token->token = ft_strjoin(token->token, join);
 		(*p) += 1;
 	}
-	token->token[*p] = '\0';
-	if (quote > 0)
+	if (quote > 0 || squote > 0)
 	{
-		token->token = NULL;
+		// printf("%i, %i\n", quote, squote);
+		// token->token = NULL;
+		// printf("flag1\n");
 		token->priority = -1;
 	}
+	// printf("%s, len: %li\n", token->token, ft_strlen(token->token));
 	return (token);
 }
 
@@ -157,22 +186,43 @@ int	check_invalid(t_list *head_tokens, int mute)
 	t_list *node;
 
 	node = head_tokens;
-	if (((t_token *)head_tokens->content)->priority == -1)
+	// if (((t_token *)head_tokens->content)->priority == -1)
+	// {
+	// 	if (!mute)
+	// 		printf("error: %s\nSyntax error!\n", ((t_token *)head_tokens->content)->token);
+	// 	return (1);
+	// }
+	while (node != NULL)
 	{
-		if (!mute)
-			printf("error: %s\nSyntax error!\n", ((t_token *)head_tokens->content)->token);
-		return (1);
-	}
-	while (node->next != NULL)
-	{
-		if (((t_token *)node->next->content)->priority == -1)
+		if (((t_token *)node->content)->priority == -1)
 		{
 			if (!mute)
-				printf("error: %s\nSyntax error!\n", ((t_token *)node->next->content)->token);
+				printf("error: %s\nSyntax error!\n", ((t_token *)node->content)->token);
 			return (1);
 		}
-		if (node->next != NULL)
-			node = node->next;
+		node = node->next;
 	}
 	return (0);
+}
+
+void	check_head_tokens(t_list *node, char *line)
+{
+	if (line[0] == '\0')
+		return;
+	if (ft_strncmp(get_tl_str(node), "|", 2) == 0)
+		((t_token *)node->content)->priority = -1;
+	if (ft_strncmp(get_tl_str(node), ">", 2) == 0)
+		((t_token *)node->content)->priority = -1;
+	if (ft_strncmp(get_tl_str(node), "<", 2) == 0)
+		((t_token *)node->content)->priority = -1;
+	if (ft_strncmp(get_tl_str(node), ">>", 3) == 0)
+		((t_token *)node->content)->priority = -1;
+	if (ft_strncmp(get_tl_str(node), "<<", 3) == 0)
+		((t_token *)node->content)->priority = -1;
+	if (ft_strncmp(get_tl_str(node), "&", 2) == 0)
+		((t_token *)node->content)->priority = -1;
+	if (ft_strncmp(get_tl_str(node), "||", 3) == 0)
+		((t_token *)node->content)->priority = -1;
+	if (ft_strncmp(get_tl_str(node), "&&", 3) == 0)
+		((t_token *)node->content)->priority = -1;
 }

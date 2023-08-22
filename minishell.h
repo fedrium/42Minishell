@@ -24,7 +24,7 @@ typedef	struct s_token
 	char	*token;
 	// char	*expansion;
 	int		priority;
-	s_token *next;
+	struct s_token *next;
 	// char	*input;
 }			t_token;
 
@@ -35,6 +35,7 @@ typedef struct s_pipe
 	char	*input;
 }			t_pipe;
 
+void     execute_args(t_list *head_tokens, t_list *head_env);
 void	echo(t_list *line);
 void cd(t_list *env, t_list *token, int size);
 void pwd(void);
@@ -60,5 +61,11 @@ int		get_file(char *cmd, t_list *env);
 void	exe(t_list *env, char *cmd, char *path);
 void	freeing(char **array);
 int	get_file_helper(char *path, char *cmd_arr, char *cmd, t_list *env);
-int execute_args(t_list *head_tokens, t_list *head_env);
+void    split_args(t_list **segment, t_list **head_tokens);
+void    run_functions(t_list *head_tokens, t_list *head_env);
+void    lst_free_one(t_list *node);
+int is_last_arg(t_list *head_tokens);
+char    is_special(t_list *node);
+void    lst_free_all(t_list *head);
+void    lst_free_env(t_list *head_env);
 #endif

@@ -9,7 +9,7 @@
 
 NAME        := minishell
 CC        := gcc
-FLAGS    := -Wall -Wextra -Werror -fsanitize=address -g3
+FLAGS    := -Wall -Wextra -Werror #-fsanitize=address -g3
 ################################################################################
 #                                 PROGRAM'S SRCS                               #
 ################################################################################
@@ -63,11 +63,9 @@ SRCS        :=      libft/ft_atoi.c \
                           lexer.c \
                           env.c \
                           misc.c \
-                          # execve.c \
+                          pipping.c
+                          # execve.c 
 
-                        #   piping.c \
-                          
-                          
 OBJS        := $(SRCS:.c=.o) -lreadline
 
 .c.o:

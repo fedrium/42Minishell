@@ -21,16 +21,6 @@ typedef	struct s_token
 	int		priority;
 }			t_token;
 
-typedef	struct s_lexrvar
-{
-	int		in_squote;
-	int		in_dquote;
-	int		i;
-	int		cacoon_pos;
-	int		*targets;
-	char	*meta_c;
-}			t_lexrvar;
-
 void	echo(t_list *line);
 void	cd(t_list *env, t_list *token, int size);
 void	pwd(void);

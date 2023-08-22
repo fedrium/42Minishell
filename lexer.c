@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-t_list	*tokenize(char *line)
+t_list	*tokenize(char *line, t_list *head_env)
 {
 	t_list	*head;
 	t_list	*node;
@@ -22,15 +22,103 @@ t_list	*tokenize(char *line)
 		return (ft_lstnew("\0"));
 	p = 0;
 	head = ft_lstnew((void *)get_token(line, &p));
+	if (!check_invalid(head, 1))
+		cleanse(head, head_env);
 	node = head;
 	while (line[p])
 	{
 		while (line[p] == ' ')
 			p++;
 		node->next = ft_lstnew((void *)get_token(line, &p));
+		if (!check_invalid(node, 1))
+			cleanse(node->next, head_env);
 		node = node->next;
 	}
 	return (head);
+}
+
+void	cleanse(t_list *node, t_list *head_env)
+{
+	char	*temp;
+	char	*new;
+	char	join[2];
+	int		i;
+	int		in_squote;
+	int		in_dquote;
+
+	i = 0;
+	in_dquote = -1;
+	in_squote = -1;
+	temp = ((t_token *)node->content)->token;
+	new = malloc(sizeof(char));
+	join[1] = '\0';
+	new[0] = '\0';
+	while (temp[i])
+	{
+		
+		if (temp[i] == '$' && in_squote < 0)
+			expand_n_join(&temp, &new, &i, head_env);
+		if (can_move(temp[i], &i, &in_squote, &in_dquote))
+		{
+			join[0] = temp[i];
+			i++;
+			new = ft_strjoin(new, join);
+		}
+	}
+	if (in_dquote > 0 || in_squote > 0)
+		((t_token *)node->content)->priority = -1;
+	((t_token *)node->content)->token = ft_strdup(new);
+}
+
+int	can_move(char c, int *i, int *isq, int *idq)
+{
+	if (c == '"' && (*isq) < 0)
+	{
+		(*i)++;
+		(*idq) *= -1;
+		return (0);
+	}
+	if (c == 39 && (*idq) < 0)
+	{
+		(*i)++;
+		(*isq) *= -1;
+		return (0);
+	}
+	return (1);
+}
+
+void	expand_n_join(char **temp, char **new, int *i, t_list *head_env)
+{
+	char	*key;
+	char	*value;
+	// char	*temp_env;
+	char	buffer[2];
+	t_list	*node_env;
+
+	node_env = head_env;
+	key = malloc(sizeof(char));
+	key[0] = '\0';
+	buffer[1] = '\0';
+	value = NULL;
+	while ((*temp)[(*i)] != ' ' && (*temp)[(*i)] != '\0' && ((*temp)[(*i)] != '"' && (*temp)[(*i)] != 39))
+	{
+		buffer[0] = (*temp)[(*i)];
+		key = ft_strjoin(key, buffer);
+		(*i)++;
+	}
+	key++;
+	while (node_env->next != NULL)
+	{
+		if (strncmp(key, ((t_env *)node_env->content)->key, ft_strlen(key) + 1) == 0)
+		{
+			value = ft_strdup(((t_env *)node_env->content)->value);
+			break;
+		}
+		if (node_env->next != NULL)
+			node_env = node_env->next;
+	}
+	if (value)
+		*new = ft_strjoin(*new, value);
 }
 
 t_token	*get_token(char *line, int *p)
@@ -64,109 +152,27 @@ t_token	*get_token(char *line, int *p)
 	return (token);
 }
 
-int	morph_cacoon(char *cacoon, t_list *head_env, t_list *node)
-{
-	t_list	*env;
-	t_env	*temp;
-	int		i;
-	int		lst_len;
-	
-	env = head_env;
-	i = 0;
-	lst_len = ft_lstsize(env);
-	cacoon++;
-	// pr_env(env);
-	while (i < lst_len)
-	{
-		temp = (t_env *)env->content;
-		if (ft_strncmp(cacoon, temp->key, (ft_strlen(cacoon) + 1)) == 0)
-		{
-			free(((t_token *)node->content)->token);
-			((t_token *)node->content)->token = ft_strdup(temp->value);
-			return (1);
-		}
-		env = env->next;
-		i++;
-	}
-	return (0);
-}
-
-int	morph(t_list *node, t_list *head_env)
-{
-	int		i;
-	char	*cacoon;
-	char	key[2];
-
-	i = 0;
-	key[1] = '\0';
-	cacoon = (char *)malloc(sizeof(char));
-	cacoon[0] = '\0';
-	while (((t_token *)node->content)->token[i] != '$' && ((t_token *)node->content)->token[i])
-		i++;
-	if (((t_token *)node->content)->token[i] == '\0')
-		return (1);
-	while (((t_token *)node->content)->token[i] && ((t_token *)node->content)->token[i] != '"')
-	{
-		key[0] = ((t_token *)node->content)->token[i];
-		cacoon = ft_strjoin(cacoon, key);
-		i++;
-	}
-	if (!morph_cacoon(cacoon, head_env, node))
-	{
-		free(cacoon);
-		return (0);
-	}
-	free(cacoon);
-	return (1);
-}
-
-void expand_tokens(t_list *head_tokens, t_list *head_env)
-{
-	t_list *node;
-	int i;
-	int size;
-
-	node = head_tokens;
-	i = 0;
-	size = ft_lstsize(head_tokens);
-	while (i < size)
-	{
-		morph(node, head_env);
-		node = node->next;
-		i++;
-	}
-	return;
-}
-
-int	check_invalid(t_list *head_tokens)
+int	check_invalid(t_list *head_tokens, int mute)
 {
 	t_list *node;
 
 	node = head_tokens;
 	if (((t_token *)head_tokens->content)->priority == -1)
 	{
-		printf("Syntax error!\n");
+		if (!mute)
+			printf("error: %s\nSyntax error!\n", ((t_token *)head_tokens->content)->token);
 		return (1);
 	}
 	while (node->next != NULL)
 	{
 		if (((t_token *)node->next->content)->priority == -1)
 		{
-			printf("Syntax error!\n");
+			if (!mute)
+				printf("error: %s\nSyntax error!\n", ((t_token *)node->next->content)->token);
 			return (1);
 		}
 		if (node->next != NULL)
 			node = node->next;
 	}
 	return (0);
-}
-
-int is_valid_lst(t_list *head_tokens, t_list *head_env)
-{
-	if (check_invalid(head_tokens))
-		return (0);
-	expand_tokens(head_tokens, head_env);
-	if (check_invalid(head_tokens))
-		return (0);
-	return (1);
 }

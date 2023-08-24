@@ -18,6 +18,7 @@ void    print_args(t_list *head_tokens)
 
 //creates child processes and pipes,
 //run the functions in the child process
+// !!!need to add multiple pipes!!!
 void     execute_args(t_list *head_tokens, t_list *head_env)
 {
 	t_list  *segment;
@@ -73,6 +74,7 @@ void     execute_args(t_list *head_tokens, t_list *head_env)
 	{
 		while(child_num > 0)
 		{
+			//close the pipes
 			waitpid(0, NULL, 0);
 			child_num--;
 		}

@@ -24,6 +24,7 @@ void     execute_args(t_list *head_tokens, t_list *head_env)
 	t_list  *segment;
 	t_list  **seg_addr;
 	pid_t     pid;
+	// pid_t	last_pid;
 	int     fd[2];
 	int     original_stdout;
 	int     last;
@@ -41,6 +42,7 @@ void     execute_args(t_list *head_tokens, t_list *head_env)
 	segment = NULL;
 	//redirect output into pipe
 	dup2(fd[1], 1);
+	// dup2(fd[0], 0);
 	//split long linked list into seperate segments of small linked lists,
 	//pass them into the child process and free them immediately after that.
 	while (head_tokens != NULL)
@@ -56,31 +58,37 @@ void     execute_args(t_list *head_tokens, t_list *head_env)
 		{
 			child_num++;
 			pid = fork();
-			// if (pid > 0)
-				// lst_free_all(segment);
+			// if (pid > 0 && last)
+			// 	last_pid = pid;
 		}
 		if (pid == 0)
 		{
+			close(fd[1]);
+			dup2(fd[0], 0);
+			close(fd[0]);
 			//print output to stdout if is last command
 			if (last)
+			{
 				dup2(original_stdout, 1);
+				run_functions(segment, head_env);
+				close(fd[0]);
+				close(fd[1]);
+				exit(0);
+			}
 			run_functions(segment, head_env);
 			// free(*seg_addr);
 			exit(0);
 		}
 	}
 	//wait for all child to end
+	// Wait for all child processes to end
 	if (pid > 0)
 	{
-		while(child_num > 0)
-		{
-			//close the pipes
-			waitpid(0, NULL, 0);
-			child_num--;
-		}
-		//redirect output so that minishell shows at prompt
+		// Close the write end of the pipe and restore original stdout
+		waitpid(0, NULL, 0);
+		close(fd[1]);
 		dup2(original_stdout, 1);
-	}
+	}	
 }
 
 //return head of the start of the command, point last argument to NULL instead of pipe

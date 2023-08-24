@@ -55,8 +55,8 @@ void     execute_args(t_list *head_tokens, t_list *head_env)
 		{
 			child_num++;
 			pid = fork();
-			if (pid > 0)
-				lst_free_all(segment);
+			// if (pid > 0)
+				// lst_free_all(segment);
 		}
 		if (pid == 0)
 		{
@@ -64,7 +64,7 @@ void     execute_args(t_list *head_tokens, t_list *head_env)
 			if (last)
 				dup2(original_stdout, 1);
 			run_functions(segment, head_env);
-			free(*seg_addr);
+			// free(*seg_addr);
 			exit(0);
 		}
 	}
@@ -132,5 +132,5 @@ void    run_functions(t_list *head_tokens, t_list *head_env)
 		}
 	}
 	else
-	    bin_functions(head_tokens, head_env);
+	    get_file(head_tokens, head_env);
 }

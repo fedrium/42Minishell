@@ -57,7 +57,7 @@ char	*getvalue(t_list *env, char *key);
 char	**env_arr(t_list *env);
 char	**path_format(t_list *env);
 char	*strjoin_helper(char *path, char *cmd);
-int		get_file(t_list *cmd, t_list *env);
+void	get_file(t_list *cmd, t_list *env);
 void	exe(t_list *env, char *cmd, char *path);
 void	freeing(char **array);
 int		get_file_helper(char *path, char *cmd_arr, char *cmd, t_list *env);

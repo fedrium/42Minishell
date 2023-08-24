@@ -1,5 +1,18 @@
 #include "minishell.h"
 
+void	print_2d_arr(char **env)
+{
+	int	i;
+
+	i = 0;
+	while(env[i])
+	{
+		printf("%s\n", env[i]);
+		i++;
+	}
+	// printf("%s\n", env[i]);
+}
+
 char	*getvalue(t_list *env, char *key)
 {
 	t_env *temp;
@@ -7,7 +20,7 @@ char	*getvalue(t_list *env, char *key)
 	while (env)
 	{
 		temp = (t_env *)env->content;
-		printf("strlen: %s\n", temp->key);
+		// printf("strlen: %s\n", temp->key);
 		if (ft_strncmp(temp->key, key, ft_strlen(key)) == 0)
 			return (temp->value);
 		else
@@ -22,19 +35,22 @@ char	**env_arr(t_list *env)
 	int		i;
 	char	*str;
 	char	**array;
-	t_env	*temp;
 
 	size = ft_lstsize(env);
-	array = malloc(sizeof(char *) * size);
+	// printf("%lu\n", sizeof(char *) * size + 1);
+	array = (char **)malloc(sizeof(char *) * (size + 1));
+	array[size] = NULL;
 	i = 0;
-	while (env->next != NULL)
+	while (env != NULL)
 	{
-		temp = (t_env *)env->content;
-		str = ft_strjoin(temp->key, "=");
-		array[i] = ft_strjoin(str, temp->value);
+		str = ft_strjoin(((t_env *)env->content)->key, "=");
+		array[i] = ft_strjoin(str, ((t_env *)env->content)->value);
 		free(str);
+		// printf("%s\n", array[i]);
+		i++;
 		env = env->next;
 	}
+	// print_2d_arr(array);
 	return (array);
 }
 
@@ -44,6 +60,7 @@ char	**path_format(t_list *env)
 	char	*str;
 
 	str = getvalue(env, "PATH");
+	// printf("%s\n", str);
 	array = ft_split(str, ':');
 	return (array);
 }
@@ -76,16 +93,19 @@ char	**convert_list(t_list *head_tokens)
 	i = 0;
 	if (head_tokens == NULL)
 		return NULL;
-	cmd_arr = malloc(sizeof(char *) * ft_lstsize(head_tokens));
-	while (head_tokens != NULL)
+	// printf("%s, size: %d\n", ((t_token *)node->content)->token, ft_lstsize(node));
+	cmd_arr = malloc(sizeof(char *) * ft_lstsize(node) + 1);
+	while (node != NULL)
 	{
 		cmd_arr[i] = ft_strdup(((t_token *)node->content)->token);
 		i++;
+		node = node->next;
 	}
 	return (cmd_arr);
 }
 
-int		get_file(t_list *head_tokens, t_list *env)
+
+void	get_file(t_list *head_tokens, t_list *env)
 {
 	DIR		*cur_dir;
 	struct	dirent *cur_file;
@@ -95,7 +115,7 @@ int		get_file(t_list *head_tokens, t_list *env)
 
 	i = 0;
 	path = path_format(env);
-	//change llist into 2d arr
+	// print_2d_arr(env_arr(env));
 	cmd_arr = convert_list(head_tokens);
 	while (path[i] != NULL)
 	{
@@ -104,65 +124,33 @@ int		get_file(t_list *head_tokens, t_list *env)
 			printf("error");
 		while ((cur_file = readdir(cur_dir)))
 		{
-			// if (get_file_helper(path[i], cmd_arr[0], cmd, env) == 0)
-			// {
-			// 	freeing(cmd_arr);
-			// 	freeing(path);
-			// 	return (0);
-			// }
 			if (access(strjoin_helper(path[i], cmd_arr[0]), X_OK) == 0)
 			{
-				// exe(env, cmd, strjoin_helper(path[i], cmd_arr[0]));
-				return (0);
+				printf("fd is ok\n");
+				execve(path[i], cmd_arr, env_arr(env));
+				printf("fd is ok\n");
+				return;
 			}
 		}
 		i++;
 		closedir(cur_dir);
 	}
-	freeing(cmd_arr);
-	freeing(path);
-	return (1);
+	printf("command not found\n");
+	return;
 }
 
-#//jp = joined path
-int	get_file_helper(char *path, char *cmd_arr, char *cmd, t_list *env)
-{
-	char	*jp;
+//jp = joined path
+// int	get_file_helper(char *path, char *cmd_arr, char *cmd, t_list *env)
+// {
+// 	char	*jp;
 
-	jp = strjoin_helper(path, cmd_arr);
-	if (access(jp, X_OK) == 0)
-	{
-		exe(env, cmd, strjoin_helper(path, cmd_arr));
-		free(jp);
-		return (0);
-	}
-	free(jp);
-	return (1);
-}
-
-void	exe(t_list *env, char *cmd, char *path)
-{
-	char	**array;
-	char	**cmd_arr;
-	int		pid;
-
-	array = env_arr(env);
-	cmd_arr = ft_split(cmd, ' ');
-	pid = fork();
-	if (pid == 0)
-		execve(path, cmd_arr, array);
-	freeing(array);
-	freeing(cmd_arr);
-	waitpid(pid, NULL, 0);
-}
-
-
-void	bin_functions(t_list *head_tokens, t_list *head_env)
-{
-	char	**path_arr;
-	char	**env_arr;
-	char	**arguments;
-
-	path_arr = get_paths(head_env);
-
-}
+// 	jp = strjoin_helper(path, cmd_arr);
+// 	if (access(jp, X_OK) == 0)
+// 	{
+// 		exe(env, cmd, strjoin_helper(path, cmd_arr));
+// 		free(jp);
+// 		return (0);
+// 	}
+// 	free(jp);
+// 	return (1);
+// }

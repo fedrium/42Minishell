@@ -94,7 +94,8 @@ char	**convert_list(t_list *head_tokens)
 	if (head_tokens == NULL)
 		return NULL;
 	// printf("%s, size: %d\n", ((t_token *)node->content)->token, ft_lstsize(node));
-	cmd_arr = malloc(sizeof(char *) * ft_lstsize(node) + 1);
+	cmd_arr = malloc(sizeof(char *) * (ft_lstsize(node) + 1));
+	cmd_arr[ft_lstsize(node)] = NULL;
 	while (node != NULL)
 	{
 		cmd_arr[i] = ft_strdup(((t_token *)node->content)->token);
@@ -126,9 +127,12 @@ void	get_file(t_list *head_tokens, t_list *env)
 		{
 			if (access(strjoin_helper(path[i], cmd_arr[0]), X_OK) == 0)
 			{
-				printf("fd is ok\n");
-				execve(path[i], cmd_arr, env_arr(env));
-				printf("fd is ok\n");
+				// printf("fd is ok\n");
+				// printf("path: %s\n", ft_strjoin(path[i], ft_strjoin("/", cmd_arr[0])));
+				// print_2d_arr(cmd_arr);
+				// print_2d_arr(env_arr(env));
+				execve(ft_strjoin(path[i], ft_strjoin("/", cmd_arr[0])), cmd_arr, env_arr(env));
+				// printf("fd is ok\n");
 				return;
 			}
 		}
@@ -138,19 +142,3 @@ void	get_file(t_list *head_tokens, t_list *env)
 	printf("command not found\n");
 	return;
 }
-
-//jp = joined path
-// int	get_file_helper(char *path, char *cmd_arr, char *cmd, t_list *env)
-// {
-// 	char	*jp;
-
-// 	jp = strjoin_helper(path, cmd_arr);
-// 	if (access(jp, X_OK) == 0)
-// 	{
-// 		exe(env, cmd, strjoin_helper(path, cmd_arr));
-// 		free(jp);
-// 		return (0);
-// 	}
-// 	free(jp);
-// 	return (1);
-// }

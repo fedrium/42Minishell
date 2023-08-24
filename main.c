@@ -83,11 +83,11 @@ void echo(t_list *line)
 	t_list *node;
 
 	node = line;
-	while (node->next != NULL)
+	node = node->next;
+	while (node != NULL)
 	{
-		printf("%s ", ((t_token *)node->next->content)->token);
-		if (node->next != NULL)
-			node = node->next;
+		printf("%s ", ((t_token *)node->content)->token);
+		node = node->next;
 	}
 	printf("\n");
 }

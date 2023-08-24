@@ -66,7 +66,26 @@ char	*strjoin_helper(char *path, char *cmd)
 	return (temp2);
 }
 
-int		get_file(char *cmd, t_list *env)
+char	**convert_list(t_list *head_tokens)
+{
+	t_list	*node;
+	char	**cmd_arr;
+	int		i;
+
+	node = head_tokens;
+	i = 0;
+	if (head_tokens == NULL)
+		return NULL;
+	cmd_arr = malloc(sizeof(char *) * ft_lstsize(head_tokens));
+	while (head_tokens != NULL)
+	{
+		cmd_arr[i] = ft_strdup(((t_token *)node->content)->token);
+		i++;
+	}
+	return (cmd_arr);
+}
+
+int		get_file(t_list *head_tokens, t_list *env)
 {
 	DIR		*cur_dir;
 	struct	dirent *cur_file;
@@ -76,7 +95,8 @@ int		get_file(char *cmd, t_list *env)
 
 	i = 0;
 	path = path_format(env);
-	cmd_arr = ft_split(cmd, ' ');
+	//change llist into 2d arr
+	cmd_arr = convert_list(head_tokens);
 	while (path[i] != NULL)
 	{
 		cur_dir = opendir(path[i]);
@@ -84,17 +104,17 @@ int		get_file(char *cmd, t_list *env)
 			printf("error");
 		while ((cur_file = readdir(cur_dir)))
 		{
-			if (get_file_helper(path[i], cmd_arr[0], cmd, env) == 0)
-			{
-				freeing(cmd_arr);
-				freeing(path);
-				return (0);
-			}
-			// if (access(strjoin_helper(path[i], cmd_arr[0]), X_OK) == 0)
+			// if (get_file_helper(path[i], cmd_arr[0], cmd, env) == 0)
 			// {
-			// 	exe(env, cmd, strjoin_helper(path[i], cmd_arr[0]));
+			// 	freeing(cmd_arr);
+			// 	freeing(path);
 			// 	return (0);
 			// }
+			if (access(strjoin_helper(path[i], cmd_arr[0]), X_OK) == 0)
+			{
+				// exe(env, cmd, strjoin_helper(path[i], cmd_arr[0]));
+				return (0);
+			}
 		}
 		i++;
 		closedir(cur_dir);
@@ -136,15 +156,13 @@ void	exe(t_list *env, char *cmd, char *path)
 	waitpid(pid, NULL, 0);
 }
 
-void	freeing(char **array)
-{
-	int	i;
 
-	i = 0;
-	while (array[i] != 0)
-	{
-		free(array[i]);
-		i++;
-	}
-	free(array);
+void	bin_functions(t_list *head_tokens, t_list *head_env)
+{
+	char	**path_arr;
+	char	**env_arr;
+	char	**arguments;
+
+	path_arr = get_paths(head_env);
+
 }

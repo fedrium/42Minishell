@@ -28,14 +28,14 @@ typedef	struct s_token
 	// char	*input;
 }			t_token;
 
-typedef struct s_pipe
+typedef struct s_cp
 {
-	t_list	*tokens;
-	char	*output;
-	char	*input;
-}			t_pipe;
+	t_list			*tokens;
+	int				pipe[2];
+	struct s_cp		*next;
+}			t_cp;
 
-void    execute_args(t_list *head_tokens, t_list *head_env);
+void    organise_args(t_list *head_tokens, t_list *head_env);
 void	echo(t_list *line);
 void 	cd(t_list *env, t_list *token, int size);
 void 	pwd(void);

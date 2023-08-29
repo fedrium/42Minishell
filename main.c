@@ -14,7 +14,7 @@ int main(int argc, char **argv, char **env)
 		check_head_tokens(head_tokens, line);
 		if (line[0] != '\0' && !check_invalid(head_tokens, 0))
 		{
-			execute_args(head_tokens, head_env);
+			organise_args(head_tokens, head_env);
 			if (line && *line)
         		add_history(line);
 		}

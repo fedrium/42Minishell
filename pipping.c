@@ -19,76 +19,55 @@ void    print_args(t_list *head_tokens)
 //creates child processes and pipes,
 //run the functions in the child process
 // !!!need to add multiple pipes!!!
-void     execute_args(t_list *head_tokens, t_list *head_env)
-{
-	t_list  *segment;
-	t_list  **seg_addr;
-	pid_t     pid;
-	// pid_t	last_pid;
-	int     fd[2];
-	int     original_stdout;
-	int     last;
-	int     child_num;
 
-	//create the pipe
-	pipe(fd);
-	//keep track of number of childs
-	child_num = 0;
-	//preserve the original stdout
-	original_stdout = dup(1);
-	//init pid for parent process
-	pid = 1;
-	//init command segment
-	segment = NULL;
-	//redirect output into pipe
-	dup2(fd[1], 1);
-	// dup2(fd[0], 0);
-	//split long linked list into seperate segments of small linked lists,
-	//pass them into the child process and free them immediately after that.
+t_cp	*make_cp(t_list *head_tokens)
+{
+	t_cp 	*cp_head;
+	t_cp	*cp_node;
+
+	cp_node = malloc(sizeof(t_cp));
+	cp_head = cp_node;
 	while (head_tokens != NULL)
 	{
-		//check if the current segment is the last arguement
-		last = is_last_arg(head_tokens);
-		//split the linked list
-		split_args(&segment, &head_tokens);
-		//store address of seperated link list to free later
-		seg_addr = &segment;
-		//if is parent
-		if (pid > 0)
-		{
-			child_num++;
-			pid = fork();
-			// if (pid > 0 && last)
-			// 	last_pid = pid;
-		}
+		cp_node = malloc(sizeof(t_cp));
+		split_args(&cp_node->tokens, &head_tokens);
+		cp_node->next = NULL;
+		cp_node = cp_node->next;
+	}
+	cp_node = cp_head;
+	pipe(cp_node->pipe);
+	dup2(cp_node->pipe[0], STDIN_FILENO);
+	dup2(cp_node->pipe[1], STDOUT_FILENO);
+	while (cp_node->next != NULL)
+	{
+		pipe(cp_node->pipe);
+		pipe(cp_node->next->pipe);
+		dup2(cp_node->next->pipe[0], cp_node->pipe[1]);
+		cp_node = cp_node->next;
+	}
+	dup2(1, cp_node->pipe[1]);
+	return (cp_head);
+}
+
+void     organise_args(t_list *head_tokens, t_list *head_env)
+{
+	t_cp	*child_processes;
+	pid_t	pid;
+	
+	pid = 1;
+	child_processes = make_cp(head_tokens);
+	while (child_processes != NULL)
+	{
+		pid = fork();
 		if (pid == 0)
 		{
-			close(fd[1]);
-			dup2(fd[0], 0);
-			close(fd[0]);
-			//print output to stdout if is last command
-			if (last)
-			{
-				dup2(original_stdout, 1);
-				run_functions(segment, head_env);
-				close(fd[0]);
-				close(fd[1]);
-				exit(0);
-			}
-			run_functions(segment, head_env);
-			// free(*seg_addr);
+			run_functions(child_processes->tokens, head_env);
 			exit(0);
 		}
+		else
+			child_processes = child_processes->next;
 	}
-	//wait for all child to end
-	// Wait for all child processes to end
-	if (pid > 0)
-	{
-		// Close the write end of the pipe and restore original stdout
-		waitpid(0, NULL, 0);
-		close(fd[1]);
-		dup2(original_stdout, 1);
-	}	
+	while (wait(NULL) > 0);
 }
 
 //return head of the start of the command, point last argument to NULL instead of pipe

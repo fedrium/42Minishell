@@ -14,7 +14,9 @@ int main(int argc, char **argv, char **env)
 		check_head_tokens(head_tokens, line);
 		if (line[0] != '\0' && !check_invalid(head_tokens, 0))
 		{
-			organise_args(head_tokens, head_env);
+			// organise_args(head_tokens, head_env);
+			redir_check(head_tokens, head_env);
+			run_functions(head_tokens, head_env);
 			if (line && *line)
         		add_history(line);
 		}
@@ -86,7 +88,15 @@ void echo(t_list *line)
 	node = node->next;
 	while (node != NULL)
 	{
-		printf("%s ", ((t_token *)node->content)->token);
+		if (ft_strncmp((((t_token*)node->content)->token), ">>", 3) == 0
+			|| ft_strncmp((((t_token*)node->content)->token), ">", 2) == 0
+			|| ft_strncmp((((t_token*)node->content)->token), "<<", 3) == 0
+			|| ft_strncmp((((t_token*)node->content)->token), "<", 2) == 0)
+		{
+			printf("\n");
+			return;
+		}
+		printf("%s", ((t_token *)node->content)->token);
 		node = node->next;
 	}
 	printf("\n");

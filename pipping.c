@@ -31,7 +31,7 @@ t_cp	*make_cp(t_list *head_tokens)
 	cp_head->tokens = NULL;
 	split_args(&cp_head->tokens, &head_tokens);
 	cp_head->next = NULL;
-	cp_node = cp_head->next
+	cp_node = cp_head->next;
     while (head_tokens != NULL)
     {
         cp_node = malloc(sizeof(t_cp));
@@ -41,7 +41,7 @@ t_cp	*make_cp(t_list *head_tokens)
 		cp_node = cp_node->next;
     }
 	cp_node = cp_head;
-	print_args(cp_node->tokens);
+	// print_args(cp_node->tokens);
 	pipe(cp_node->pipe);
 	dup2(cp_node->pipe[0], STDIN_FILENO);
 	dup2(cp_node->pipe[1], STDOUT_FILENO);
@@ -105,6 +105,7 @@ void    run_functions(t_list *head_tokens, t_list *head_env)
 	int size;
 
 	size = ft_lstsize(head_tokens);
+	// printf("cmd: %s\n", ((t_token *)head_tokens->content)->token);
 	if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 5) == 0)
 		echo(head_tokens);
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "cd", 3) == 0)

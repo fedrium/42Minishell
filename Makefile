@@ -9,7 +9,7 @@
 
 NAME        := minishell
 CC        := gcc
-FLAGS    := -Wall -Wextra -Werror -fsanitize=address -g3
+FLAGS    := -Wall -Wextra -Werror #-fsanitize=address -g3
 ################################################################################
 #                                 PROGRAM'S SRCS                               #
 ################################################################################
@@ -64,7 +64,8 @@ SRCS        :=      libft/ft_atoi.c \
                           env.c \
                           misc.c \
                           pipping.c \
-                          execve.c 
+                          execve.c \
+                          redir.c \
 
 OBJS        := $(SRCS:.c=.o)
 
@@ -86,7 +87,7 @@ RM		    := rm -f
 
 ${NAME}:	${OBJS}
 			@echo "$(GREEN)Compilation ${CLR_RMV}of ${YELLOW}$(NAME) ${CLR_RMV}..."
-			${CC} ${FLAGS} -o ${NAME} ${OBJS} -lreadline -fsanitize=address -g3
+			${CC} ${FLAGS} -o ${NAME} ${OBJS} -lreadline 
 			@echo "$(GREEN)$(NAME) created[0m ✔️"
 
 all:		${NAME}

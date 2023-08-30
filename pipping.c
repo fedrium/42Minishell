@@ -25,27 +25,38 @@ t_cp	*make_cp(t_list *head_tokens)
 	t_cp 	*cp_head;
 	t_cp	*cp_node;
 
-	cp_node = malloc(sizeof(t_cp));
-	cp_head = cp_node;
-	while (head_tokens != NULL)
-	{
-		cp_node = malloc(sizeof(t_cp));
-		split_args(&cp_node->tokens, &head_tokens);
-		cp_node->next = NULL;
+    cp_head = NULL;
+    cp_node = NULL;
+	cp_head = malloc(sizeof(t_cp));
+	cp_head->tokens = NULL;
+	split_args(&cp_head->tokens, &head_tokens);
+	cp_head->next = NULL;
+	cp_node = cp_head->next
+    while (head_tokens != NULL)
+    {
+        cp_node = malloc(sizeof(t_cp));
+        cp_node->tokens = NULL;  // Initialize the tokens list
+        split_args(&cp_node->tokens, &head_tokens);
+        cp_node->next = NULL;
 		cp_node = cp_node->next;
-	}
+    }
 	cp_node = cp_head;
+	print_args(cp_node->tokens);
 	pipe(cp_node->pipe);
 	dup2(cp_node->pipe[0], STDIN_FILENO);
 	dup2(cp_node->pipe[1], STDOUT_FILENO);
+	close(cp_node->pipe[0]);
+	close(cp_node->pipe[1]);
 	while (cp_node->next != NULL)
 	{
 		pipe(cp_node->pipe);
 		pipe(cp_node->next->pipe);
 		dup2(cp_node->next->pipe[0], cp_node->pipe[1]);
+		close(cp_node->next->pipe[0]);
 		cp_node = cp_node->next;
 	}
-	dup2(1, cp_node->pipe[1]);
+	dup2(cp_node->pipe[1], 1);
+	close(cp_node->pipe[1]);
 	return (cp_head);
 }
 

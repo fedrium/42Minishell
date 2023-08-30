@@ -11,7 +11,7 @@ void	redir_app(t_list *head_tokens, t_list *head_env)
 	run_functions(head_tokens, head_env);
 	dup2(fd, 1);
 	close(fd);
-	dup2(1, stdo);
+	dup2(stdo, 1);
 	// write(fd, "test", 4);
 }
 

@@ -98,6 +98,11 @@ char	**convert_list(t_list *head_tokens)
 	cmd_arr[ft_lstsize(node)] = NULL;
 	while (node != NULL)
 	{
+		if (ft_strncmp((((t_token*)node->content)->token), ">>", 3) == 0
+			|| ft_strncmp((((t_token*)node->content)->token), ">", 2) == 0
+			|| ft_strncmp((((t_token*)node->content)->token), "<<", 3) == 0
+			|| ft_strncmp((((t_token*)node->content)->token), "<", 2) == 0)
+			break;
 		cmd_arr[i] = ft_strdup(((t_token *)node->content)->token);
 		i++;
 		node = node->next;

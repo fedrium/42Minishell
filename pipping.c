@@ -16,6 +16,22 @@ void    print_args(t_list *head_tokens)
 	}
 }
 
+void	print_cp(t_cp *head_cp)
+{
+	t_cp	*node;
+	int		i;
+
+	i = 1;
+	node = head_cp;
+	while (node != NULL)
+	{
+		printf("node: %d\n", i);
+		print_args(node->tokens);
+		i++;
+		node = node->next;
+	}
+}
+
 //creates child processes and pipes,
 //run the functions in the child process
 // !!!need to add multiple pipes!!!
@@ -25,23 +41,25 @@ t_cp	*make_cp(t_list *head_tokens)
 	t_cp 	*cp_head;
 	t_cp	*cp_node;
 
-    cp_head = NULL;
-    cp_node = NULL;
 	cp_head = malloc(sizeof(t_cp));
-	cp_head->tokens = NULL;
-	split_args(&cp_head->tokens, &head_tokens);
+	if (cp_head == NULL)
+		printf("error\n");
 	cp_head->next = NULL;
-	cp_node = cp_head->next
-    while (head_tokens != NULL)
-    {
-        cp_node = malloc(sizeof(t_cp));
-        cp_node->tokens = NULL;  // Initialize the tokens list
-        split_args(&cp_node->tokens, &head_tokens);
-        cp_node->next = NULL;
-		cp_node = cp_node->next;
-    }
+	split_args(&cp_head->tokens, &head_tokens);
 	cp_node = cp_head;
-	print_args(cp_node->tokens);
+	// printf("first node\n");
+	// print_args(cp_node->tokens);
+	while (head_tokens != NULL)
+	{
+		cp_node->next = malloc(sizeof(t_cp));
+		if (cp_node->next == NULL)
+			printf("error\n");
+		cp_node->next->next = NULL;
+		split_args(&cp_node->next->tokens, &head_tokens);
+		cp_node = cp_node->next;
+	}
+	cp_node = cp_head;
+	// print_cp(cp_head);
 	pipe(cp_node->pipe);
 	dup2(cp_node->pipe[0], STDIN_FILENO);
 	dup2(cp_node->pipe[1], STDOUT_FILENO);
@@ -67,6 +85,7 @@ void     organise_args(t_list *head_tokens, t_list *head_env)
 	
 	pid = 1;
 	child_processes = make_cp(head_tokens);
+	printf("done\n");
 	while (child_processes != NULL)
 	{
 		pid = fork();
@@ -78,7 +97,7 @@ void     organise_args(t_list *head_tokens, t_list *head_env)
 		else
 			child_processes = child_processes->next;
 	}
-	while (wait(NULL) > 0);
+	// while (wait(NULL) > 0);
 }
 
 //return head of the start of the command, point last argument to NULL instead of pipe
@@ -86,6 +105,7 @@ void    split_args(t_list **segment, t_list **head_tokens)
 {
 	t_list  *temp; //for swaping head
 
+	(*segment) = malloc(sizeof(t_list));
 	*segment = *head_tokens;
 	while ((*head_tokens)->next != NULL && is_special((*head_tokens)->next) != '|')
 		(*head_tokens) = (*head_tokens)->next;

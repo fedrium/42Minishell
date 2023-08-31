@@ -24,10 +24,13 @@ void    lst_free_env(t_list *head_env)
 
 void    lst_free_all(t_list *head)
 {
+    t_list  *temp;
+    
     while (head != NULL)
     {
+        temp = head->next;
         lst_free_one(head);
-        head = head->next;
+        head = temp;
     }
 }
 

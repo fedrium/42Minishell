@@ -69,6 +69,10 @@ int 	is_last_arg(t_list *head_tokens);
 char    is_special(t_list *node);
 void    lst_free_all(t_list *head);
 void    lst_free_env(t_list *head_env);
-int		redir_check(t_list *head_tokens, t_list *head_env);
+int		redir_check(t_list *head_tokens);
 void    print_args(t_list *head_tokens);
+void	redir_rm(t_list **head, t_list *to_del);
+void	ll_iter(t_list *head_tokens);
+void	heredoc(char *delimeter);
+
 #endif

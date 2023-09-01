@@ -5,7 +5,8 @@ int main(int argc, char **argv, char **env)
 	char *line;
 	t_list *head_env;
 	t_list *head_tokens;
-
+	int out = dup(1);
+	int in = dup(0);
 	head_env = env_init(env);
 	while (1)
 	{
@@ -17,13 +18,11 @@ int main(int argc, char **argv, char **env)
 			if (line && *line)
         		add_history(line);
 			// organise_args(head_tokens, head_env);
-			if (redir_check(head_tokens, head_env) == 1)
-				continue;
-			// if (here_doc)
-			// {
-			// 	waitpid(0, NUL, 0);
-			// }
+			redir_check(head_tokens);
 			run_functions(head_tokens, head_env);
+			unlink(".temp");
+			dup2(out, 1);
+			dup2(in, 0);
 		}
 		free(line);
 	}
@@ -84,6 +83,7 @@ void cd(t_list *env, t_list *token, int size)
 		env = env->next;
 	}
 }
+
 
 void echo(t_list *line)
 {

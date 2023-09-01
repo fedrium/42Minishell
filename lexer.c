@@ -17,8 +17,10 @@ t_list	*tokenize(char *line, t_list *head_env)
 	t_list	*head;
 	t_list	*node;
 	int		p;
-	
-	if (!line[0])
+
+	if (!line)
+		return NULL;
+	if (!line[0]) 	// TODO segfault
 		return (ft_lstnew("\0"));
 	p = 0;
 	head = ft_lstnew((void *)get_token(line, &p));
@@ -207,6 +209,8 @@ int	check_invalid(t_list *head_tokens, int mute)
 
 void	check_head_tokens(t_list *node, char *line)
 {
+	if (!line)
+		return;
 	if (line[0] == '\0')
 		return;
 	if (ft_strncmp(get_tl_str(node), "|", 2) == 0)

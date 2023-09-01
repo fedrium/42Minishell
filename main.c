@@ -9,16 +9,25 @@ int main(int argc, char **argv, char **env)
 	head_env = env_init(env);
 	while (1)
 	{
+		// dprintf(2, "error1\n");
 		line = readline("Minishell$ ");
+		// dprintf(2, "error2\n");
 		head_tokens = tokenize(line, head_env);
+		// dprintf(2, "error3\n");
 		check_head_tokens(head_tokens, line);
-		if (line[0] != '\0' && !check_invalid(head_tokens, 0))
+		// dprintf(2, "error4\n");
+		if (line[0] && !check_invalid(head_tokens, 0))
 		{
+			// dprintf(2, "error5\n");
 			organise_args(head_tokens, head_env);
+			// dprintf(2, "error6\n");
 			if (line && *line)
         		add_history(line);
+			// dprintf(2, "error7\n");
 		}
+		// dprintf(2, "error8\n");
 		free(line);
+		// dprintf(2, "error9\n");
 	}
 	(void)argc;
 	(void)argv;

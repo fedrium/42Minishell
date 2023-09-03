@@ -126,6 +126,8 @@ void organise_args(t_list *head_tokens, t_list *head_env)
             //     temp = temp->next;
             // }
             close(child_processes->pipe[1]);
+            close(child_processes->pipe[0]);
+            close(STDIN_FILENO);
             run_functions(child_processes->tokens, head_env);
             exit(0);
         } 
@@ -143,9 +145,9 @@ void organise_args(t_list *head_tokens, t_list *head_env)
         temp = head;
         while (temp != NULL)
         {
-            close(temp->pipe[0]);
-            close(temp->pipe[1]);
-            temp = temp->next;
+        close(temp->pipe[0]);
+        close(temp->pipe[1]);
+        temp = temp->next;
         }
 		num_processes--;
 	}

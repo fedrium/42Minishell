@@ -82,6 +82,8 @@ t_cp *make_cp(t_list *head_tokens, int *out, int *in)
 void organise_args(t_list *head_tokens, t_list *head_env) 
 {
     t_cp *child_processes;
+    t_cp *head;
+    t_cp    *temp;
     pid_t pid;
     int ori_stdout;
     int ori_stdin;
@@ -90,6 +92,7 @@ void organise_args(t_list *head_tokens, t_list *head_env)
 	num_processes = 0; // Count the number of child processes
     pid = 1;
     child_processes = make_cp(head_tokens, &ori_stdout, &ori_stdin);
+    head = child_processes;
     while (child_processes != NULL) 
     {
         num_processes++; // Increment the number of child processes
@@ -113,22 +116,46 @@ void organise_args(t_list *head_tokens, t_list *head_env)
             }
             // Don't close STDIN and STDOUT here
 			// close(child_processes->pipe[0]);
+            // close(STDIN_FILENO);
+            // close(child_processes->pipe[1]);
+            // close(STDOUT_FILENO);
+            // while (temp != NULL)
+            // {
+            //     close(temp->pipe[0]);
+            //     close(temp->pipe[1]);
+            //     temp = temp->next;
+            // }
             close(child_processes->pipe[1]);
             run_functions(child_processes->tokens, head_env);
             exit(0);
         } 
         else 
         {
-            close(child_processes->pipe[1]);
             child_processes = child_processes->next;
         }
     }
     // Wait for all child processes to exit
+    temp = head;
 	while (num_processes > 0)
 	{
-		wait(NULL);
+		waitpid(0, NULL, 0);
+        // print_args(temp->tokens);
+        temp = head;
+        while (temp != NULL)
+        {
+            close(temp->pipe[0]);
+            close(temp->pipe[1]);
+            temp = temp->next;
+        }
 		num_processes--;
 	}
+    // waitpid(0, NULL, 0);
+    // while (temp != NULL)
+    // {
+    //     close(temp->pipe[0]);
+    //     close(temp->pipe[1]);
+    //     temp = temp->next;
+    // }
 	// wait(NULL);
 }
 

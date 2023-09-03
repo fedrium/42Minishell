@@ -1,8 +1,3 @@
-#include "minishell.h"
-
-//sort out fd and pipes before fork
-//wait for child to complete before next
-
 void    print_args(t_list *head_tokens)
 {
 	t_list *node;
@@ -88,13 +83,13 @@ t_cp *make_cp(t_list *head_tokens, int *out, int *in)
 	// the reason why you dont need to close the previous one is cause you already closed em 
 	// before executing the next cp
 
-	// cp_node = cp_head->next;
+	cp_node = cp_head->next;
 
-	// while (cp_node != NULL)
-	// {
-	// 	pipe(cp_node->pipe);
-	// 	cp_node = cp_node->next;
-	// }
+	while (cp_node != NULL)
+	{
+		pipe(cp_node->pipe);
+		cp_node = cp_node->next;
+	}
 
 	(*out) = ori_stdout;
 	(*in) = ori_stdin;
@@ -125,9 +120,9 @@ void organise_args(t_list *head_tokens, t_list *head_env)
 
 		// cat | cat | ls will work if you pipe it like this instead
 
-		if (child_processes->next)
-			pipe(child_processes->next->pipe);
-        // pipe(child_processes->next->pipe);
+		// if (child_processes->next)
+		// 	pipe(child_processes->next->pipe);
+
 		pid = fork();
 		if (pid == 0) 
 		{
@@ -148,7 +143,6 @@ void organise_args(t_list *head_tokens, t_list *head_env)
 
 			if (child_processes->next != NULL)
 			{
-                // pipe(child_processes->pipe);
 				// gotta close the READ end of the next child_process
 				// or else its gonna assume someone is still using the read end
 				close(child_processes->next->pipe[0]);

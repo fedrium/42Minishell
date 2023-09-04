@@ -6,6 +6,7 @@ int main(int argc, char **argv, char **env)
 	t_list *head_env;
 	t_list *head_tokens;
 
+	dprintf(2, "run\n");
 	head_env = env_init(env);
 	while (1)
 	{
@@ -19,7 +20,8 @@ int main(int argc, char **argv, char **env)
 		if (line[0] && !check_invalid(head_tokens, 0))
 		{
 			// dprintf(2, "error5\n");
-			organise_args(head_tokens, head_env);
+			organise_args(head_tokens, &head_env);
+			// pr_env(head_env);
 			// dprintf(2, "error6\n");
 			if (line && *line)
         		add_history(line);

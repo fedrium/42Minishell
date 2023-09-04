@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 10:23:52 by yalee             #+#    #+#             */
-/*   Updated: 2023/06/23 21:25:13 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/04 14:36:29 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,9 @@ t_list	*tokenize(char *line, t_list *head_env)
 		while (line[p] == ' ')
 			p++;
 		node->next = ft_lstnew((void *)get_token(line, &p));
-		if (!check_invalid(node, 1))
+		if ((t_token *)node->next->content == NULL)
+			node->next = NULL;
+		if (node->next != NULL && !check_invalid(node, 1))
 			cleanse(node->next, head_env);
 		node = node->next;
 	}
@@ -180,6 +182,8 @@ t_token	*get_token(char *line, int *p)
 		token->priority = -1;
 	}
 	// printf("%s, len: %li\n", token->token, ft_strlen(token->token));
+	if (token->token[0] == '\0')
+		return(NULL);
 	return (token);
 }
 

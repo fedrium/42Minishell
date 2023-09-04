@@ -6,58 +6,117 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/15 17:32:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/06/23 15:33:38 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/04 15:26:48 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void export(t_list *head_env, t_list *head_tokens)
+void export(t_list **head_env, t_list *head_tokens)
 {
 	int printed;
 	char *smallest_key;
 
+	printf("%d\n", ft_lstsize((*head_env)));
 	if (head_tokens->next == NULL)
 	{
 		smallest_key = 0;
 		printed = 0;
-		while (printed < ft_lstsize(head_env))
+		while (printed < ft_lstsize((*head_env)))
 		{
-			smallest_key = find_smallest_key(head_env, smallest_key);
-			printed += print_output(head_env, smallest_key);
+			smallest_key = find_smallest_key((*head_env), smallest_key);
+			printed += print_output((*head_env), smallest_key);
 		}
 	}
-	// else
-	// 	add_env(head_env, head_tokens);
+	else
+	{
+		add_env(head_env, head_tokens);
+		// pr_env(*head_env);
+	}
 }
 
-// void	add_env(t_list *head_env, t_list *head_tokens)
-// {
-// 	t_list	*node_e;
-// 	t_list	*node_t;
-// 	int		i;
-// 	int		j;
+int		export_syntax_check(t_list	*node)
+{
+	char	*str;
+	int		i;
+	
+	str = ((t_token *)node->content)->token;
+	i = 0;
+	if (!ft_isalpha(str[0]))
+	{
+		dprintf(2, "export syntax error!\n");
+		return (0);
+	}
+	while (str[i])
+	{
+		if (str[i] == ' ')
+		{
+			dprintf(2, "export syntax error!\n");
+			return (0);
+		}
+		i++;
+	}
+	return (1);
+}
 
-// 	i = 0;
-// 	node_t = head_tokens->next;
-// 	node_e = head_env;
-// 	while (i < ft_lstsize(node_t))
-// 	{
-// 		j = 0;
-// 		node_e = head_env;
-// 		while (j < ft_lstsize(head_env))
-// 		{
-// 			if (same_key(node_t, node_e))
-// 				add_env_value(node_t, node_e);
-// 			node_e = node_e->next;
-// 			j++;
-// 		}
-// 		add_env_key(ft_lstlast(node_e), node_t);
-// 		add_env_value(ft_lstlast(node_e), node_t);
-// 		node_t = node_t->next;
-// 		i++;
-// 	}
-// }
+void add_to_envlst(t_list **head_env, t_list *node)
+{
+	char **splitted_args;
+	t_list *node_env;
+	t_list	*new_env;
+	t_env *env;
+
+	env = malloc(sizeof(t_env));
+	node_env = *head_env;
+	splitted_args = ft_split(((t_token *)node->content)->token, '=');
+
+	while (node_env->next != NULL)
+		node_env = node_env->next;
+
+	env->key = ft_strdup(splitted_args[0]);
+	env->value = ft_strdup(splitted_args[1]);
+
+	t_env *temp = node_env->content;
+	// Check if the variable already exists, and if so, update its value
+	while (node_env != NULL)
+	{
+		temp = node_env->content;
+		if (ft_strncmp(temp->key, env->key, ft_strlen(env->key) + 1) == 0)
+		{
+			free(temp->value);
+			temp->value = env->value;
+			free(env->key);
+			free(env);
+			return;
+		}
+		node_env = node_env->next;
+	}
+
+	node_env = *head_env;
+	while (node_env->next != NULL)
+		node_env = node_env->next;
+	new_env = ft_lstnew(env);
+	ft_lstadd_back(head_env, new_env);
+}
+
+void	add_env(t_list **head_env, t_list *head_tokens)
+{
+	t_list	*node;
+
+	node = head_tokens;
+	if (node->next == NULL)
+	{
+		dprintf(2, "export error!\n");
+		return;
+	}
+	node = node->next;
+	while (node != NULL)
+	{
+		if (export_syntax_check(node))
+			add_to_envlst(head_env, node);
+		node = node->next;
+	}
+}
 
 char	*find_smallest_key(t_list *head, char *smallest_key)
 {

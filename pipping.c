@@ -70,13 +70,11 @@ t_cp *make_cp(t_list *head_tokens, int *out, int *in)
 
 	// // the HEAD does not nEED a pipe
 
-
 	// pre-piping the cp will make cat | cat | ls fail
 
 	// reason? idk honestly
 	// probably cause the fd cant close fast enough?
 	// or maybe theres a fd leaking somewhere that idk of :P
-
 
 	// update, its cause if you prepipe, you need to close ALL the write and read end for
 	// ALL pipes that arent used
@@ -85,7 +83,7 @@ t_cp *make_cp(t_list *head_tokens, int *out, int *in)
 	// running the 2nd one requires you to close the 4th one's pipe
 	// and so on
 
-	// the reason why you dont need to close the previous one is cause you already closed em 
+	// the reason why you dont need to close the previous one is cause you already closed em
 	// before executing the next cp
 
 	// cp_node = cp_head->next;
@@ -101,22 +99,21 @@ t_cp *make_cp(t_list *head_tokens, int *out, int *in)
 	return (cp_head);
 }
 
-
-void organise_args(t_list *head_tokens, t_list *head_env) 
+void organise_args(t_list *head_tokens, t_list **head_env)
 {
 	t_cp *child_processes;
 	t_cp *head;
-	t_cp  *temp;
+	t_cp *temp;
 	pid_t pid;
 	int ori_stdout;
 	int ori_stdin;
 	int num_processes;
-	
+
 	num_processes = 0; // Count the number of child processes
 	pid = 1;
 	child_processes = make_cp(head_tokens, &ori_stdout, &ori_stdin);
 	head = child_processes;
-	while (child_processes != NULL) 
+	while (child_processes != NULL)
 	{
 		num_processes++; // Increment the number of child processes
 
@@ -127,9 +124,9 @@ void organise_args(t_list *head_tokens, t_list *head_env)
 
 		if (child_processes->next)
 			pipe(child_processes->next->pipe);
-        // pipe(child_processes->next->pipe);
+		// pipe(child_processes->next->pipe);
 		pid = fork();
-		if (pid == 0) 
+		if (pid == 0)
 		{
 			// Redirect STDIN to read from its own pipe
 
@@ -139,16 +136,16 @@ void organise_args(t_list *head_tokens, t_list *head_env)
 				close(child_processes->pipe[0]); // Close read end of its own pipe
 			}
 
-			// if (child_processes->next == NULL) 
+			// if (child_processes->next == NULL)
 			// {
 			// 	// Redirect STDOUT to the original STDOUT
 			// 	dup2(ori_stdout, STDOUT_FILENO);
 			// 	close(ori_stdout); // Close the original STDOUT
-			// } 
+			// }
 
 			if (child_processes->next != NULL)
 			{
-                // pipe(child_processes->pipe);
+				// pipe(child_processes->pipe);
 				// gotta close the READ end of the next child_process
 				// or else its gonna assume someone is still using the read end
 				close(child_processes->next->pipe[0]);
@@ -159,13 +156,13 @@ void organise_args(t_list *head_tokens, t_list *head_env)
 
 			// i have removed the big chunk o' comment here :P
 
-			// preetty sure if everything is done properly, 
+			// preetty sure if everything is done properly,
 			// theres no need to close the write end
 			// close(child_processes->pipe[1]);
 			run_functions(child_processes->tokens, head_env);
 			exit(0);
-		} 
-		else 
+		}
+		else
 		{
 			// 0 is read end of pipe
 			// 1 is write end of pipe
@@ -210,7 +207,7 @@ void    split_args(t_list **segment, t_list **head_tokens)
 	(*head_tokens) = (*head_tokens)->next;
 }
 
-void    run_functions(t_list *head_tokens, t_list *head_env)
+void    run_functions(t_list *head_tokens, t_list **head_env)
 {
 	int size;
 
@@ -218,17 +215,19 @@ void    run_functions(t_list *head_tokens, t_list *head_env)
 	if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 5) == 0)
 		echo(head_tokens);
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "cd", 3) == 0)
-		cd(head_env, head_tokens, size);
+		cd(*head_env, head_tokens, size);
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "pwd", 4) == 0)
 		pwd();
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "env", 4) == 0)
-		pr_env(head_env);
+		pr_env(*head_env);
 	// if (ft_strncmp(((t_token *)head_tokens)->token,, "unset", 5) == 0)
 	// 	unset(head_env, ((t_token *)head_tokens->next->content)->token);
 	// if	(ft_strncmp(((t_token *)head_tokens)->token,, "export", 6) == 0)
 	// 	export(head_env, head_tokens);
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "export", 7) == 0)
+	{
 		export(head_env, head_tokens);
+	}
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "test", 5) == 0)
 	{
 		t_list *node;
@@ -242,5 +241,5 @@ void    run_functions(t_list *head_tokens, t_list *head_env)
 		}
 	}
 	else
-		get_file(head_tokens, head_env);
+		get_file(head_tokens, *head_env);
 }

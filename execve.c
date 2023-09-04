@@ -113,8 +113,10 @@ void	get_file(t_list *head_tokens, t_list *env)
 	char	**path;
 	char	**cmd_arr;
 	int		i;
+	pid_t	pid;
 
 	i = 0;
+	pid = 1;
 	path = path_format(env);
 	// print_2d_arr(env_arr(env));
 	cmd_arr = convert_list(head_tokens);
@@ -131,7 +133,13 @@ void	get_file(t_list *head_tokens, t_list *env)
 				// printf("path: %s\n", ft_strjoin(path[i], ft_strjoin("/", cmd_arr[0])));
 				// print_2d_arr(cmd_arr);
 				// print_2d_arr(env_arr(env));
-				execve(ft_strjoin(path[i], ft_strjoin("/", cmd_arr[0])), cmd_arr, env_arr(env));
+				pid = fork();
+				if (pid == 0)
+				{
+					execve(ft_strjoin(path[i], ft_strjoin("/", cmd_arr[0])), cmd_arr, env_arr(env));
+					exit(0);
+				}
+				waitpid(0, NULL, 0);
 				// printf("fd is ok\n");
 				return;
 			}

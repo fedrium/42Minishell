@@ -155,6 +155,7 @@ int	redir_check(t_list *head_tokens)
 		{
 			redir = 2;
 			fd = redir_heredoc(head ,start, fd);
+			head = start;
 		}
 		head = head->next;
 	}

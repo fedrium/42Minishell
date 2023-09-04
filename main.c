@@ -17,9 +17,9 @@ int main(int argc, char **argv, char **env)
 		{
 			if (line && *line)
         		add_history(line);
-			// organise_args(head_tokens, head_env);
 			redir_check(head_tokens);
-			run_functions(head_tokens, head_env);
+			// organise_args(head_tokens, &head_env);
+			run_functions(head_tokens, &head_env);
 			unlink(".temp");
 			dup2(out, 1);
 			dup2(in, 0);

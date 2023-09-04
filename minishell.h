@@ -36,7 +36,7 @@ typedef struct s_cp
 	struct s_cp		*next;
 }			t_cp;
 
-void    organise_args(t_list *head_tokens, t_list *head_env);
+void	organise_args(t_list *head_tokens, t_list **head_env);
 void	echo(t_list *line);
 void 	cd(t_list *env, t_list *token, int size);
 void 	pwd(void);
@@ -63,7 +63,7 @@ void	exe(t_list *env, char *cmd, char *path);
 void	freeing(char **array);
 int		get_file_helper(char *path, char *cmd_arr, char *cmd, t_list *env);
 void    split_args(t_list **segment, t_list **head_tokens);
-void    run_functions(t_list *head_tokens, t_list *head_env);
+void    run_functions(t_list *head_tokens, t_list **head_env);
 void    lst_free_one(t_list *node);
 int 	is_last_arg(t_list *head_tokens);
 char    is_special(t_list *node);

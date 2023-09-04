@@ -73,17 +73,11 @@ void organise_args(t_list *head_tokens, t_list **head_env)
 	num_processes = 0; // Count the number of child processes
 	pid = 1;
 	child_processes = make_cp(head_tokens, &ori_stdout, &ori_stdin);
-	// dprintf(2, "error\n");
-	// if (child_processes->next != NULL)
-	// {
-	// 	pipe(child_processes->next->pipe);
-	// 	// dup2(child_processes->next->pipe[0], STDIN_FILENO);
-	// 	// close(child_processes->next->pipe[0]);
-	// 	dup2(child_processes->next->pipe[1], STDOUT_FILENO);
-	// 	close(child_processes->next->pipe[1]); // Close write end of the next pipe
-	// }
-	// run_functions(child_processes->tokens, head_env);
-	// child_processes = child_processes->next;
+	if (child_processes->next == NULL)
+	{
+		run_functions(head_tokens, head_env);
+		child_processes = child_processes->next;
+	}
 	while (child_processes != NULL)
 	{
 		num_processes++; // Increment the number of child processes

@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 10:23:52 by yalee             #+#    #+#             */
-/*   Updated: 2023/06/23 21:25:13 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/07 13:26:39 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,18 +109,14 @@ void expand_n_join(char **temp, char **new, int *i, t_list *head_env)
 	key = ft_strdup("");
 	tenv = head_env;
 	value = NULL;
-	// printf("%s, tlen: %li\n", (*temp), ft_strlen((*temp)));
-	// printf("in ex: %s\n", (*temp));
 	while ((*temp)[(*i)] != 0 && ((*temp)[(*i)] != ' ' || (*temp)[(*i)] != '"' || (*temp)[(*i)] != '$'))
 	{
 		if ((*temp)[(*i)] == ' ' || (*temp)[(*i)] == '"' || (*temp)[(*i)] == '$')
 			break;
 		buffer[0] = (*temp)[(*i)];
 		key = ft_strjoin(key, buffer);
-		// printf("key: %s\n", key);
 		(*i)++;
 	}
-	// printf("key: %s\n", key);
 	while (tenv != NULL)
 	{
 		if (ft_strncmp(key, ((t_env *)tenv->content)->key, ft_strlen(key)) == 0)
@@ -157,27 +153,17 @@ t_token	*get_token(char *line, int *p)
 		if (!line[*p])
 			break;
 		if (line[*p] == 39 && quote < 0)
-		{
-			// printf("here\n");
 			squote *= -1;
-		}
 		if (line[*p] == '"' && squote < 0)
-		{
-			// printf("here2\n");
 			quote *= -1;
-		}
+		if ((squote < 0 || quote < 0) && line[(*p) + 1] == '|')
+			token->priority = -1;
 		join[0] = line[*p];
 		token->token = ft_strjoin(token->token, join);
 		(*p) += 1;
 	}
 	if (quote > 0 || squote > 0)
-	{
-		// printf("%i, %i\n", quote, squote);
-		// token->token = NULL;
-		// printf("flag1\n");
 		token->priority = -1;
-	}
-	// printf("%s, len: %li\n", token->token, ft_strlen(token->token));
 	return (token);
 }
 
@@ -186,12 +172,6 @@ int	check_invalid(t_list *head_tokens, int mute)
 	t_list *node;
 
 	node = head_tokens;
-	// if (((t_token *)head_tokens->content)->priority == -1)
-	// {
-	// 	if (!mute)
-	// 		printf("error: %s\nSyntax error!\n", ((t_token *)head_tokens->content)->token);
-	// 	return (1);
-	// }
 	while (node != NULL)
 	{
 		if (((t_token *)node->content)->priority == -1)
@@ -209,6 +189,8 @@ void	check_head_tokens(t_list *node, char *line)
 {
 	if (line[0] == '\0')
 		return;
+	if (line[0] == '|')
+		((t_token *)node->content)->priority = -1;
 	if (ft_strncmp(get_tl_str(node), "|", 2) == 0)
 		((t_token *)node->content)->priority = -1;
 	if (ft_strncmp(get_tl_str(node), ">", 2) == 0)

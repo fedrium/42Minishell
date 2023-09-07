@@ -1,11 +1,11 @@
 #include "minishell.h"
 
-void	print_2d_arr(char **env)
+void print_2d_arr(char **env)
 {
-	int	i;
+	int i;
 
 	i = 0;
-	while(env[i])
+	while (env[i])
 	{
 		printf("%s\n", env[i]);
 		i++;
@@ -13,7 +13,7 @@ void	print_2d_arr(char **env)
 	// printf("%s\n", env[i]);
 }
 
-char	*getvalue(t_list *env, char *key)
+char *getvalue(t_list *env, char *key)
 {
 	t_env *temp;
 
@@ -29,12 +29,12 @@ char	*getvalue(t_list *env, char *key)
 	return NULL;
 }
 
-char	**env_arr(t_list *env)
+char **env_arr(t_list *env)
 {
-	int		size;
-	int		i;
-	char	*str;
-	char	**array;
+	int size;
+	int i;
+	char *str;
+	char **array;
 
 	size = ft_lstsize(env);
 	// printf("%lu\n", sizeof(char *) * size + 1);
@@ -54,10 +54,10 @@ char	**env_arr(t_list *env)
 	return (array);
 }
 
-char	**path_format(t_list *env)
+char **path_format(t_list *env)
 {
-	char	**array;
-	char	*str;
+	char **array;
+	char *str;
 
 	str = getvalue(env, "PATH");
 	// printf("%s\n", str);
@@ -65,13 +65,13 @@ char	**path_format(t_list *env)
 	return (array);
 }
 
-//make a function for running through dir
+// make a function for running through dir
 
-char	*strjoin_helper(char *path, char *cmd)
+char *strjoin_helper(char *path, char *cmd)
 {
-	char	*res;
-	char	*temp1;
-	char	*temp2;
+	char *res;
+	char *temp1;
+	char *temp2;
 
 	res = ft_strjoin(path, "/");
 	temp1 = ft_strdup(res);
@@ -83,11 +83,11 @@ char	*strjoin_helper(char *path, char *cmd)
 	return (temp2);
 }
 
-char	**convert_list(t_list *head_tokens)
+char **convert_list(t_list *head_tokens)
 {
-	t_list	*node;
-	char	**cmd_arr;
-	int		i;
+	t_list *node;
+	char **cmd_arr;
+	int i;
 
 	node = head_tokens;
 	i = 0;
@@ -98,11 +98,6 @@ char	**convert_list(t_list *head_tokens)
 	cmd_arr[ft_lstsize(node)] = NULL;
 	while (node != NULL)
 	{
-		if (ft_strncmp((((t_token*)node->content)->token), ">>", 3) == 0
-			|| ft_strncmp((((t_token*)node->content)->token), ">", 2) == 0
-			|| ft_strncmp((((t_token*)node->content)->token), "<<", 3) == 0
-			|| ft_strncmp((((t_token*)node->content)->token), "<", 2) == 0)
-			break;
 		cmd_arr[i] = ft_strdup(((t_token *)node->content)->token);
 		i++;
 		node = node->next;
@@ -110,44 +105,59 @@ char	**convert_list(t_list *head_tokens)
 	return (cmd_arr);
 }
 
-
-void	get_file(t_list *head_tokens, t_list *env)
+void get_file(t_list *head_tokens, t_list *env)
 {
-	DIR		*cur_dir;
-	struct	dirent *cur_file;
-	char	**path;
-	char	**cmd_arr;
-	int		i;
+	DIR *cur_dir;
+	struct dirent *cur_file;
+	char **path;
+	char **cmd_arr;
+	int i;
+	pid_t pid;
 
 	i = 0;
+	pid = 1;
 	path = path_format(env);
 	// print_2d_arr(env_arr(env));
 	cmd_arr = convert_list(head_tokens);
+	// dprintf(2, "path: %s\n", path[i]);
 	while (path[i] != NULL)
 	{
-		cur_dir = opendir(path[i]);
-		if (cur_dir == NULL)
-			printf("error");
-		while ((cur_file = readdir(cur_dir)))
+		if (cmd_arr[0][0] == '/') // Check if it's an absolute path
 		{
-			if (access(strjoin_helper(path[i], cmd_arr[0]), X_OK) == 0)
+			if (access(cmd_arr[0], X_OK) == 0)
 			{
-				// printf("fd is ok\n");
-				// printf("path: %s\n", ft_strjoin(path[i], ft_strjoin("/", cmd_arr[0])));
-				// print_2d_arr(cmd_arr);
-				// print_2d_arr(env_arr(env));
-				int pid = fork();
+				pid = fork();
 				if (pid == 0)
 				{
-					execve(ft_strjoin(path[i], ft_strjoin("/", cmd_arr[0])), cmd_arr, env_arr(env));
+					execve(cmd_arr[0], cmd_arr, env_arr(env));
+					exit(0);
 				}
-				waitpid(pid, NULL, 0);
-				// printf("fd is ok\n");
+				waitpid(0, NULL, 0);
 				return;
 			}
 		}
+		else
+		{
+			cur_dir = opendir(path[i]);
+			if (cur_dir == NULL)
+				printf("error");
+			while ((cur_file = readdir(cur_dir)))
+			{
+				if (access(strjoin_helper(path[i], cmd_arr[0]), X_OK) == 0)
+				{
+					pid = fork();
+					if (pid == 0)
+					{
+						execve(ft_strjoin(path[i], ft_strjoin("/", cmd_arr[0])), cmd_arr, env_arr(env));
+						exit(0);
+					}
+					waitpid(0, NULL, 0);
+					return;
+				}
+			}
+			closedir(cur_dir);
+		}
 		i++;
-		closedir(cur_dir);
 	}
 	printf("command not found\n");
 	return;

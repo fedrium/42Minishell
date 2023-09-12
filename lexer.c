@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 10:23:52 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/07 13:26:39 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/12 22:50:26 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,8 @@ void expand_n_join(char **temp, char **new, int *i, t_list *head_env)
 		}
 		tenv = tenv->next;
 	}
+	if (ft_strncmp(key, "?", 2) == 0)
+		value = ft_itoa(g_ercode);
 	if (value)
 	{
 		(*new) = ft_strjoin((*new), value);

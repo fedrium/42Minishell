@@ -8,6 +8,7 @@ int main(int argc, char **argv, char **env)
 	int out = dup(1);
 	int in = dup(0);
 	head_env = env_init(env);
+	g_ercode = 0;
 	while (1)
 	{
 		line = readline("Minishell$ ");

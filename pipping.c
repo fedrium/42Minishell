@@ -3,6 +3,45 @@
 // sort out fd and pipes before fork
 // wait for child to complete before next
 
+void run_functions_nopp(t_list *head_tokens, t_list **head_env)
+{
+	int size;
+
+	size = ft_lstsize(head_tokens);
+	if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 5) == 0)
+		echo(head_tokens);
+	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "cd", 3) == 0)
+		cd(*head_env, head_tokens, size);
+	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "pwd", 4) == 0)
+		pwd();
+	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "env", 4) == 0)
+		pr_env(*head_env);
+	// if (ft_strncmp(((t_token *)head_tokens)->token,, "unset", 5) == 0)
+	// 	unset(head_env, ((t_token *)head_tokens->next->content)->token);
+	// if	(ft_strncmp(((t_token *)head_tokens)->token,, "export", 6) == 0)
+	// 	export(head_env, head_tokens);
+	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "export", 7) == 0)
+	{
+		export(head_env, head_tokens);
+	}
+	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "error", 6) == 0)
+		printf("error code: %d\n", g_ercode);
+	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "test", 5) == 0)
+	{
+		t_list *node;
+		node = head_tokens;
+		printf("tout: %s\n", ((t_token *)node->content)->token);
+		while (node->next != NULL)
+		{
+			printf("tout: %s\n", ((t_token *)node->next->content)->token);
+			if (node->next != NULL)
+				node = node->next;
+		}
+	}
+	else
+		get_file_nopp(head_tokens, *head_env);
+}
+
 void print_args(t_list *head_tokens)
 {
 	t_list *node;
@@ -62,6 +101,19 @@ t_cp *make_cp(t_list *head_tokens, int *out, int *in)
 	return (cp_head);
 }
 
+int	get_cp_size(t_cp *cp)
+{
+	int i;
+
+	i = 0;
+	while(cp != NULL)
+	{
+		cp = cp->next;
+		i++;
+	}
+	return (i);
+}
+
 void organise_args(t_list *head_tokens, t_list **head_env)
 {
 	t_cp *child_processes;
@@ -71,8 +123,8 @@ void organise_args(t_list *head_tokens, t_list **head_env)
 	int num_processes;
 
 	num_processes = 0; // Count the number of child processes
-	pid = 1;
 	child_processes = make_cp(head_tokens, &ori_stdout, &ori_stdin);
+	pid = 1;
 	if (child_processes->next == NULL)
 	{
 		run_functions(head_tokens, head_env);
@@ -100,7 +152,7 @@ void organise_args(t_list *head_tokens, t_list **head_env)
 				dup2(child_processes->next->pipe[1], STDOUT_FILENO);
 				close(child_processes->next->pipe[1]); // Close write end of the next pipe
 			}
-			run_functions(child_processes->tokens, head_env);
+			run_functions_nopp(child_processes->tokens, head_env);
 			exit(0);
 		}
 		else
@@ -117,7 +169,8 @@ void organise_args(t_list *head_tokens, t_list **head_env)
 	// Wait for all child processes to exit
 	while (num_processes > 0)
 	{
-		waitpid(0, NULL, 0);
+		waitpid(0, &g_ercode, 0);
+		g_ercode = g_ercode % 255;
 		num_processes--;
 	}
 }
@@ -163,6 +216,8 @@ void run_functions(t_list *head_tokens, t_list **head_env)
 	{
 		export(head_env, head_tokens);
 	}
+	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "error", 6) == 0)
+		printf("error code: %d\n", g_ercode);
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "test", 5) == 0)
 	{
 		t_list *node;

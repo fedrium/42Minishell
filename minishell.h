@@ -36,6 +36,7 @@ typedef struct s_cp
 	struct s_cp		*next;
 }			t_cp;
 
+int		g_ercode;
 void	organise_args(t_list *head_tokens, t_list **head_env);
 void	echo(t_list *line);
 void 	cd(t_list *env, t_list *token, int size);
@@ -75,5 +76,6 @@ void	redir_rm(t_list **head, t_list *to_del);
 void	ll_iter(t_list *head_tokens);
 void	heredoc(char *delimeter);
 void add_env(t_list **head_env, t_list *head_tokens);
+void get_file_nopp(t_list *head_tokens, t_list *env);
 
 #endif

@@ -10,7 +10,6 @@ void print_2d_arr(char **env)
 		printf("%s\n", env[i]);
 		i++;
 	}
-	// printf("%s\n", env[i]);
 }
 
 char *getvalue(t_list *env, char *key)
@@ -50,7 +49,6 @@ char **env_arr(t_list *env)
 		i++;
 		env = env->next;
 	}
-	// print_2d_arr(array);
 	return (array);
 }
 
@@ -117,9 +115,7 @@ void get_file(t_list *head_tokens, t_list *env)
 	i = 0;
 	pid = 1;
 	path = path_format(env);
-	// print_2d_arr(env_arr(env));
 	cmd_arr = convert_list(head_tokens);
-	// dprintf(2, "path: %s\n", path[i]);
 	while (path[i] != NULL)
 	{
 		if (cmd_arr[0][0] == '/') // Check if it's an absolute path
@@ -129,10 +125,11 @@ void get_file(t_list *head_tokens, t_list *env)
 				pid = fork();
 				if (pid == 0)
 				{
-					execve(cmd_arr[0], cmd_arr, env_arr(env));
-					exit(0);
+					g_ercode = (execve(cmd_arr[0], cmd_arr, env_arr(env)) % 225);
+					exit(1); // Exit with a non-zero status to indicate error
 				}
-				waitpid(0, NULL, 0);
+				waitpid(pid, &g_ercode, 0);
+				g_ercode = g_ercode % 255;
 				return;
 			}
 		}
@@ -140,7 +137,9 @@ void get_file(t_list *head_tokens, t_list *env)
 		{
 			cur_dir = opendir(path[i]);
 			if (cur_dir == NULL)
+			{
 				printf("error");
+			}
 			while ((cur_file = readdir(cur_dir)))
 			{
 				if (access(strjoin_helper(path[i], cmd_arr[0]), X_OK) == 0)
@@ -148,10 +147,11 @@ void get_file(t_list *head_tokens, t_list *env)
 					pid = fork();
 					if (pid == 0)
 					{
-						execve(ft_strjoin(path[i], ft_strjoin("/", cmd_arr[0])), cmd_arr, env_arr(env));
-						exit(0);
+						g_ercode = (execve(ft_strjoin(path[i], ft_strjoin("/", cmd_arr[0])), cmd_arr, env_arr(env)) % 225);
+						exit(1); // Exit with a non-zero status to indicate error
 					}
-					waitpid(0, NULL, 0);
+					waitpid(pid, &g_ercode, 0);
+					g_ercode = g_ercode % 255;
 					return;
 				}
 			}
@@ -160,5 +160,49 @@ void get_file(t_list *head_tokens, t_list *env)
 		i++;
 	}
 	printf("command not found\n");
-	return;
+	g_ercode = 127;
+}
+
+void get_file_nopp(t_list *head_tokens, t_list *env)
+{
+	DIR *cur_dir;
+	struct dirent *cur_file;
+	char **path;
+	char **cmd_arr;
+	int i;
+
+	i = 0;
+	path = path_format(env);
+	cmd_arr = convert_list(head_tokens);
+	while (path[i] != NULL)
+	{
+		if (cmd_arr[0][0] == '/') // Check if it's an absolute path
+		{
+			if (access(cmd_arr[0], X_OK) == 0)
+			{
+				g_ercode = (execve(cmd_arr[0], cmd_arr, env_arr(env)) % 225);
+				exit(1); // Exit with a non-zero status to indicate error
+			}
+		}
+		else
+		{
+			cur_dir = opendir(path[i]);
+			if (cur_dir == NULL)
+			{
+				printf("error");
+			}
+			while ((cur_file = readdir(cur_dir)))
+			{
+				if (access(strjoin_helper(path[i], cmd_arr[0]), X_OK) == 0)
+				{
+					g_ercode = (execve(ft_strjoin(path[i], ft_strjoin("/", cmd_arr[0])), cmd_arr, env_arr(env)) % 225);
+					exit(1); // Exit with a non-zero status to indicate error
+				}
+			}
+			closedir(cur_dir);
+		}
+		i++;
+	}
+	printf("command not found\n");
+	g_ercode = 127;
 }

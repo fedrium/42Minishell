@@ -12,14 +12,38 @@ void    lst_free_one(t_list *node)
     free(node);
 }
 
-void    lst_free_env(t_list *head_env)
+void lst_free_env(t_list *head_env)
 {
+    t_list *temp_env;
+
     while (head_env != NULL)
     {
-        free(((t_env *)head_env->content)->key);
-        free(((t_env *)head_env->content)->value);
+        temp_env = head_env;
         head_env = head_env->next;
+
+        // Free key and value strings
+        free(((t_env *)temp_env->content)->key);
+        free(((t_env *)temp_env->content)->value);
+
+        // Free the t_env structure itself
+        free(temp_env->content);
+
+        // Finally, free the list node
+        free(temp_env);
     }
+}
+
+void    free_2dar(char **ar_2d)
+{
+    char    **tmp;
+
+    tmp = ar_2d;
+    while (tmp && *tmp)
+    {
+        free(*tmp);
+        tmp++;
+    }
+    free(ar_2d);
 }
 
 void    lst_free_all(t_list *head)
@@ -56,3 +80,4 @@ char    is_special(t_list *node)
     else
         return (0);
 }
+

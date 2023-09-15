@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 10:23:52 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/12 22:50:26 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/13 17:13:33 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,8 +158,11 @@ t_token	*get_token(char *line, int *p)
 			squote *= -1;
 		if (line[*p] == '"' && squote < 0)
 			quote *= -1;
-		if ((squote < 0 || quote < 0) && line[(*p) + 1] == '|')
-			token->priority = -1;
+		// if (line[(*p) + 1] == '|' && (quote < 0 || squote < 0))
+		// {
+		// 	printf("here\n");
+		// 	token->priority = -1;
+		// }
 		join[0] = line[*p];
 		token->token = ft_strjoin(token->token, join);
 		(*p) += 1;

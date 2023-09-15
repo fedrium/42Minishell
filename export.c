@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/15 17:32:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/04 18:14:27 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/13 17:53:42 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void export(t_list **head_env, t_list *head_tokens)
 	int printed;
 	char *smallest_key;
 
-	printf("%d\n", ft_lstsize((*head_env)));
+	// printf("%d\n", ft_lstsize((*head_env)));
 	if (head_tokens->next == NULL)
 	{
 		smallest_key = 0;
@@ -70,21 +70,17 @@ void add_to_envlst(t_list **head_env, t_list *node)
 	node_env = *head_env;
 	splitted_args = ft_split(((t_token *)node->content)->token, '=');
 
-	while (node_env->next != NULL)
-		node_env = node_env->next;
-
 	env->key = ft_strdup(splitted_args[0]);
 	env->value = ft_strdup(splitted_args[1]);
 
-	t_env *temp = node_env->content;
 	// Check if the variable already exists, and if so, update its value
 	while (node_env != NULL)
 	{
-		temp = node_env->content;
-		if (ft_strncmp(temp->key, env->key, ft_strlen(env->key) + 1) == 0)
+		t_env *temp = (t_env *)node_env->content;
+		if (ft_strncmp(temp->key, env->key, ft_strlen(env->key)) == 0)
 		{
 			free(temp->value);
-			temp->value = env->value;
+			temp->value = ft_strdup(env->value);
 			free(env->key);
 			free(env);
 			return;
@@ -92,9 +88,7 @@ void add_to_envlst(t_list **head_env, t_list *node)
 		node_env = node_env->next;
 	}
 
-	node_env = *head_env;
-	while (node_env->next != NULL)
-		node_env = node_env->next;
+	// If not found, add it to the end of the list
 	new_env = ft_lstnew(env);
 	ft_lstadd_back(head_env, new_env);
 }

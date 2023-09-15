@@ -77,5 +77,7 @@ void	ll_iter(t_list *head_tokens);
 void	heredoc(char *delimeter);
 void add_env(t_list **head_env, t_list *head_tokens);
 void get_file_nopp(t_list *head_tokens, t_list *env);
-
+void	signal_handler(int num);
+void	sig();
+void	setatt();
 #endif

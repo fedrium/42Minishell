@@ -5,12 +5,17 @@ int main(int argc, char **argv, char **env)
 	char *line;
 	t_list *head_env;
 	t_list *head_tokens;
+	struct termios saved;
+
+
 	int out = dup(1);
 	int in = dup(0);
 	head_env = env_init(env);
 	g_ercode = 0;
+	tcgetattr(STDIN_FILENO, &saved);
 	while (1)
 	{
+		sig();
 		line = readline("Minishell$ ");
 		head_tokens = tokenize(line, head_env);
 		check_head_tokens(head_tokens, line);

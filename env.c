@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 10:24:54 by yalee             #+#    #+#             */
-/*   Updated: 2023/06/19 16:42:29 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/18 14:09:06 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,17 @@ t_env *new_env(char **splitted_env)
 	t_env *env;
 
 	env = malloc(sizeof(t_env));
-	env->key = splitted_env[0];
-	env->value = splitted_env[1];
-	return (env);
+	if (env == NULL)
+	{
+		// Handle memory allocation error
+		return NULL;
+	}
+
+	// Assuming key and value are dynamically allocated copies
+	env->key = ft_strdup(splitted_env[0]);
+	env->value = ft_strdup(splitted_env[1]);
+
+	return env;
 }
 
 t_list *env_init(char **env)
@@ -32,11 +40,13 @@ t_list *env_init(char **env)
 	i = 1;
 	splitted_env = ft_split(env[0], '=');
 	node = ft_lstnew((void *)new_env(splitted_env));
+	free_2dar(splitted_env);
 	head = node;
 	while (env[i])
 	{
 		splitted_env = ft_split(env[i], '=');
 		node->next = ft_lstnew((void *)new_env(splitted_env));
+		free_2dar(splitted_env);
 		node = node->next;
 		i++;
 	}

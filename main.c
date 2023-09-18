@@ -15,8 +15,13 @@ int main(int argc, char **argv, char **env)
 	tcgetattr(STDIN_FILENO, &saved);
 	while (1)
 	{
-		sig();
+		sig(head_tokens, head_env);
 		line = readline("Minishell$ ");
+		if (line == NULL)
+		{
+			printf("Minishell$ exit\n");
+			exit_func(head_tokens, head_env);
+		}
 		head_tokens = tokenize(line, head_env);
 		check_head_tokens(head_tokens, line);
 		if (line[0] != '\0' && !check_invalid(head_tokens, 0))
@@ -25,7 +30,10 @@ int main(int argc, char **argv, char **env)
         		add_history(line);
 			redir_check(head_tokens);
 			organise_args(head_tokens, &head_env);
-			// run_functions(head_tokens, &head_env);
+			// lst_free_all(head_tokens);
+			// lst_free_env(head_env);
+			// system("leaks minishell");
+			// exit(0);
 			unlink(".temp");
 			dup2(out, 1);
 			dup2(in, 0);
@@ -119,4 +127,14 @@ void unset(t_list *env, char *line)
 		}
 		env = env->next;
 	}
+}
+
+void    exit_func(t_list *head_tokens, t_list *head_env)
+{
+	// if (head_tokens != NULL)
+	// lst_free_all(head_tokens);
+	// if (head_env != NULL)
+	lst_free_env(head_env);
+    system("leaks minishell");
+    exit(0);
 }

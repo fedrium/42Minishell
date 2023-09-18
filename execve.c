@@ -91,7 +91,6 @@ char **convert_list(t_list *head_tokens)
 	i = 0;
 	if (head_tokens == NULL)
 		return NULL;
-	// printf("%s, size: %d\n", ((t_token *)node->content)->token, ft_lstsize(node));
 	cmd_arr = malloc(sizeof(char *) * (ft_lstsize(node) + 1));
 	cmd_arr[ft_lstsize(node)] = NULL;
 	while (node != NULL)
@@ -147,7 +146,7 @@ void get_file(t_list *head_tokens, t_list *env)
 					pid = fork();
 					if (pid == 0)
 					{
-						g_ercode = (execve(ft_strjoin(path[i], ft_strjoin("/", cmd_arr[0])), cmd_arr, env_arr(env)) % 225);
+						g_ercode = (execve(strjoin_helper(path[i], strjoin_helper("/", cmd_arr[0])), cmd_arr, env_arr(env)) % 225);
 						exit(1); // Exit with a non-zero status to indicate error
 					}
 					waitpid(pid, &g_ercode, 0);

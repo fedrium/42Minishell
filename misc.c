@@ -15,9 +15,12 @@ void    lst_free_one(t_list *node)
 void lst_free_env(t_list *head_env)
 {
     t_list *temp_env;
+    char    *key;
+    char    *value;
 
     while (head_env != NULL)
     {
+        // printf("free %i\n", i);
         temp_env = head_env;
         head_env = head_env->next;
 
@@ -35,13 +38,13 @@ void lst_free_env(t_list *head_env)
 
 void    free_2dar(char **ar_2d)
 {
-    char    **tmp;
+    int i;
 
-    tmp = ar_2d;
-    while (tmp && *tmp)
+    i = 0;
+    while (ar_2d[i])
     {
-        free(*tmp);
-        tmp++;
+        free(ar_2d[i]);
+        i++;
     }
     free(ar_2d);
 }

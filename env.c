@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 10:24:54 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/15 19:39:21 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/18 14:09:06 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,18 +40,16 @@ t_list *env_init(char **env)
 	i = 1;
 	splitted_env = ft_split(env[0], '=');
 	node = ft_lstnew((void *)new_env(splitted_env));
+	free_2dar(splitted_env);
 	head = node;
 	while (env[i])
 	{
 		splitted_env = ft_split(env[i], '=');
 		node->next = ft_lstnew((void *)new_env(splitted_env));
+		free_2dar(splitted_env);
 		node = node->next;
 		i++;
 	}
-	free_2dar(splitted_env);
-	// lst_free_env(head);
-	// system("leaks minishell");
-	// exit(0);
 	return (head);
 }
 

@@ -63,7 +63,7 @@ char	*strjoin_helper(char *path, char *cmd);
 void	get_file(t_list *cmd, t_list *env);
 void	exe(t_list *env, char *cmd, char *path);
 void	freeing(char **array);
-int		get_file_helper(char *path, char *cmd_arr, char *cmd, t_list *env);
+// int		get_file_helper(char *path, char *cmd_arr, char *cmd, t_list *env);
 void    split_args(t_list **segment, t_list **head_tokens);
 void    run_functions(t_list *head_tokens, t_list **head_env);
 void    lst_free_one(t_list *node);
@@ -83,4 +83,5 @@ void	sig(t_list *head_tokens, t_list *head_env);
 void	setatt();
 void    exit_func(t_list *head_tokens, t_list *head_env);
 void 	free_cp(t_cp *head);
+
 #endif

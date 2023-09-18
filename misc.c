@@ -84,3 +84,18 @@ char    is_special(t_list *node)
         return (0);
 }
 
+// char	*strjoin_helper(char *str1, char *str2)
+// {
+// 	char	*temp1;
+// 	char	*temp2;
+// 	char	*new;
+
+// 	temp1 = ft_strdup(str1);
+// 	free(str1);
+// 	temp2 = ft_strdup(str2);
+// 	free(str2);
+// 	new = ft_strjoin(temp1, temp2);
+// 	free(temp1);
+// 	free(temp2);
+// 	return(new);
+// }

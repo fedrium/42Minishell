@@ -8,7 +8,7 @@ char    *get_tl_str(t_list *node)
 void    lst_free_one(t_list *node)
 {
     free(((t_token *)node->content)->token);
-    // free(node->content);
+    free(node->content);
     free(node);
 }
 
@@ -55,9 +55,9 @@ void    lst_free_all(t_list *head)
     
     while (head != NULL)
     {
-        temp = head->next;
-        lst_free_one(head);
-        head = temp;
+        temp = head;
+        head = head->next;
+        lst_free_one(temp);
     }
 }
 

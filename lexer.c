@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 10:23:52 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/13 17:13:33 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/18 16:56:51 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ t_list	*tokenize(char *line, t_list *head_env)
 	p = 0;
 	head = ft_lstnew((void *)get_token(line, &p));
 	if (!check_invalid(head, 1))
-		cleanse(head, head_env);
+	cleanse(head, head_env);
 	node = head;
 	while (line[p])
 	{
@@ -35,6 +35,22 @@ t_list	*tokenize(char *line, t_list *head_env)
 		node = node->next;
 	}
 	return (head);
+}
+
+char	*lexer_strjoin(char *str1, char *str2)
+{
+	char	*temp1;
+	char	*temp2;
+	char	*new;
+
+	temp1 = ft_strdup(str1);
+	free(str1);
+	temp2 = ft_strdup(str2);
+	// free(str2);
+	new = ft_strjoin(temp1, temp2);
+	free(temp1);
+	free(temp2);
+	return(new);
 }
 
 void cleanse(t_list *node, t_list *head_env) {
@@ -50,7 +66,6 @@ void cleanse(t_list *node, t_list *head_env) {
     in_squote = -1;
     temp = ((t_token *)node->content)->token;
     join[1] = '\0';
-	// printf("%s, len: %li\n", temp, ft_strlen(temp));
     new = ft_strdup(""); // Initialize 'new' with an empty string
     while (temp[i])
 	{
@@ -67,8 +82,7 @@ void cleanse(t_list *node, t_list *head_env) {
 		{
             join[0] = temp[i];
             i++;
-            new = ft_strjoin(new, join);
-			// printf("%c\n", temp[i]);
+            new = lexer_strjoin(new, join);
         }
     }
 	// printf("%s\n", new);
@@ -78,7 +92,7 @@ void cleanse(t_list *node, t_list *head_env) {
         ((t_token *)node->content)->priority = -1;
 	}
     free(((t_token *)node->content)->token); // Free the old token
-    ((t_token *)node->content)->token = new; // Update the token with the new value
+	((t_token *)node->content)->token = new; // Update the token with the new value
 }
 
 int	can_move(char c, int *i, int *isq, int *idq)
@@ -114,7 +128,7 @@ void expand_n_join(char **temp, char **new, int *i, t_list *head_env)
 		if ((*temp)[(*i)] == ' ' || (*temp)[(*i)] == '"' || (*temp)[(*i)] == '$')
 			break;
 		buffer[0] = (*temp)[(*i)];
-		key = ft_strjoin(key, buffer);
+		key = lexer_strjoin(key, buffer);
 		(*i)++;
 	}
 	while (tenv != NULL)
@@ -130,7 +144,7 @@ void expand_n_join(char **temp, char **new, int *i, t_list *head_env)
 		value = ft_itoa(g_ercode);
 	if (value)
 	{
-		(*new) = ft_strjoin((*new), value);
+		(*new) = lexer_strjoin((*new), value);
 		free(value);
 	}
 	free(key);
@@ -139,14 +153,13 @@ void expand_n_join(char **temp, char **new, int *i, t_list *head_env)
 t_token	*get_token(char *line, int *p)
 {
 	t_token	*token;
-	char	*join;
+	char	join[2];
 	int		quote;
 	int		squote;
 
 	quote = -1;
 	squote = -1;
-	token = (t_token *)malloc(sizeof(t_token));
-	join = (char *)malloc(sizeof(char) * 2);
+	token = malloc(sizeof(t_token));
 	token->token = (char *)malloc(sizeof(char));
 	token->token[0] = '\0';
 	join[1] = '\0';
@@ -164,7 +177,7 @@ t_token	*get_token(char *line, int *p)
 		// 	token->priority = -1;
 		// }
 		join[0] = line[*p];
-		token->token = ft_strjoin(token->token, join);
+		token->token = lexer_strjoin(token->token, join);
 		(*p) += 1;
 	}
 	if (quote > 0 || squote > 0)

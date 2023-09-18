@@ -170,10 +170,10 @@ void	free_cp(t_cp *head)
 
 	while (head != NULL)
 	{
-		printf("free1\n");
-		lst_free_all(head->tokens);
+		// printf("free1\n");
 		temp_cp = head;
 		head = head->next;
+		lst_free_all(temp_cp->tokens);
 		free(temp_cp);
 	}
 }
@@ -182,7 +182,7 @@ void split_args(t_list **segment, t_list **head_tokens)
 {
 	t_list *temp; // for swaping head
 
-	(*segment) = malloc(sizeof(t_list));
+	// (*segment) = malloc(sizeof(t_list));
 	*segment = *head_tokens;
 	while ((*head_tokens)->next != NULL && is_special((*head_tokens)->next) != '|')
 		(*head_tokens) = (*head_tokens)->next;

@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 10:23:52 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/18 16:56:51 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/19 15:30:56 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ t_list	*tokenize(char *line, t_list *head_env)
 	head = ft_lstnew((void *)get_token(line, &p));
 	if (!check_invalid(head, 1))
 	cleanse(head, head_env);
+	while (line[p] == ' ')
+		p++;
 	node = head;
 	while (line[p])
 	{
@@ -32,6 +34,8 @@ t_list	*tokenize(char *line, t_list *head_env)
 		node->next = ft_lstnew((void *)get_token(line, &p));
 		if (!check_invalid(node, 1))
 			cleanse(node->next, head_env);
+		while (line[p] == ' ')
+			p++;
 		node = node->next;
 	}
 	return (head);
@@ -171,11 +175,6 @@ t_token	*get_token(char *line, int *p)
 			squote *= -1;
 		if (line[*p] == '"' && squote < 0)
 			quote *= -1;
-		// if (line[(*p) + 1] == '|' && (quote < 0 || squote < 0))
-		// {
-		// 	printf("here\n");
-		// 	token->priority = -1;
-		// }
 		join[0] = line[*p];
 		token->token = lexer_strjoin(token->token, join);
 		(*p) += 1;

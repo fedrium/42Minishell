@@ -168,7 +168,6 @@ void get_file(t_list *head_tokens, t_list *env)
 	g_ercode = 127;
 	free_2dar(cmd_arr);
 	free_2dar(path);
-	free(exec_cmd);
 }
 
 void get_file_nopp(t_list *head_tokens, t_list *env)

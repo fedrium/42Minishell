@@ -105,6 +105,8 @@ void echo(t_list *line)
 
 	node = line;
 	node = node->next;
+	if (ft_strncmp(((t_token *)node->content)->token, "-n", 3) == 0)
+		return ;
 	while (node != NULL)
 	{
 		printf("%s ", ((t_token *)node->content)->token);

@@ -1,5 +1,18 @@
 #include "minishell.h"
 
+void	tester(t_list	*head_tokens)
+{
+	t_list *node;
+	node = head_tokens;
+	dprintf(2, "tout: %s\n", ((t_token *)node->content)->token);
+	while (node->next != NULL)
+	{
+		dprintf(2, "tout: %s\n", ((t_token *)node->next->content)->token);
+		if (node->next != NULL)
+			node = node->next;
+	}
+}
+
 int main(int argc, char **argv, char **env)
 {
 	char *line;
@@ -30,18 +43,12 @@ int main(int argc, char **argv, char **env)
         		add_history(line);
 			redir_check(head_tokens);
 			organise_args(head_tokens, &head_env);
-			// lst_free_all(head_tokens);
-			// lst_free_env(head_env);
-			// system("leaks minishell");
-			// exit(0);
 			unlink(".temp");
 			dup2(out, 1);
 			dup2(in, 0);
 		}
 		free(line);
 	}
-	(void)argc;
-	(void)argv;
 }
 
 void pwd(void)
@@ -105,7 +112,7 @@ void echo(t_list *line)
 
 	node = line;
 	node = node->next;
-	if (ft_strncmp(((t_token *)node->content)->token, "-n", 3) == 0)
+	if (node != NULL && ft_strncmp(((t_token *)node->content)->token, "-n", 3) == 0)
 		return ;
 	while (node != NULL)
 	{
@@ -115,20 +122,49 @@ void echo(t_list *line)
 	printf("\n");
 }
 
-void unset(t_list *env, char *line)
+void	free_unset(t_list *temp_env)
 {
-	t_env *temp;
+	free(((t_env *)temp_env->content)->key);
+	free(((t_env *)temp_env->content)->value);
+	free(temp_env->content);
+	free(temp_env);
+}
 
-	while (env->next != NULL)
+void	init_unset(t_list **head_env, t_list **prev_env, t_list **slave, t_list **env)
+{
+	*head_env = *env;
+	*prev_env = ft_lstnew(NULL);
+	*slave = *prev_env;
+	(*prev_env)->next = *head_env;
+}
+
+void unset(t_list **env, t_list *token, int size)
+{
+	t_list	*temp_env;
+	t_list	*prev_env;
+	t_list	*head_env;
+	t_list	*slave;
+	char	*line;
+
+	if (size == 1)
+		return;
+	init_unset(&head_env, &prev_env, &slave, env);
+	line = ((t_token *)token->next->content)->token;
+	while (head_env != NULL)
 	{
-		temp = (t_env *)env->content;
-		if (ft_strncmp(line, temp->key, 3) == 0)
+		if (ft_strncmp(line, ((t_env *)head_env->content)->key, ft_strlen(line) + 1) == 0)
 		{
-			free(temp->key);
-			free(temp->value);
+			temp_env = head_env;
+			head_env = head_env->next;
+			if (prev_env->content != NULL)
+				prev_env->next = head_env;
+			free_unset(temp_env);
 		}
-		env = env->next;
+		else
+			head_env = head_env->next;
+		prev_env = prev_env->next;
 	}
+	free(slave);
 }
 
 void    exit_func(t_list *head_tokens, t_list *head_env)

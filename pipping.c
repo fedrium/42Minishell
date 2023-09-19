@@ -204,6 +204,8 @@ void run_functions(t_list *head_tokens, t_list **head_env)
 	size = ft_lstsize(head_tokens);
 	if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 5) == 0)
 		echo(head_tokens);
+	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "unset", 6) == 0)
+		unset(head_env, head_tokens, size);
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "cd", 3) == 0)
 		cd(*head_env, head_tokens, size);
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "pwd", 4) == 0)

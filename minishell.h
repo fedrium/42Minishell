@@ -83,4 +83,6 @@ void	sig(t_list *head_tokens, t_list *head_env);
 void	setatt();
 void    exit_func(t_list *head_tokens, t_list *head_env);
 void 	free_cp(t_cp *head);
+void	unset(t_list **env, t_list *token, int size);
+
 #endif

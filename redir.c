@@ -79,6 +79,7 @@ void	redir_rm(t_list **head, t_list *to_del)
 		if (temp == to_del)
 		{
 			prev->next = temp->next;
+			free(((t_token *)temp->content)->token);
 			free(temp->content);
 			free(temp);
 			break;
@@ -109,13 +110,17 @@ void	heredoc(char *delimeter)
 	while (1)
 	{
 		line = readline("heredoc>");
+		if (line == NULL)
+			return;
 		if (ft_strncmp(line, delimeter, ft_strlen(delimeter) + 1) == 0)
 		{
 			close(fd);
+			free(line);
 			break;
 		}
 		write(fd, line, ft_strlen(line));
 		write(fd, "\n", 1);
+		free(line);
 	}
 }
 

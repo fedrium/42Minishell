@@ -115,19 +115,19 @@ int	get_file_helper(char *cmd_arr, char *path, char **env, char **arr)
 	line_c = strjoin_helper(path, line_b);
 	pid = 1;
 	i = 0;
-	printf("linea: %s\n", line_a);
+	// printf("linea: %s\n", line_a);
 	if (access(line_a, X_OK) == 0)
 	{
 		pid = fork();
 		if (pid == 0)
 		{
-			printf("linec: %s\n", line_c);
+			// printf("linec: %s\n", line_c);
 			g_ercode = (execve(line_c, arr, env) % 225);
 			free(line_a);
 			free(line_b);
 			free(line_c);
 			free(arr);
-			while (env[i] != NULL)
+			while (env[i] != 0)
 			{
 				free(env[i]);
 				i++;

@@ -30,10 +30,6 @@ int main(int argc, char **argv, char **env)
         		add_history(line);
 			redir_check(head_tokens);
 			organise_args(head_tokens, &head_env);
-			// lst_free_all(head_tokens);
-			// lst_free_env(head_env);
-			// system("leaks minishell");
-			// exit(0);
 			unlink(".temp");
 			dup2(out, 1);
 			dup2(in, 0);

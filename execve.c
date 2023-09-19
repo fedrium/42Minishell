@@ -36,7 +36,6 @@ char **env_arr(t_list *env)
 	char **array;
 
 	size = ft_lstsize(env);
-	// printf("%lu\n", sizeof(char *) * size + 1);
 	array = (char **)malloc(sizeof(char *) * (size + 1));
 	array[size] = NULL;
 	i = 0;
@@ -45,7 +44,6 @@ char **env_arr(t_list *env)
 		str = ft_strjoin(((t_env *)env->content)->key, "=");
 		array[i] = ft_strjoin(str, ((t_env *)env->content)->value);
 		free(str);
-		// printf("%s\n", array[i]);
 		i++;
 		env = env->next;
 	}
@@ -58,12 +56,11 @@ char **path_format(t_list *env)
 	char *str;
 
 	str = getvalue(env, "PATH");
-	// printf("%s\n", str);
 	array = ft_split(str, ':');
+	// if (str != NULL)
+	// 	free(str);
 	return (array);
 }
-
-// make a function for running through dir
 
 char *strjoin_helper(char *path, char *cmd)
 {
@@ -102,61 +99,13 @@ char **convert_list(t_list *head_tokens)
 	return (cmd_arr);
 }
 
-int	get_file_helper(char *cmd_arr, char *path, char **env, char **arr)
-{
-	pid_t	pid;
-	char	*line_a;
-	char	*line_b;
-	char	*line_c;
-	int		i;
-
-	line_a = strjoin_helper(path, cmd_arr);
-	line_b = strjoin_helper("/", cmd_arr);
-	line_c = strjoin_helper(path, line_b);
-	pid = 1;
-	i = 0;
-	// printf("linea: %s\n", line_a);
-	if (access(line_a, X_OK) == 0)
-	{
-		pid = fork();
-		if (pid == 0)
-		{
-			// printf("linec: %s\n", line_c);
-			g_ercode = (execve(line_c, arr, env) % 225);
-			free(line_a);
-			free(line_b);
-			free(line_c);
-			free(arr);
-			while (env[i] != 0)
-			{
-				free(env[i]);
-				i++;
-			}
-			free(env);
-			return (1); // Exit with a non-zero status to indicate error
-		}
-		waitpid(pid, &g_ercode, 0);
-		g_ercode = g_ercode % 255;
-	}
-	free(line_a);
-	free(line_b);
-	free(line_c);
-	free(arr);
-	while (env[i] != 0)
-	{
-		free(env[i]);
-		i++;
-	}
-	free(env);
-	return (0);
-}
-
 void get_file(t_list *head_tokens, t_list *env)
 {
 	DIR *cur_dir;
 	struct dirent *cur_file;
 	char **path;
 	char **cmd_arr;
+	char *exec_cmd;
 	int i;
 	pid_t pid;
 
@@ -178,6 +127,8 @@ void get_file(t_list *head_tokens, t_list *env)
 				}
 				waitpid(pid, &g_ercode, 0);
 				g_ercode = g_ercode % 255;
+				free_2dar(cmd_arr);
+				free_2dar(path);
 				return;
 			}
 		}
@@ -190,21 +141,24 @@ void get_file(t_list *head_tokens, t_list *env)
 			}
 			while ((cur_file = readdir(cur_dir)))
 			{
-				// if (access(strjoin_helper(path[i], cmd_arr[0]), X_OK) == 0)
-				// {
-				// 	printf("this: %s\n", (strjoin_helper(path[i], cmd_arr[0])));
-				// 	pid = fork();
-				// 	if (pid == 0)
-				// 	{
-				// 		g_ercode = (execve(strjoin_helper(path[i], strjoin_helper("/", cmd_arr[0])), cmd_arr, env_arr(env)) % 225);
-				// 		exit(1); // Exit with a non-zero status to indicate error
-				// 	}
-				// 	waitpid(pid, &g_ercode, 0);
-				// 	g_ercode = g_ercode % 255;
-				// 	return;
-				// }
-				if (get_file_helper(cmd_arr[0], path[i], env_arr(env), cmd_arr) == 1)
+				exec_cmd = strjoin_helper(path[i], cmd_arr[0]);
+				if (access(exec_cmd, X_OK) == 0)
+				{
+					pid = fork();
+					if (pid == 0)
+					{
+						g_ercode = (execve(strjoin_helper(path[i], strjoin_helper("/", cmd_arr[0])), cmd_arr, env_arr(env)) % 225);
+						exit(1); // Exit with a non-zero status to indicate error
+					}
+					waitpid(pid, &g_ercode, 0);
+					g_ercode = g_ercode % 255;
+					free_2dar(cmd_arr);
+					free_2dar(path);
+					free(exec_cmd);
+					closedir(cur_dir);
 					return;
+				}
+				free(exec_cmd);
 			}
 			closedir(cur_dir);
 		}
@@ -212,6 +166,9 @@ void get_file(t_list *head_tokens, t_list *env)
 	}
 	printf("command not found\n");
 	g_ercode = 127;
+	free_2dar(cmd_arr);
+	free_2dar(path);
+	free(exec_cmd);
 }
 
 void get_file_nopp(t_list *head_tokens, t_list *env)

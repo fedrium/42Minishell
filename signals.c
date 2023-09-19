@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
+/*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/15 12:39:15 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/15 15:18:02 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/19 15:44:43 by cyu-xian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,22 +24,13 @@ void	signal_handler(int num)
 	}
 }
 
-void	exit_signal(int num)
-{
-	if (num == SIGQUIT)
-	{
-		write(1, "exit\n", 5);
-		exit(0);
-	}
-}
-
 void	sig(t_list *head_tokens, t_list *head_env)
 {
 	setatt();
 	(void)head_env;
 	(void)head_tokens;
 	signal(SIGINT, signal_handler);
-	signal(SIGQUIT, exit_signal);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 void	setatt()

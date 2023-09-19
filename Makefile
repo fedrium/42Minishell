@@ -66,7 +66,6 @@ SRCS        := env.c \
 			   misc.c \
 			   pipping.c \
 			   redir.c \
-			#    signals.c
 
 OBJS        := $(SRCS:.c=.o)
 

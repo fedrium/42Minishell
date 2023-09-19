@@ -20,18 +20,11 @@ void lst_free_env(t_list *head_env)
 
     while (head_env != NULL)
     {
-        // printf("free %i\n", i);
         temp_env = head_env;
         head_env = head_env->next;
-
-        // Free key and value strings
         free(((t_env *)temp_env->content)->key);
         free(((t_env *)temp_env->content)->value);
-
-        // Free the t_env structure itself
         free(temp_env->content);
-
-        // Finally, free the list node
         free(temp_env);
     }
 }

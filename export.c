@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/15 17:32:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/13 17:53:42 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/19 13:56:59 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,8 @@ void add_to_envlst(t_list **head_env, t_list *node)
 	node_env = *head_env;
 	splitted_args = ft_split(((t_token *)node->content)->token, '=');
 
-	env->key = ft_strdup(splitted_args[0]);
-	env->value = ft_strdup(splitted_args[1]);
+	env->key = splitted_args[0];
+	env->value = splitted_args[1];
 
 	// Check if the variable already exists, and if so, update its value
 	while (node_env != NULL)
@@ -91,6 +91,7 @@ void add_to_envlst(t_list **head_env, t_list *node)
 	// If not found, add it to the end of the list
 	new_env = ft_lstnew(env);
 	ft_lstadd_back(head_env, new_env);
+	free(splitted_args);
 }
 
 void add_env(t_list **head_env, t_list *head_tokens)

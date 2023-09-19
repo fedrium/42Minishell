@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-void run_functions_nopp(t_list *head_tokens, t_list **head_env)
+void run_functions_nopp(t_list *head_tokens, t_list **head_env, t_main_vars *main_vars)
 {
 	int size;
 
@@ -18,7 +18,7 @@ void run_functions_nopp(t_list *head_tokens, t_list **head_env)
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "error", 6) == 0)
 		printf("error code: %d\n", g_ercode);
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "exit", 5) == 0)
-		exit_func(head_tokens, *head_env);
+		exit_func(head_tokens, *head_env, main_vars);
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "test", 5) == 0)
 	{
 		t_list *node;
@@ -102,7 +102,7 @@ int	get_cp_size(t_cp *cp)
 	return (i);
 }
 
-void organise_args(t_list *head_tokens, t_list **head_env)
+void organise_args(t_list *head_tokens, t_list **head_env, t_main_vars *main_vars)
 {
 	t_cp *child_processes;
 	t_cp *cp_head;
@@ -117,7 +117,7 @@ void organise_args(t_list *head_tokens, t_list **head_env)
 	pid = 1;
 	if (child_processes->next == NULL)
 	{
-		run_functions(head_tokens, head_env);
+		run_functions(head_tokens, head_env, main_vars);
 		child_processes = child_processes->next;
 	}
 	while (child_processes != NULL)
@@ -139,7 +139,7 @@ void organise_args(t_list *head_tokens, t_list **head_env)
 				dup2(child_processes->next->pipe[1], STDOUT_FILENO);
 				close(child_processes->next->pipe[1]); // Close write end of the next pipe
 			}
-			run_functions_nopp(child_processes->tokens, head_env);
+			run_functions_nopp(child_processes->tokens, head_env, main_vars);
 
 			exit(0);
 		}
@@ -197,7 +197,7 @@ void split_args(t_list **segment, t_list **head_tokens)
 	(*head_tokens) = (*head_tokens)->next;
 }
 
-void run_functions(t_list *head_tokens, t_list **head_env)
+void run_functions(t_list *head_tokens, t_list **head_env, t_main_vars *main_vars)
 {
 	int size;
 
@@ -217,7 +217,7 @@ void run_functions(t_list *head_tokens, t_list **head_env)
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "error", 6) == 0)
 		printf("error code: %d\n", g_ercode);
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "exit", 5) == 0)
-		exit_func(head_tokens, *head_env);
+		exit_func(head_tokens, *head_env, main_vars);
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "test", 5) == 0)
 	{
 		t_list *node;

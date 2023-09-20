@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/15 17:32:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/19 13:56:59 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/20 14:28:36 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ void export(t_list **head_env, t_list *head_tokens)
 	int printed;
 	char *smallest_key;
 
-	// printf("%d\n", ft_lstsize((*head_env)));
 	if (head_tokens->next == NULL)
 	{
 		smallest_key = 0;
@@ -29,10 +28,7 @@ void export(t_list **head_env, t_list *head_tokens)
 		}
 	}
 	else
-	{
 		add_env(head_env, head_tokens);
-		// pr_env(*head_env);
-	}
 }
 
 int export_syntax_check(t_list *node)
@@ -59,21 +55,17 @@ int export_syntax_check(t_list *node)
 	return (1);
 }
 
-void add_to_envlst(t_list **head_env, t_list *node)
+void add_to_envlst(t_list **head_env, t_list *node, t_env *env)
 {
 	char **splitted_args;
 	t_list *node_env;
 	t_list *new_env;
-	t_env *env;
 
 	env = malloc(sizeof(t_env));
 	node_env = *head_env;
 	splitted_args = ft_split(((t_token *)node->content)->token, '=');
-
 	env->key = splitted_args[0];
 	env->value = splitted_args[1];
-
-	// Check if the variable already exists, and if so, update its value
 	while (node_env != NULL)
 	{
 		t_env *temp = (t_env *)node_env->content;
@@ -87,8 +79,6 @@ void add_to_envlst(t_list **head_env, t_list *node)
 		}
 		node_env = node_env->next;
 	}
-
-	// If not found, add it to the end of the list
 	new_env = ft_lstnew(env);
 	ft_lstadd_back(head_env, new_env);
 	free(splitted_args);
@@ -96,7 +86,8 @@ void add_to_envlst(t_list **head_env, t_list *node)
 
 void add_env(t_list **head_env, t_list *head_tokens)
 {
-	t_list *node;
+	t_list	*node;
+	t_env	*env;
 
 	node = head_tokens;
 	if (node->next == NULL)
@@ -108,7 +99,7 @@ void add_env(t_list **head_env, t_list *head_tokens)
 	while (node != NULL)
 	{
 		if (export_syntax_check(node))
-			add_to_envlst(head_env, node);
+			add_to_envlst(head_env, node, env);
 		node = node->next;
 	}
 }

@@ -23,10 +23,8 @@ typedef struct s_env
 typedef	struct s_token
 {
 	char	*token;
-	// char	*expansion;
 	int		priority;
 	struct s_token *next;
-	// char	*input;
 }			t_token;
 
 typedef struct s_cp
@@ -57,6 +55,17 @@ typedef struct s_execve_vars
 	struct dirent	*cur_file;
 }			t_execve_vars;
 
+typedef struct s_lexer_cleanse_vars
+{
+	char	*temp;
+	char	*new;
+	char	join[2];
+	int		i;
+	int		in_squote;
+	int		in_dquote;
+}		t_cleanse_vars;
+
+
 int		g_ercode;
 void free_2dar(char **ar_2d);
 void organise_args(t_list *head_tokens, t_list **head_env, t_main_vars *main_vars);
@@ -73,8 +82,8 @@ char 	*find_smallest_key(t_list *head, char *smallest_key);
 int		print_output(t_list *head, char *smallest_key);
 void	cleanse(t_list *node, t_list *head_env);
 int		check_invalid(t_list *head_tokens, int mute);
-void	expand_n_join(char **temp, char **new, int *i,t_list *head_env);
-int		can_move(char c, int *i, int *isq, int *idq);
+void expand_n_join(char **temp, char **new, int *i, t_list *head_env);
+int can_move(char c, int *i, int *isq, int *idq);
 void	check_head_tokens(t_list *node, char *line);
 char	*get_tl_str(t_list *node);
 char	*getvalue(t_list *env, char *key);

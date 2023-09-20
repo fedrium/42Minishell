@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 13:34:12 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/20 14:10:22 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/20 14:23:38 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,9 +125,10 @@ void	free_getfile_norm(t_execve_vars *execve_vars)
 	free_2dar(execve_vars->path);
 	free(execve_vars->exec_cmd);
 	closedir(execve_vars->cur_dir);
+	free(execve_vars);
 }
 
-void	get_file_abs_path(t_execve_vars *execve_vars, t_list *env)
+int	get_file_abs_path(t_execve_vars *execve_vars, t_list *env)
 {
 	if (access(execve_vars->cmd_arr[0], X_OK) == 0)
 	{
@@ -142,17 +143,18 @@ void	get_file_abs_path(t_execve_vars *execve_vars, t_list *env)
 		g_ercode = g_ercode % 255;
 		free_2dar(execve_vars->cmd_arr);
 		free_2dar(execve_vars->path);
-		return;
+		return (1);
 	}
+	return (0);
 }
 
-void	get_file_normal(t_execve_vars *execve_vars, t_list *env)
+int	get_file_normal(t_execve_vars *execve_vars, t_list *env)
 {
 	execve_vars->cur_dir = opendir(execve_vars->path[execve_vars->i]);
 	while ((execve_vars->cur_file = readdir(execve_vars->cur_dir)))
 	{
-		execve_vars->exec_cmd = strjoin_helper(execve_vars->path[execve_vars->i],
-			execve_vars->cmd_arr[0]);
+		execve_vars->exec_cmd = strjoin_helper(execve_vars->path
+			[execve_vars->i], execve_vars->cmd_arr[0]);
 		if (access(execve_vars->exec_cmd, X_OK) == 0)
 		{
 			execve_vars->pid = fork();
@@ -167,11 +169,12 @@ void	get_file_normal(t_execve_vars *execve_vars, t_list *env)
 			waitpid(execve_vars->pid, &g_ercode, 0);
 			g_ercode = g_ercode % 255;
 			free_getfile_norm(execve_vars);
-			return;
+			return (1);
 		}
 		free(execve_vars->exec_cmd);
 	}
 	closedir(execve_vars->cur_dir);
+	return (0);
 }
 
 void get_file(t_list *head_tokens, t_list *env)
@@ -182,9 +185,15 @@ void get_file(t_list *head_tokens, t_list *env)
 	while (execve_vars->path[execve_vars->i] != NULL)
 	{
 		if (execve_vars->cmd_arr[0][0] == '/')
-			get_file_abs_path(execve_vars, env);
+		{
+			if (get_file_abs_path(execve_vars, env))
+				return ;
+		}
 		else
-			get_file_normal(execve_vars, env);
+		{
+			if (get_file_normal(execve_vars, env))
+				return ;
+		}
 		execve_vars->i++;
 	}
 	printf("command not found\n");
@@ -194,7 +203,7 @@ void get_file(t_list *head_tokens, t_list *env)
 	free(execve_vars);
 }
 
-void get_file_abs_path_nopp(t_execve_vars *execve_vars, t_list *env)
+int get_file_abs_path_nopp(t_execve_vars *execve_vars, t_list *env)
 {
 	if (access(execve_vars->cmd_arr[0], X_OK) == 0)
 	{
@@ -204,17 +213,18 @@ void get_file_abs_path_nopp(t_execve_vars *execve_vars, t_list *env)
 		g_ercode = g_ercode % 255;
 		free_2dar(execve_vars->cmd_arr);
 		free_2dar(execve_vars->path);
-		return;
+		return (1);
 	}
+	return (0);
 }
 
-void get_file_normal_nopp(t_execve_vars *execve_vars, t_list *env)
+int	get_file_normal_nopp(t_execve_vars *execve_vars, t_list *env)
 {
 	execve_vars->cur_dir = opendir(execve_vars->path[execve_vars->i]);
 	while ((execve_vars->cur_file = readdir(execve_vars->cur_dir)))
 	{
-		execve_vars->exec_cmd = strjoin_helper(execve_vars->path[execve_vars->i],
-											   execve_vars->cmd_arr[0]);
+		execve_vars->exec_cmd = strjoin_helper(execve_vars->path
+			[execve_vars->i], execve_vars->cmd_arr[0]);
 		if (access(execve_vars->exec_cmd, X_OK) == 0)
 		{
 			g_ercode = (execve(strjoin_helper(execve_vars->path[execve_vars->i],
@@ -223,11 +233,12 @@ void get_file_normal_nopp(t_execve_vars *execve_vars, t_list *env)
 			waitpid(execve_vars->pid, &g_ercode, 0);
 			g_ercode = g_ercode % 255;
 			free_getfile_norm(execve_vars);
-			return;
+			return (1);
 		}
 		free(execve_vars->exec_cmd);
 	}
 	closedir(execve_vars->cur_dir);
+	return (0);
 }
 
 void get_file_nopp(t_list *head_tokens, t_list *env)
@@ -238,9 +249,15 @@ void get_file_nopp(t_list *head_tokens, t_list *env)
 	while (execve_vars->path[execve_vars->i] != NULL)
 	{
 		if (execve_vars->cmd_arr[0][0] == '/')
-			get_file_abs_path(execve_vars, env);
+		{
+			if (get_file_abs_path_nopp(execve_vars, env))
+				return;
+		}
 		else
-			get_file_normal(execve_vars, env);
+		{
+			if (get_file_normal_nopp(execve_vars, env))
+				return;
+		}
 		execve_vars->i++;
 	}
 	printf("command not found\n");

@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 10:23:52 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/19 15:30:56 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/20 19:18:46 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,46 +57,51 @@ char	*lexer_strjoin(char *str1, char *str2)
 	return(new);
 }
 
-void cleanse(t_list *node, t_list *head_env) {
-    char *temp;
-    char *new;
-    char join[2];
-    int i;
-    int in_squote;
-    int in_dquote;
+t_cleanse_vars	*init_cleanse(t_list *node)
+{
+	t_cleanse_vars	*cleanse_vars;
 
-    i = 0;
-    in_dquote = -1;
-    in_squote = -1;
-    temp = ((t_token *)node->content)->token;
-    join[1] = '\0';
-    new = ft_strdup(""); // Initialize 'new' with an empty string
-    while (temp[i])
+	cleanse_vars = malloc(sizeof(t_cleanse_vars));
+	cleanse_vars->i = 0;
+	cleanse_vars->in_dquote = -1;
+	cleanse_vars->in_squote = -1;
+	cleanse_vars->temp = ((t_token *)node->content)->token;
+	cleanse_vars->join[1] = '\0';
+	cleanse_vars->new = ft_strdup("");
+	return (cleanse_vars);
+}
+
+void	check_quotes(t_cleanse_vars *cleanse_vars, t_list *node)
+{
+	if (cleanse_vars->in_dquote > 0 || cleanse_vars->in_squote > 0)
+		((t_token *)node->content)->priority = -1;
+}
+
+void cleanse(t_list *node, t_list *head_env)
+{
+	t_cleanse_vars	*cleanse_vars;
+
+	cleanse_vars = init_cleanse(node);
+	while (cleanse_vars->temp[cleanse_vars->i])
 	{
-        if (temp[i] == '$' && in_squote < 0)
+		if (cleanse_vars->temp[cleanse_vars->i] == '$' && cleanse_vars->in_squote < 0)
 		{
-			// printf("b4 ex: %s\n", temp);
-			i++;
-            expand_n_join(&temp, &new, &i, head_env);
-			// printf("%s\n", temp);
+			cleanse_vars->i++;
+			expand_n_join(&cleanse_vars->temp, &cleanse_vars->new, &cleanse_vars->i, head_env);
 		}
-		if (!temp[i])
+		if (!cleanse_vars->temp[cleanse_vars->i])
 			break;
-        if (can_move(temp[i], &i, &in_squote, &in_dquote))
+		if (can_move(cleanse_vars->temp[cleanse_vars->i], &cleanse_vars->i, &cleanse_vars->in_squote, &cleanse_vars->in_dquote))
 		{
-            join[0] = temp[i];
-            i++;
-            new = lexer_strjoin(new, join);
-        }
+			cleanse_vars->join[0] = cleanse_vars->temp[cleanse_vars->i];
+			cleanse_vars->i++;
+			cleanse_vars->new = lexer_strjoin(cleanse_vars->new, cleanse_vars->join);
+		}
     }
-	// printf("%s\n", new);
-    if (in_dquote > 0 || in_squote > 0)
-	{
-		printf("flag\n");
-        ((t_token *)node->content)->priority = -1;
-	}
-    free(((t_token *)node->content)->token); // Free the old token
-	((t_token *)node->content)->token = new; // Update the token with the new value
+	check_quotes(cleanse_vars, node);
+	free(((t_token *)node->content)->token);
+	free(cleanse_vars);
+	((t_token *)node->content)->token = cleanse_vars->new;
 }
 
 int	can_move(char c, int *i, int *isq, int *idq)
@@ -116,6 +121,31 @@ int	can_move(char c, int *i, int *isq, int *idq)
 	return (1);
 }
 
+void	expansion_get_key(char **temp, int *i, char buffer[2], char **key)
+{
+	while ((*temp)[(*i)] != 0 && ((*temp)[(*i)] != ' ' || (*temp)[(*i)] != '"' || (*temp)[(*i)] != '$'))
+	{
+		if ((*temp)[(*i)] == ' ' || (*temp)[(*i)] == '"' || (*temp)[(*i)] == '$')
+			break;
+		buffer[0] = (*temp)[(*i)];
+		(*key) = lexer_strjoin((*key), buffer);
+		(*i)++;
+	}
+}
+
+void	expansion_get_value(t_list **tenv, char **key, char **value)
+{
+	while ((*tenv) != NULL)
+	{
+		if (ft_strncmp((*key), ((t_env *)(*tenv)->content)->key, ft_strlen((*key))) == 0)
+		{
+			(*value) = ft_strdup(((t_env *)(*tenv)->content)->value);
+			break;
+		}
+		(*tenv) = (*tenv)->next;
+	}
+}
+
 void expand_n_join(char **temp, char **new, int *i, t_list *head_env) 
 {
 	char	*key;
@@ -127,23 +157,8 @@ void expand_n_join(char **temp, char **new, int *i, t_list *head_env)
 	key = ft_strdup("");
 	tenv = head_env;
 	value = NULL;
-	while ((*temp)[(*i)] != 0 && ((*temp)[(*i)] != ' ' || (*temp)[(*i)] != '"' || (*temp)[(*i)] != '$'))
-	{
-		if ((*temp)[(*i)] == ' ' || (*temp)[(*i)] == '"' || (*temp)[(*i)] == '$')
-			break;
-		buffer[0] = (*temp)[(*i)];
-		key = lexer_strjoin(key, buffer);
-		(*i)++;
-	}
-	while (tenv != NULL)
-	{
-		if (ft_strncmp(key, ((t_env *)tenv->content)->key, ft_strlen(key)) == 0)
-		{
-			value = ft_strdup(((t_env *)tenv->content)->value);
-			break;
-		}
-		tenv = tenv->next;
-	}
+	expansion_get_key(temp, i, buffer, &key);
+	expansion_get_value(&tenv, &key, &value);
 	if (ft_strncmp(key, "?", 2) == 0)
 		value = ft_itoa(g_ercode);
 	if (value)
@@ -154,6 +169,15 @@ void expand_n_join(char **temp, char **new, int *i, t_list *head_env)
 	free(key);
 }
 
+void	init_get_token(int *quote, int *squote, t_token **token, char (*join)[2])
+{
+	*quote = -1;
+	*squote = -1;
+	(*token) = malloc(sizeof(t_token));
+	(*token)->token = (char *)malloc(sizeof(char));
+	(*token)->token[0] = '\0';
+}
+
 t_token	*get_token(char *line, int *p)
 {
 	t_token	*token;
@@ -161,12 +185,7 @@ t_token	*get_token(char *line, int *p)
 	int		quote;
 	int		squote;
 
-	quote = -1;
-	squote = -1;
-	token = malloc(sizeof(t_token));
-	token->token = (char *)malloc(sizeof(char));
-	token->token[0] = '\0';
-	join[1] = '\0';
+	init_get_token(&quote, &squote, &token, &join);
 	while (line[*p] != ' '|| quote > 0 || squote > 0)
 	{
 		if (!line[*p])

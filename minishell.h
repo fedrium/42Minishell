@@ -46,6 +46,17 @@ typedef struct s_main_vars
 	struct termios	saved;
 }			t_main_vars;
 
+typedef struct s_execve_vars
+{
+	int				i;
+	DIR				*cur_dir;
+	char 			**path;
+	char			**cmd_arr;
+	char			*exec_cmd;
+	pid_t			pid;
+	struct dirent	*cur_file;
+}			t_execve_vars;
+
 int		g_ercode;
 void free_2dar(char **ar_2d);
 void organise_args(t_list *head_tokens, t_list **head_env, t_main_vars *main_vars);

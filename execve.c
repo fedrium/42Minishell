@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execve.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/09/20 13:34:12 by yalee             #+#    #+#             */
+/*   Updated: 2023/09/20 14:03:04 by yalee            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void print_2d_arr(char **env)
@@ -19,7 +31,6 @@ char *getvalue(t_list *env, char *key)
 	while (env)
 	{
 		temp = (t_env *)env->content;
-		// printf("strlen: %s\n", temp->key);
 		if (ft_strncmp(temp->key, key, ft_strlen(key)) == 0)
 			return (temp->value);
 		else
@@ -57,8 +68,6 @@ char **path_format(t_list *env)
 
 	str = getvalue(env, "PATH");
 	array = ft_split(str, ':');
-	// if (str != NULL)
-	// 	free(str);
 	return (array);
 }
 
@@ -99,117 +108,144 @@ char **convert_list(t_list *head_tokens)
 	return (cmd_arr);
 }
 
+t_execve_vars	*init_get_file(t_list *head_tokens, t_list *env)
+{
+	t_execve_vars *execve_vars = malloc(sizeof(t_execve_vars));
+
+	execve_vars->i = 0;
+	execve_vars->pid = 1;
+	execve_vars->path = path_format(env);
+	execve_vars->cmd_arr = convert_list(head_tokens);
+	return (execve_vars);
+}
+
+void	free_getfile_norm(t_execve_vars *execve_vars)
+{
+	free_2dar(execve_vars->cmd_arr);
+	free_2dar(execve_vars->path);
+	free(execve_vars->exec_cmd);
+	closedir(execve_vars->cur_dir);
+}
+
+void	get_file_abs_path(t_execve_vars *execve_vars, t_list *env)
+{
+	if (access(execve_vars->cmd_arr[0], X_OK) == 0)
+	{
+		execve_vars->pid = fork();
+		if (execve_vars->pid == 0)
+		{
+			g_ercode = (execve(execve_vars->cmd_arr[0],
+				execve_vars->cmd_arr, env_arr(env)) % 225);
+			exit(1);
+		}
+		waitpid(execve_vars->pid, &g_ercode, 0);
+		g_ercode = g_ercode % 255;
+		free_2dar(execve_vars->cmd_arr);
+		free_2dar(execve_vars->path);
+		return;
+	}
+}
+
+void	get_file_normal(t_execve_vars *execve_vars, t_list *env)
+{
+	execve_vars->cur_dir = opendir(execve_vars->path[execve_vars->i]);
+	while ((execve_vars->cur_file = readdir(execve_vars->cur_dir)))
+	{
+		execve_vars->exec_cmd = strjoin_helper(execve_vars->path[execve_vars->i],
+			execve_vars->cmd_arr[0]);
+		if (access(execve_vars->exec_cmd, X_OK) == 0)
+		{
+			execve_vars->pid = fork();
+			if (execve_vars->pid == 0)
+			{
+				execve(strjoin_helper
+					(execve_vars->path[execve_vars->i], strjoin_helper
+					("/", execve_vars->cmd_arr[0])), execve_vars->cmd_arr,
+					env_arr(env));
+				exit(1);
+			}
+			waitpid(execve_vars->pid, &g_ercode, 0);
+			g_ercode = g_ercode % 255;
+			free_getfile_norm(execve_vars);
+			return;
+		}
+		free(execve_vars->exec_cmd);
+	}
+	closedir(execve_vars->cur_dir);
+}
+
 void get_file(t_list *head_tokens, t_list *env)
 {
-	DIR *cur_dir;
-	struct dirent *cur_file;
-	char **path;
-	char **cmd_arr;
-	char *exec_cmd;
-	int i;
-	pid_t pid;
-
-	i = 0;
-	pid = 1;
-	path = path_format(env);
-	cmd_arr = convert_list(head_tokens);
-	while (path[i] != NULL)
+	t_execve_vars	*execve_vars;
+	
+	execve_vars = init_get_file(head_tokens, env);
+	while (execve_vars->path[execve_vars->i] != NULL)
 	{
-		if (cmd_arr[0][0] == '/') // Check if it's an absolute path
-		{
-			if (access(cmd_arr[0], X_OK) == 0)
-			{
-				pid = fork();
-				if (pid == 0)
-				{
-					g_ercode = (execve(cmd_arr[0], cmd_arr, env_arr(env)) % 225);
-					exit(1); // Exit with a non-zero status to indicate error
-				}
-				waitpid(pid, &g_ercode, 0);
-				g_ercode = g_ercode % 255;
-				free_2dar(cmd_arr);
-				free_2dar(path);
-				return;
-			}
-		}
+		if (execve_vars->cmd_arr[0][0] == '/')
+			get_file_abs_path(execve_vars, env);
 		else
-		{
-			cur_dir = opendir(path[i]);
-			if (cur_dir == NULL)
-			{
-				printf("error");
-			}
-			while ((cur_file = readdir(cur_dir)))
-			{
-				exec_cmd = strjoin_helper(path[i], cmd_arr[0]);
-				if (access(exec_cmd, X_OK) == 0)
-				{
-					pid = fork();
-					if (pid == 0)
-					{
-						g_ercode = (execve(strjoin_helper(path[i], strjoin_helper("/", cmd_arr[0])), cmd_arr, env_arr(env)) % 225);
-						exit(1); // Exit with a non-zero status to indicate error
-					}
-					waitpid(pid, &g_ercode, 0);
-					g_ercode = g_ercode % 255;
-					free_2dar(cmd_arr);
-					free_2dar(path);
-					free(exec_cmd);
-					closedir(cur_dir);
-					return;
-				}
-				free(exec_cmd);
-			}
-			closedir(cur_dir);
-		}
-		i++;
+			get_file_normal(execve_vars, env);
+		execve_vars->i++;
 	}
 	printf("command not found\n");
 	g_ercode = 127;
-	free_2dar(cmd_arr);
-	free_2dar(path);
+	free_2dar(execve_vars->cmd_arr);
+	free_2dar(execve_vars->path);
+	free(execve_vars);
+}
+
+void get_file_abs_path_nopp(t_execve_vars *execve_vars, t_list *env)
+{
+	if (access(execve_vars->cmd_arr[0], X_OK) == 0)
+	{
+		g_ercode = (execve(execve_vars->cmd_arr[0],
+			execve_vars->cmd_arr, env_arr(env)) % 225);
+		waitpid(execve_vars->pid, &g_ercode, 0);
+		g_ercode = g_ercode % 255;
+		free_2dar(execve_vars->cmd_arr);
+		free_2dar(execve_vars->path);
+		return;
+	}
+}
+
+void get_file_normal_nopp(t_execve_vars *execve_vars, t_list *env)
+{
+	execve_vars->cur_dir = opendir(execve_vars->path[execve_vars->i]);
+	while ((execve_vars->cur_file = readdir(execve_vars->cur_dir)))
+	{
+		execve_vars->exec_cmd = strjoin_helper(execve_vars->path[execve_vars->i],
+											   execve_vars->cmd_arr[0]);
+		if (access(execve_vars->exec_cmd, X_OK) == 0)
+		{
+			g_ercode = (execve(strjoin_helper(execve_vars->path[execve_vars->i],
+				strjoin_helper("/", execve_vars->cmd_arr[0])),
+				execve_vars->cmd_arr, env_arr(env)) %225);
+			waitpid(execve_vars->pid, &g_ercode, 0);
+			g_ercode = g_ercode % 255;
+			free_getfile_norm(execve_vars);
+			return;
+		}
+		free(execve_vars->exec_cmd);
+	}
+	closedir(execve_vars->cur_dir);
 }
 
 void get_file_nopp(t_list *head_tokens, t_list *env)
 {
-	DIR *cur_dir;
-	struct dirent *cur_file;
-	char **path;
-	char **cmd_arr;
-	int i;
+	t_execve_vars *execve_vars;
 
-	i = 0;
-	path = path_format(env);
-	cmd_arr = convert_list(head_tokens);
-	while (path[i] != NULL)
+	execve_vars = init_get_file(head_tokens, env);
+	while (execve_vars->path[execve_vars->i] != NULL)
 	{
-		if (cmd_arr[0][0] == '/') // Check if it's an absolute path
-		{
-			if (access(cmd_arr[0], X_OK) == 0)
-			{
-				g_ercode = (execve(cmd_arr[0], cmd_arr, env_arr(env)) % 225);
-				exit(1); // Exit with a non-zero status to indicate error
-			}
-		}
+		if (execve_vars->cmd_arr[0][0] == '/')
+			get_file_abs_path(execve_vars, env);
 		else
-		{
-			cur_dir = opendir(path[i]);
-			if (cur_dir == NULL)
-			{
-				printf("error");
-			}
-			while ((cur_file = readdir(cur_dir)))
-			{
-				if (access(strjoin_helper(path[i], cmd_arr[0]), X_OK) == 0)
-				{
-					g_ercode = (execve(ft_strjoin(path[i], ft_strjoin("/", cmd_arr[0])), cmd_arr, env_arr(env)) % 225);
-					exit(1); // Exit with a non-zero status to indicate error
-				}
-			}
-			closedir(cur_dir);
-		}
-		i++;
+			get_file_normal(execve_vars, env);
+		execve_vars->i++;
 	}
 	printf("command not found\n");
 	g_ercode = 127;
+	free_2dar(execve_vars->cmd_arr);
+	free_2dar(execve_vars->path);
+	free(execve_vars);
 }

@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 10:24:54 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/18 14:09:06 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/20 13:17:39 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,9 @@ t_env *new_env(char **splitted_env)
 
 	env = malloc(sizeof(t_env));
 	if (env == NULL)
-	{
-		// Handle memory allocation error
 		return NULL;
-	}
-
-	// Assuming key and value are dynamically allocated copies
 	env->key = ft_strdup(splitted_env[0]);
 	env->value = ft_strdup(splitted_env[1]);
-
 	return env;
 }
 

@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:31:49 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 22:33:31 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/21 23:52:56 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,21 +50,18 @@ t_piping_vars	*init_pipes(t_list *head_tokens)
 	return (piping_vars);
 }
 
-void	start_cp(t_piping_vars **piping_vars, t_list **head_env,
+void	start_cp(t_piping_vars *piping_vars, t_list **head_env,
 	t_main_vars *main_vars)
 {
-	if ((*piping_vars)->num_processes)
+	if (piping_vars->num_processes > 1)
+		dup2(piping_vars->child_processes->pipe[0], STDIN_FILENO);
+	if (piping_vars->child_processes->next != NULL)
 	{
-		dup2((*piping_vars)->child_processes->pipe[0], STDIN_FILENO);
-		close((*piping_vars)->child_processes->pipe[0]);
+		close(piping_vars->child_processes->next->pipe[0]);
+		dup2(piping_vars->child_processes->next->pipe[1], STDOUT_FILENO);
+		close(piping_vars->child_processes->next->pipe[1]);
 	}
-	if ((*piping_vars)->child_processes->next != NULL)
-	{
-		close((*piping_vars)->child_processes->next->pipe[0]);
-		dup2((*piping_vars)->child_processes->next->pipe[1], STDOUT_FILENO);
-		close((*piping_vars)->child_processes->next->pipe[1]);
-	}
-	run_functions_nopp((*piping_vars)->child_processes->tokens,
+	run_functions_nopp(piping_vars->child_processes->tokens,
 		head_env, main_vars);
 	exit(0);
 }
@@ -87,7 +84,7 @@ void	organise_args(t_list *head_tokens, t_list **head_env,
 			pipe(piping_vars->child_processes->next->pipe);
 		piping_vars->pid = fork();
 		if (piping_vars->pid == 0)
-			start_cp(&piping_vars, head_env, main_vars);
+			start_cp(piping_vars, head_env, main_vars);
 		else
 			iterate_list(&piping_vars);
 	}

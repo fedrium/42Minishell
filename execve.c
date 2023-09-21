@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 13:34:12 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 16:00:10 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/22 00:02:39 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ int	get_file_abs_path(t_execve_vars *execve_vars, t_list *env)
 		g_ercode = g_ercode % 255;
 		free_2dar(execve_vars->cmd_arr);
 		free_2dar(execve_vars->path);
+		free(execve_vars);
 		return (1);
 	}
 	return (0);

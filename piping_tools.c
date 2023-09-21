@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:32:29 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 16:59:25 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/22 00:07:27 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int	get_cp_size(t_cp *cp)
 
 void	iterate_list(t_piping_vars **piping_vars)
 {
-	if ((*piping_vars)->num_processes)
+	if ((*piping_vars)->num_processes > 1)
 		close((*piping_vars)->child_processes->pipe[0]);
 	if ((*piping_vars)->child_processes->next != NULL)
 		close((*piping_vars)->child_processes->next->pipe[1]);
@@ -70,5 +70,7 @@ void	wait_cp(t_piping_vars *piping_vars)
 {
 	waitpid(0, &g_ercode, 0);
 	g_ercode = g_ercode % 255;
+	if (g_ercode == 13)
+		g_ercode = 1;
 	piping_vars->num_processes--;
 }

@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 16:19:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 17:05:15 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/21 23:42:43 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,7 +183,7 @@ void			run_functions(t_list *head_tokens, t_list **head_env,
 					t_main_vars *main_vars);
 void			run_functions_nopp(t_list *head_tokens, t_list **head_env,
 					t_main_vars *main_vars);
-void			start_cp(t_piping_vars **piping_vars, t_list **head_env,
+void			start_cp(t_piping_vars *piping_vars, t_list **head_env,
 					t_main_vars *main_vars);
 void			wait_cp(t_piping_vars *piping_vars);
 int				get_cp_size(t_cp *cp);

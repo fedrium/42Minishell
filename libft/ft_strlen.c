@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 15:33:35 by cyu-xian          #+#    #+#             */
-/*   Updated: 2022/05/09 12:03:34 by cyu-xian         ###   ########.fr       */
+/*   Updated: 2023/09/22 00:10:16 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <stdio.h>
+
 size_t	ft_strlen(const char *str)
 {
 	size_t	i;

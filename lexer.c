@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 10:23:52 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/19 15:30:56 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/21 16:48:49 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,13 @@ t_list	*tokenize(char *line, t_list *head_env)
 	t_list	*head;
 	t_list	*node;
 	int		p;
-	
+
 	if (!line[0])
 		return (ft_lstnew("\0"));
 	p = 0;
 	head = ft_lstnew((void *)get_token(line, &p));
 	if (!check_invalid(head, 1))
-	cleanse(head, head_env);
+		cleanse(head, head_env);
 	while (line[p] == ' ')
 		p++;
 	node = head;
@@ -41,82 +41,40 @@ t_list	*tokenize(char *line, t_list *head_env)
 	return (head);
 }
 
-char	*lexer_strjoin(char *str1, char *str2)
+void	extend(t_cleanse_vars *cleanse_vars)
 {
-	char	*temp1;
-	char	*temp2;
-	char	*new;
-
-	temp1 = ft_strdup(str1);
-	free(str1);
-	temp2 = ft_strdup(str2);
-	// free(str2);
-	new = ft_strjoin(temp1, temp2);
-	free(temp1);
-	free(temp2);
-	return(new);
+	cleanse_vars->join[0] = cleanse_vars->temp[cleanse_vars->i];
+	cleanse_vars->i++;
+	cleanse_vars->new = lexer_strjoin(cleanse_vars->new, cleanse_vars->join);
 }
 
-void cleanse(t_list *node, t_list *head_env) {
-    char *temp;
-    char *new;
-    char join[2];
-    int i;
-    int in_squote;
-    int in_dquote;
+void	cleanse(t_list *node, t_list *head_env)
+{
+	t_cleanse_vars	*cleanse_vars;
 
-    i = 0;
-    in_dquote = -1;
-    in_squote = -1;
-    temp = ((t_token *)node->content)->token;
-    join[1] = '\0';
-    new = ft_strdup(""); // Initialize 'new' with an empty string
-    while (temp[i])
+	cleanse_vars = init_cleanse(node);
+	while (cleanse_vars->temp[cleanse_vars->i])
 	{
-        if (temp[i] == '$' && in_squote < 0)
+		if (cleanse_vars->temp[cleanse_vars->i] == '$'
+			&& cleanse_vars->in_squote < 0)
 		{
-			// printf("b4 ex: %s\n", temp);
-			i++;
-            expand_n_join(&temp, &new, &i, head_env);
-			// printf("%s\n", temp);
+			cleanse_vars->i++;
+			expand_n_join(&cleanse_vars->temp, &cleanse_vars->new,
+				&cleanse_vars->i, head_env);
 		}
-		if (!temp[i])
-			break;
-        if (can_move(temp[i], &i, &in_squote, &in_dquote))
-		{
-            join[0] = temp[i];
-            i++;
-            new = lexer_strjoin(new, join);
-        }
-    }
-	// printf("%s\n", new);
-    if (in_dquote > 0 || in_squote > 0)
-	{
-		printf("flag\n");
-        ((t_token *)node->content)->priority = -1;
+		if (!cleanse_vars->temp[cleanse_vars->i])
+			break ;
+		if (can_move(cleanse_vars->temp[cleanse_vars->i], &cleanse_vars->i,
+				&cleanse_vars->in_squote, &cleanse_vars->in_dquote))
+			extend(cleanse_vars);
 	}
-    free(((t_token *)node->content)->token); // Free the old token
-	((t_token *)node->content)->token = new; // Update the token with the new value
+	check_quotes(cleanse_vars, node);
+	free(((t_token *)node->content)->token);
+	free(cleanse_vars);
+	((t_token *)node->content)->token = cleanse_vars->new;
 }
 
-int	can_move(char c, int *i, int *isq, int *idq)
-{
-	if (c == '"' && (*isq) < 0)
-	{
-		(*i)++;
-		(*idq) *= -1;
-		return (0);
-	}
-	if (c == 39 && (*idq) < 0)
-	{
-		(*i)++;
-		(*isq) *= -1;
-		return (0);
-	}
-	return (1);
-}
-
-void expand_n_join(char **temp, char **new, int *i, t_list *head_env) 
+void	expand_n_join(char **temp, char **new, int *i, t_list *head_env)
 {
 	char	*key;
 	char	*value;
@@ -127,23 +85,8 @@ void expand_n_join(char **temp, char **new, int *i, t_list *head_env)
 	key = ft_strdup("");
 	tenv = head_env;
 	value = NULL;
-	while ((*temp)[(*i)] != 0 && ((*temp)[(*i)] != ' ' || (*temp)[(*i)] != '"' || (*temp)[(*i)] != '$'))
-	{
-		if ((*temp)[(*i)] == ' ' || (*temp)[(*i)] == '"' || (*temp)[(*i)] == '$')
-			break;
-		buffer[0] = (*temp)[(*i)];
-		key = lexer_strjoin(key, buffer);
-		(*i)++;
-	}
-	while (tenv != NULL)
-	{
-		if (ft_strncmp(key, ((t_env *)tenv->content)->key, ft_strlen(key)) == 0)
-		{
-			value = ft_strdup(((t_env *)tenv->content)->value);
-			break;
-		}
-		tenv = tenv->next;
-	}
+	expansion_get_key(temp, i, buffer, &key);
+	expansion_get_value(&tenv, &key, &value);
 	if (ft_strncmp(key, "?", 2) == 0)
 		value = ft_itoa(g_ercode);
 	if (value)
@@ -152,76 +95,4 @@ void expand_n_join(char **temp, char **new, int *i, t_list *head_env)
 		free(value);
 	}
 	free(key);
-}
-
-t_token	*get_token(char *line, int *p)
-{
-	t_token	*token;
-	char	join[2];
-	int		quote;
-	int		squote;
-
-	quote = -1;
-	squote = -1;
-	token = malloc(sizeof(t_token));
-	token->token = (char *)malloc(sizeof(char));
-	token->token[0] = '\0';
-	join[1] = '\0';
-	while (line[*p] != ' '|| quote > 0 || squote > 0)
-	{
-		if (!line[*p])
-			break;
-		if (line[*p] == 39 && quote < 0)
-			squote *= -1;
-		if (line[*p] == '"' && squote < 0)
-			quote *= -1;
-		join[0] = line[*p];
-		token->token = lexer_strjoin(token->token, join);
-		(*p) += 1;
-	}
-	if (quote > 0 || squote > 0)
-		token->priority = -1;
-	return (token);
-}
-
-int	check_invalid(t_list *head_tokens, int mute)
-{
-	t_list *node;
-
-	node = head_tokens;
-	while (node != NULL)
-	{
-		if (((t_token *)node->content)->priority == -1)
-		{
-			if (!mute)
-				printf("error: %s\nSyntax error!\n", ((t_token *)node->content)->token);
-			return (1);
-		}
-		node = node->next;
-	}
-	return (0);
-}
-
-void	check_head_tokens(t_list *node, char *line)
-{
-	if (line[0] == '\0')
-		return;
-	if (line[0] == '|')
-		((t_token *)node->content)->priority = -1;
-	if (ft_strncmp(get_tl_str(node), "|", 2) == 0)
-		((t_token *)node->content)->priority = -1;
-	if (ft_strncmp(get_tl_str(node), ">", 2) == 0)
-		((t_token *)node->content)->priority = -1;
-	if (ft_strncmp(get_tl_str(node), "<", 2) == 0)
-		((t_token *)node->content)->priority = -1;
-	if (ft_strncmp(get_tl_str(node), ">>", 3) == 0)
-		((t_token *)node->content)->priority = -1;
-	if (ft_strncmp(get_tl_str(node), "<<", 3) == 0)
-		((t_token *)node->content)->priority = -1;
-	if (ft_strncmp(get_tl_str(node), "&", 2) == 0)
-		((t_token *)node->content)->priority = -1;
-	if (ft_strncmp(get_tl_str(node), "||", 3) == 0)
-		((t_token *)node->content)->priority = -1;
-	if (ft_strncmp(get_tl_str(node), "&&", 3) == 0)
-		((t_token *)node->content)->priority = -1;
 }

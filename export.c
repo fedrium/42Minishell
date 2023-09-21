@@ -6,18 +6,17 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/15 17:32:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/19 13:56:59 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/21 16:06:26 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void export(t_list **head_env, t_list *head_tokens)
+void	export(t_list **head_env, t_list *head_tokens)
 {
-	int printed;
-	char *smallest_key;
+	int		printed;
+	char	*smallest_key;
 
-	// printf("%d\n", ft_lstsize((*head_env)));
 	if (head_tokens->next == NULL)
 	{
 		smallest_key = 0;
@@ -29,16 +28,13 @@ void export(t_list **head_env, t_list *head_tokens)
 		}
 	}
 	else
-	{
 		add_env(head_env, head_tokens);
-		// pr_env(*head_env);
-	}
 }
 
-int export_syntax_check(t_list *node)
+int	export_syntax_check(t_list *node)
 {
-	char *str;
-	int i;
+	char	*str;
+	int		i;
 
 	str = ((t_token *)node->content)->token;
 	i = 0;
@@ -59,95 +55,57 @@ int export_syntax_check(t_list *node)
 	return (1);
 }
 
-void add_to_envlst(t_list **head_env, t_list *node)
+void	free_temp(t_env *temp, t_env *env)
 {
-	char **splitted_args;
-	t_list *node_env;
-	t_list *new_env;
-	t_env *env;
+	free(temp->value);
+	temp->value = ft_strdup(env->value);
+	free(env->key);
+	free(env);
+}
+
+void	add_to_envlst(t_list **head_env, t_list *node, t_env *env)
+{
+	char	**splitted_args;
+	t_list	*node_env;
+	t_list	*new_env;
+	t_env	*temp;
 
 	env = malloc(sizeof(t_env));
 	node_env = *head_env;
 	splitted_args = ft_split(((t_token *)node->content)->token, '=');
-
 	env->key = splitted_args[0];
 	env->value = splitted_args[1];
-
-	// Check if the variable already exists, and if so, update its value
 	while (node_env != NULL)
 	{
-		t_env *temp = (t_env *)node_env->content;
+		temp = (t_env *)node_env->content;
 		if (ft_strncmp(temp->key, env->key, ft_strlen(env->key)) == 0)
 		{
-			free(temp->value);
-			temp->value = ft_strdup(env->value);
-			free(env->key);
-			free(env);
-			return;
+			free_temp(temp, env);
+			return ;
 		}
 		node_env = node_env->next;
 	}
-
-	// If not found, add it to the end of the list
 	new_env = ft_lstnew(env);
 	ft_lstadd_back(head_env, new_env);
 	free(splitted_args);
 }
 
-void add_env(t_list **head_env, t_list *head_tokens)
+void	add_env(t_list **head_env, t_list *head_tokens)
 {
-	t_list *node;
+	t_list	*node;
+	t_env	*env;
 
 	node = head_tokens;
 	if (node->next == NULL)
 	{
 		dprintf(2, "export error!\n");
-		return;
+		return ;
 	}
 	node = node->next;
 	while (node != NULL)
 	{
 		if (export_syntax_check(node))
-			add_to_envlst(head_env, node);
+			add_to_envlst(head_env, node, env);
 		node = node->next;
 	}
-}
-
-char *find_smallest_key(t_list *head, char *smallest_key)
-{
-	t_list *node = head;
-	char *to_be_returned = NULL;
-
-	while (node)
-	{
-		char *current_key = ((t_env *)node->content)->key;
-		if ((!smallest_key || ft_strcmp(current_key, smallest_key) > 0) &&
-			(!to_be_returned || ft_strcmp(current_key, to_be_returned) < 0))
-			to_be_returned = current_key;
-		node = node->next;
-	}
-	return (to_be_returned);
-}
-
-int print_output(t_list *head, char *smallest_key)
-{
-	int printed;
-	int i;
-	t_list *node;
-
-	node = head;
-	printed = 0;
-	i = 0;
-	while (i < ft_lstsize(head))
-	{
-		if (ft_strcmp(((t_env *)node->content)->key, smallest_key) == 0)
-		{
-			printf("declare -x %s=\"%s\"\n", ((t_env *)node->content)->key, ((t_env *)node->content)->value);
-			printed++;
-		}
-		i++;
-		if (node->next != NULL)
-			node = node->next;
-	}
-	return (printed);
 }

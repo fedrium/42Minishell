@@ -1,23 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strcmp.c                                        :+:      :+:    :+:   */
+/*   echo_pwd.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/15 23:11:34 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/22 00:10:27 by yalee            ###   ########.fr       */
+/*   Created: 2023/09/21 15:19:03 by yalee             #+#    #+#             */
+/*   Updated: 2023/09/21 15:41:14 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
-int	ft_strcmp(char *s1, char *s2)
+void	pwd(void)
 {
-	int	i;
+	char	*res;
 
-	i = 0;
-	while (s1[i] == s2[i] && s1[i] != '\0' && s2[i] != '\0')
-		i++;
-	return (s1[i] - s2[i]);
+	res = getcwd(NULL, 1024);
+	printf("%s\n", res);
+	free(res);
+}
+
+void	echo(t_list *line)
+{
+	t_list	*node;
+
+	node = line;
+	node = node->next;
+	if (node != NULL && ft_strncmp(((t_token *)node->content)->token,
+			"-n", 3) == 0)
+		return ;
+	while (node != NULL)
+	{
+		printf("%s ", ((t_token *)node->content)->token);
+		node = node->next;
+	}
+	printf("\n");
 }

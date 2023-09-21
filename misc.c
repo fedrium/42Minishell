@@ -1,79 +1,70 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   misc.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/09/21 16:24:40 by yalee             #+#    #+#             */
+/*   Updated: 2023/09/21 16:26:54 by yalee            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-char    *get_tl_str(t_list *node)
+void	lst_free_one(t_list *node)
 {
-    return(((t_token *)node->content)->token);
+	free(((t_token *)node->content)->token);
+	free(node->content);
+	free(node);
 }
 
-void    lst_free_one(t_list *node)
+void	lst_free_env(t_list *head_env)
 {
-    free(((t_token *)node->content)->token);
-    free(node->content);
-    free(node);
+	t_list	*temp_env;
+	char	*key;
+	char	*value;
+
+	while (head_env != NULL)
+	{
+		temp_env = head_env;
+		head_env = head_env->next;
+		free(((t_env *)temp_env->content)->key);
+		free(((t_env *)temp_env->content)->value);
+		free(temp_env->content);
+		free(temp_env);
+	}
 }
 
-void lst_free_env(t_list *head_env)
+void	free_2dar(char **ar_2d)
 {
-    t_list *temp_env;
-    char    *key;
-    char    *value;
+	int	i;
 
-    while (head_env != NULL)
-    {
-        temp_env = head_env;
-        head_env = head_env->next;
-        free(((t_env *)temp_env->content)->key);
-        free(((t_env *)temp_env->content)->value);
-        free(temp_env->content);
-        free(temp_env);
-    }
+	i = 0;
+	while (ar_2d[i])
+	{
+		free(ar_2d[i]);
+		i++;
+	}
+	free(ar_2d);
 }
 
-void    free_2dar(char **ar_2d)
+void	lst_free_all(t_list *head)
 {
-    int i;
+	t_list	*temp;
 
-    i = 0;
-    while (ar_2d[i])
-    {
-        free(ar_2d[i]);
-        i++;
-    }
-    free(ar_2d);
+	while (head != NULL)
+	{
+		temp = head;
+		head = head->next;
+		lst_free_one(temp);
+	}
 }
 
-void    lst_free_all(t_list *head)
+char	is_special(t_list *node)
 {
-    t_list  *temp;
-    
-    while (head != NULL)
-    {
-        temp = head;
-        head = head->next;
-        lst_free_one(temp);
-    }
+	if (ft_strncmp(((t_token *)node->content)->token, "|", 2) == 0)
+		return ('|');
+	else
+		return (0);
 }
-
-int is_last_arg(t_list *head_tokens)
-{
-    t_list *p;
-
-    p = head_tokens;
-    while (p != NULL)
-    {
-        printf("%s\n", ((t_token *)p->content)->token);
-        if (ft_strncmp(((t_token *)p->content)->token, "|", 1) == 0 && p->next != NULL)
-            return (0);
-        p = p->next;
-    }
-    return (1);
-}
-
-char    is_special(t_list *node)
-{
-    if (ft_strncmp(((t_token *)node->content)->token, "|", 2) == 0)
-        return ('|');
-    else
-        return (0);
-}
-

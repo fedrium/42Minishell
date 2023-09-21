@@ -66,6 +66,20 @@ SRCS        := env.c \
 			   misc.c \
 			   pipping.c \
 			   redir.c \
+			   cd.c \
+			   echo_pwd.c \
+			   execve_nopp.c \
+			   execve_tools.c \
+			   export_tools.c \
+			   heredoc.c \
+			   lexer_tools.c \
+			   lexer_tools2.c \
+			   lexer_tools3.c \
+			   piping_nopp.c \
+			   piping_tools.c \
+			   redir_tools.c \
+			   unset.c \
+			   
 
 OBJS        := $(SRCS:.c=.o)
 

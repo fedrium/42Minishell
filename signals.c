@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/15 12:39:15 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/19 15:44:43 by cyu-xian         ###   ########.fr       */
+/*   Updated: 2023/09/21 16:37:00 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,17 @@ void	sig(t_list *head_tokens, t_list *head_env)
 	signal(SIGQUIT, SIG_IGN);
 }
 
-void	setatt()
+void	setatt(void)
 {
-	struct termios att;
+	struct termios	att;
 
 	tcgetattr(STDIN_FILENO, &att);
-    att.c_lflag &= ~ ECHOCTL;
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &att);
+	att.c_lflag &= ~ECHOCTL;
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, &att);
+}
+
+void	signulll_exit(t_main_vars *main_vars)
+{
+	printf("Minishell$ exit\n");
+	exit_func(main_vars->head_tokens, main_vars->head_env, main_vars);
 }

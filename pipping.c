@@ -1,75 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipping.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/09/21 15:31:49 by yalee             #+#    #+#             */
+/*   Updated: 2023/09/21 17:17:32 by yalee            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-void run_functions_nopp(t_list *head_tokens, t_list **head_env, t_main_vars *main_vars)
+t_cp	*make_cp(t_list *head_tokens, int *out, int *in)
 {
-	int size;
-
-	size = ft_lstsize(head_tokens);
-	if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 5) == 0)
-		echo(head_tokens);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "cd", 3) == 0)
-		cd(*head_env, head_tokens, size);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "pwd", 4) == 0)
-		pwd();
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "env", 4) == 0)
-		pr_env(*head_env);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "export", 7) == 0)
-		export(head_env, head_tokens);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "error", 6) == 0)
-		printf("error code: %d\n", g_ercode);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "exit", 5) == 0)
-		exit_func(head_tokens, *head_env, main_vars);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "test", 5) == 0)
-	{
-		t_list *node;
-		node = head_tokens;
-		printf("tout: %s\n", ((t_token *)node->content)->token);
-		while (node->next != NULL)
-		{
-			printf("tout: %s\n", ((t_token *)node->next->content)->token);
-			if (node->next != NULL)
-				node = node->next;
-		}
-	}
-	else
-		get_file_nopp(head_tokens, *head_env);
-}
-
-void print_args(t_list *head_tokens)
-{
-	t_list *node;
-	node = head_tokens;
-	dprintf(2, "tout: %s\n", ((t_token *)node->content)->token);
-	while (node->next != NULL)
-	{
-		dprintf(2, "tout: %s\n", ((t_token *)node->next->content)->token);
-		if (node->next != NULL)
-			node = node->next;
-	}
-}
-
-void print_cp(t_cp *head_cp)
-{
-	t_cp *node;
-	int i;
-
-	i = 1;
-	node = head_cp;
-	while (node != NULL)
-	{
-		printf("node: %d\n", i);
-		print_args(node->tokens);
-		i++;
-		node = node->next;
-	}
-}
-
-t_cp *make_cp(t_list *head_tokens, int *out, int *in)
-{
-	t_cp *cp_head = NULL;
-	t_cp *cp_node = NULL;
-	int ori_stdout;
-	int ori_stdin;
+	t_cp	*cp_head;
+	t_cp	*cp_node;
+	int		ori_stdout;
+	int		ori_stdin;
 
 	cp_head = malloc(sizeof(t_cp));
 	cp_head->next = NULL;
@@ -89,147 +37,93 @@ t_cp *make_cp(t_list *head_tokens, int *out, int *in)
 	return (cp_head);
 }
 
-int	get_cp_size(t_cp *cp)
+t_piping_vars	*init_pipes(t_list *head_tokens)
 {
-	int i;
+	t_piping_vars	*piping_vars;
 
-	i = 0;
-	while(cp != NULL)
-	{
-		cp = cp->next;
-		i++;
-	}
-	return (i);
+	piping_vars = malloc(sizeof(t_piping_vars));
+	piping_vars->num_processes = 0;
+	piping_vars->child_processes = make_cp(head_tokens,
+			&piping_vars->ori_stdout, &piping_vars->ori_stdin);
+	piping_vars->cp_head = piping_vars->child_processes;
+	piping_vars->pid = 1;
+	return (piping_vars);
 }
 
-void organise_args(t_list *head_tokens, t_list **head_env, t_main_vars *main_vars)
+void	start_cp(t_piping_vars **piping_vars, t_list **head_env,
+	t_main_vars *main_vars)
 {
-	t_cp *child_processes;
-	t_cp *cp_head;
-	pid_t pid;
-	int ori_stdout;
-	int ori_stdin;
-	int num_processes;
+	if ((*piping_vars)->num_processes)
+	{
+		dup2((*piping_vars)->child_processes->pipe[0], STDIN_FILENO);
+		close((*piping_vars)->child_processes->pipe[0]);
+	}
+	if ((*piping_vars)->child_processes->next != NULL)
+	{
+		close((*piping_vars)->child_processes->next->pipe[0]);
+		dup2((*piping_vars)->child_processes->next->pipe[1], STDOUT_FILENO);
+		close((*piping_vars)->child_processes->next->pipe[1]);
+	}
+	dprintf(1, "here\n");
+	run_functions_nopp((*piping_vars)->child_processes->tokens,
+		head_env, main_vars);
+	exit(0);
+}
 
-	num_processes = 0; // Count the number of child processes
-	child_processes = make_cp(head_tokens, &ori_stdout, &ori_stdin);
-	cp_head = child_processes;
-	pid = 1;
-	if (child_processes->next == NULL)
+void	organise_args(t_list *head_tokens, t_list **head_env,
+	t_main_vars *main_vars)
+{
+	t_piping_vars	*piping_vars;
+
+	piping_vars = init_pipes(head_tokens);
+	if (piping_vars->child_processes->next == NULL)
 	{
 		run_functions(head_tokens, head_env, main_vars);
-		child_processes = child_processes->next;
+		piping_vars->child_processes = piping_vars->child_processes->next;
 	}
-	while (child_processes != NULL)
+	while (piping_vars->child_processes != NULL)
 	{
-		num_processes++; // Increment the number of child processes
-		if (child_processes->next)
-			pipe(child_processes->next->pipe);
-		pid = fork();
-		if (pid == 0)
-		{
-			if (num_processes)
-			{
-				dup2(child_processes->pipe[0], STDIN_FILENO);
-				close(child_processes->pipe[0]); // Close read end of its own pipe
-			}
-			if (child_processes->next != NULL)
-			{
-				close(child_processes->next->pipe[0]);
-				dup2(child_processes->next->pipe[1], STDOUT_FILENO);
-				close(child_processes->next->pipe[1]); // Close write end of the next pipe
-			}
-			run_functions_nopp(child_processes->tokens, head_env, main_vars);
-
-			exit(0);
-		}
+		piping_vars->num_processes++;
+		if (piping_vars->child_processes->next)
+			pipe(piping_vars->child_processes->next->pipe);
+		piping_vars->pid = fork();
+		if (piping_vars->pid == 0)
+			start_cp(&piping_vars, head_env, main_vars);
 		else
-		{
-			if (num_processes)
-				close(child_processes->pipe[0]);
-
-			if (child_processes->next != NULL)
-				close(child_processes->next->pipe[1]);
-
-			child_processes = child_processes->next;
-		}
+			iterate_list(&piping_vars);
 	}
-	// Wait for all child processes to exit
-	while (num_processes > 0)
-	{
-		waitpid(0, &g_ercode, 0);
-		g_ercode = g_ercode % 255;
-		num_processes--;
-	}
-	free_cp(cp_head);
+	while (piping_vars->num_processes > 0)
+		wait_cp(piping_vars);
+	printf("fd restored\n");
+	free_cp(piping_vars->cp_head);
+	free(piping_vars);
 }
 
-void	free_cp(t_cp *head)
+void	run_functions(t_list *head_tokens, t_list **head_env,
+	t_main_vars *main_vars)
 {
-	t_cp	*temp_cp;
-
-	while (head != NULL)
-	{
-		// printf("free1\n");
-		temp_cp = head;
-		head = head->next;
-		lst_free_all(temp_cp->tokens);
-		free(temp_cp);
-	}
-}
-// return head of the start of the command, point last argument to NULL instead of pipe
-void split_args(t_list **segment, t_list **head_tokens)
-{
-	t_list *temp; // for swaping head
-
-	// (*segment) = malloc(sizeof(t_list));
-	*segment = *head_tokens;
-	while ((*head_tokens)->next != NULL && is_special((*head_tokens)->next) != '|')
-		(*head_tokens) = (*head_tokens)->next;
-	if ((*head_tokens)->next != NULL && (*head_tokens)->next->next != NULL)
-	{
-		temp = (*head_tokens)->next->next;
-		lst_free_one((*head_tokens)->next);
-		(*head_tokens)->next = NULL;
-		(*head_tokens) = temp;
-		return;
-	}
-	(*head_tokens) = (*head_tokens)->next;
-}
-
-void run_functions(t_list *head_tokens, t_list **head_env, t_main_vars *main_vars)
-{
-	int size;
+	int	size;
 
 	size = ft_lstsize(head_tokens);
 	if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 5) == 0)
 		echo(head_tokens);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "unset", 6) == 0)
+	else if (ft_strncmp(((t_token *)head_tokens->content)->token,
+			"unset", 6) == 0)
 		unset(head_env, head_tokens, size);
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "cd", 3) == 0)
 		cd(*head_env, head_tokens, size);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "pwd", 4) == 0)
+	else if (ft_strncmp(((t_token *)head_tokens->content)->token,
+			"pwd", 4) == 0)
 		pwd();
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "env", 4) == 0)
+	else if (ft_strncmp(((t_token *)head_tokens->content)->token,
+			"env", 4) == 0)
 		pr_env(*head_env);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "export", 7) == 0)
+	else if (ft_strncmp(((t_token *)head_tokens->content)->token,
+			"export", 7) == 0)
 		export(head_env, head_tokens);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "error", 6) == 0)
-		printf("error code: %d\n", g_ercode);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "exit", 5) == 0)
+	else if (ft_strncmp(((t_token *)head_tokens->content)->token,
+			"exit", 5) == 0)
 		exit_func(head_tokens, *head_env, main_vars);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "test", 5) == 0)
-	{
-		t_list *node;
-		node = head_tokens;
-		printf("tout: %s\n", ((t_token *)node->content)->token);
-		while (node->next != NULL)
-		{
-			printf("tout: %s\n", ((t_token *)node->next->content)->token);
-			if (node->next != NULL)
-				node = node->next;
-		}
-	}
 	else
 		get_file(head_tokens, *head_env);
 }

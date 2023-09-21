@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:19:59 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 17:30:55 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/21 17:45:30 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,9 @@ int	get_file_abs_path_nopp(t_execve_vars *execve_vars, t_list *env)
 
 int	get_file_normal_nopp(t_execve_vars *execve_vars, t_list *env)
 {
-	printf("in\n");
 	execve_vars->cur_file = readdir(execve_vars->cur_dir);
-	// execve_vars->cur_dir = opendir(execve_vars->path[execve_vars->i]);
-	while ((execve_vars->cur_file = readdir(execve_vars->cur_dir)))
+	execve_vars->cur_dir = opendir(execve_vars->path[execve_vars->i]);
+	while (execve_vars->cur_file)
 	{
 		execve_vars->exec_cmd = strjoin_helper(
 				execve_vars->path[execve_vars->i], execve_vars->cmd_arr[0]);
@@ -46,8 +45,8 @@ int	get_file_normal_nopp(t_execve_vars *execve_vars, t_list *env)
 			free_getfile_norm(execve_vars);
 			return (1);
 		}
-		// execve_vars->cur_file = readdir(execve_vars->cur_dir);
 		free(execve_vars->exec_cmd);
+		execve_vars->cur_file = readdir(execve_vars->cur_dir);
 	}
 	closedir(execve_vars->cur_dir);
 	return (0);

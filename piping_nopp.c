@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:34:32 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 17:12:55 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/21 18:12:59 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,6 @@ void	print_tokens(t_list *head_tokens)
 void	run_functions_nopp(t_list *head_tokens, t_list **head_env,
 	t_main_vars *main_vars)
 {
-	dprintf(2, "run function nopp\n");
-	print_tokens(head_tokens);
 	int	size;
 
 	size = ft_lstsize(head_tokens);
@@ -47,7 +45,6 @@ void	run_functions_nopp(t_list *head_tokens, t_list **head_env,
 		exit_func(head_tokens, *head_env, main_vars);
 	else
 	{
-		dprintf(2, "entering exe\n");
 		get_file_nopp(head_tokens, *head_env);
 	}
 }

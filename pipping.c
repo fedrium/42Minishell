@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:31:49 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 17:17:32 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/21 18:11:25 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,6 @@ void	start_cp(t_piping_vars **piping_vars, t_list **head_env,
 		dup2((*piping_vars)->child_processes->next->pipe[1], STDOUT_FILENO);
 		close((*piping_vars)->child_processes->next->pipe[1]);
 	}
-	dprintf(1, "here\n");
 	run_functions_nopp((*piping_vars)->child_processes->tokens,
 		head_env, main_vars);
 	exit(0);
@@ -94,7 +93,6 @@ void	organise_args(t_list *head_tokens, t_list **head_env,
 	}
 	while (piping_vars->num_processes > 0)
 		wait_cp(piping_vars);
-	printf("fd restored\n");
 	free_cp(piping_vars->cp_head);
 	free(piping_vars);
 }

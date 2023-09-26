@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:26:29 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 16:08:51 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/26 16:42:33 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,20 +30,6 @@ char	*lexer_strjoin(char *str1, char *str2)
 	free(temp1);
 	free(temp2);
 	return (new);
-}
-
-void	expansion_get_key(char **temp, int *i, char buffer[2], char **key)
-{
-	while ((*temp)[(*i)] != 0 && ((*temp)[(*i)] != ' ' || (*temp)[(*i)] != '"'
-		|| (*temp)[(*i)] != '$'))
-	{
-		if ((*temp)[(*i)] == ' ' || (*temp)[(*i)] == '"'
-			|| (*temp)[(*i)] == '$')
-			break ;
-		buffer[0] = (*temp)[(*i)];
-		(*key) = lexer_strjoin((*key), buffer);
-		(*i)++;
-	}
 }
 
 void	expansion_get_value(t_list **tenv, char **key, char **value)

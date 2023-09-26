@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:30:01 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/25 18:20:15 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/26 17:06:50 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ t_cleanse_vars	*init_cleanse(t_list *node)
 	return (cleanse_vars);
 }
 
-t_token	*get_token(char *line, int *p)
+t_token	*get_token(char *line, int *p, t_env *env)
 {
 	t_token	*token;
 	char	join[2];
@@ -52,6 +52,8 @@ t_token	*get_token(char *line, int *p)
 			squote *= -1;
 		if (line[*p] == '"' && squote < 0)
 			quote *= -1;
+		if (line[*p] == '$' && squote < 0)
+			expand_n_join(&line, p, quote);
 		join[0] = line[*p];
 		token->token = lexer_strjoin(token->token, join);
 		(*p) += 1;

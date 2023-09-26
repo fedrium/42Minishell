@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 16:19:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 23:42:43 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/25 19:15:25 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,9 +198,11 @@ int				redir_rep(t_list *head, t_list *start, int fd);
 int				redir_in(t_list *head, t_list *start, int fd);
 void			heredoc(char *delimeter);
 int				redir_heredoc(t_list *head, t_list *start, int fd);
+void 			cntl_c(int num);
+void 			cheese(void);
 
 // memory cleaning
-void			free_unset(t_list *temp_env);
+void 			free_unset(t_list *temp_env);
 void			free_getfile_norm(t_execve_vars *execve_vars);
 void			redir_rm(t_list **head, t_list *to_del);
 void			lst_free_env(t_list *head_env);

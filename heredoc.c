@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:35:36 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 16:07:17 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/25 19:29:53 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,16 @@ void	heredoc(char *delimeter)
 	char	*line;
 
 	fd = open(".temp", O_WRONLY | O_CREAT | O_TRUNC, 0777);
+	signal(SIGINT, cntl_c);
+	signal(SIGQUIT, SIG_IGN);
 	while (1)
 	{
 		line = readline("heredoc>");
-		if (line == NULL)
+		if (line == NULL || line[0] == '\0')
+		{
+			printf("here\n");
 			return ;
+		}
 		if (ft_strncmp(line, delimeter, ft_strlen(delimeter) + 1) == 0)
 		{
 			close(fd);
@@ -53,4 +58,6 @@ void	heredoc(char *delimeter)
 		write(fd, "\n", 1);
 		free(line);
 	}
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 }

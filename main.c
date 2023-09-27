@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 00:37:49 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 23:34:58 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/27 18:15:46 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,6 @@ void	exit_func(t_list *head_tokens, t_list *head_env, t_main_vars *main_vars)
 {
 	lst_free_env(head_env);
 	free(main_vars);
-	system("leaks minishell");
+	// system("leaks minishell");
 	exit(0);
 }

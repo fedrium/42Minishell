@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 10:23:52 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/26 22:34:45 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/27 15:13:19 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ t_list	*tokenize(char *line, t_list *head_env)
 	if (!line[0])
 		return (ft_lstnew("\0"));
 	p = 0;
-	head = ft_lstnew((void *)get_token(line, &p));
+	head = ft_lstnew((void *)get_token(line, &p, head_env));
 	if (!check_invalid(head, 1))
 		cleanse(head, head_env);
 	while (line[p] == ' ')
@@ -31,7 +31,7 @@ t_list	*tokenize(char *line, t_list *head_env)
 	{
 		while (line[p] == ' ')
 			p++;
-		node->next = ft_lstnew((void *)get_token(line, &p));
+		node->next = ft_lstnew((void *)get_token(line, &p, head_env));
 		if (!check_invalid(node, 1))
 			cleanse(node->next, head_env);
 		while (line[p] == ' ')
@@ -131,23 +131,21 @@ void	copy_after_meta(char **line, int *p, char *value)
 	free(*line);
 	while(temp[i] != '$')
 		i++;
-	i++;
 	*line = malloc(sizeof(char) * (ft_strlen(temp) + ft_strlen(value) + 1));
-	while(temp[i])
+	while(temp[j])
 	{
-		(*line)[j] = temp[i];
-		i++;
+		(*line)[j] = temp[j];
 		j++;
 	}
-	i = 0;
-	while(value[i])
+	j = 0;
+	while(value[j])
 	{
-		(*line)[j] = value[i];
+		(*line)[i] = value[j];
 		i++;
 		j++;
 	}
 	(*line)[j] = '\0';
-	*p = j;
+	*p = i;
 }
 
 void	expand_n_join(char **line, int *p, int quote, t_list *env)
@@ -156,7 +154,7 @@ void	expand_n_join(char **line, int *p, int quote, t_list *env)
 	char	*key;
 	char	*value;
 
-	key = exp_get_key(*line, p, quote);
+	key = exp_get_key(*line, *p, quote);
 	value = exp_get_value(key, env);
 	copy_b4_meta(line, p);
 	copy_after_meta(line, p, value);

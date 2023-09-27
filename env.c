@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 10:24:54 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 15:43:06 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/27 18:18:31 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,9 @@ void	pr_env(t_list *head)
 {
 	t_env	*temp;
 
-	temp = (t_env *)head->content;
 	while (head != NULL)
 	{
+		temp = (t_env *)head->content;
 		printf("%s=%s\n", temp->key, temp->value);
 		head = head->next;
 	}

@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 10:23:52 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/27 15:13:19 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/27 21:35:44 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,26 +16,31 @@ t_list	*tokenize(char *line, t_list *head_env)
 {
 	t_list	*head;
 	t_list	*node;
+	char	*line2;
 	int		p;
 
 	if (!line[0])
 		return (ft_lstnew("\0"));
 	p = 0;
-	head = ft_lstnew((void *)get_token(line, &p, head_env));
+	line2 = ft_strdup(line);
+	head = ft_lstnew((void *)get_token(&line2, &p, head_env));
 	if (!check_invalid(head, 1))
 		cleanse(head, head_env);
-	while (line[p] == ' ')
+	// printf("token: %s\n", ((t_token *)head->content)->token);
+	// printf("line after get_token: %s\n", line2);
+	while (line2[p] == ' ')
 		p++;
 	node = head;
-	while (line[p])
+	while (line2[p])
 	{
-		while (line[p] == ' ')
+		while (line2[p] == ' ')
 			p++;
-		node->next = ft_lstnew((void *)get_token(line, &p, head_env));
+		node->next = ft_lstnew((void *)get_token(&line2, &p, head_env));
 		if (!check_invalid(node, 1))
 			cleanse(node->next, head_env);
-		while (line[p] == ' ')
+		while (line2[p] == ' ')
 			p++;
+		// printf("token: %s\n", ((t_token *)node->next->content)->token);
 		node = node->next;
 	}
 	return (head);
@@ -127,25 +132,24 @@ void	copy_after_meta(char **line, int *p, char *value)
 
 	i = 0;
 	j = 0;
-	temp = ft_strdup(*line);
-	free(*line);
-	while(temp[i] != '$')
-		i++;
+	temp = ft_strdup((*line));
+	free((*line));
 	*line = malloc(sizeof(char) * (ft_strlen(temp) + ft_strlen(value) + 1));
-	while(temp[j])
+	while(temp[i])
 	{
-		(*line)[j] = temp[j];
-		j++;
+		(*line)[i] = temp[i];
+		i++;
 	}
-	j = 0;
-	while(value[j])
+	(*line)[i] = 0;
+	while (value[j])
 	{
 		(*line)[i] = value[j];
 		i++;
 		j++;
 	}
-	(*line)[j] = '\0';
-	*p = i;
+	(*line)[i] = 0;
+	// printf("P: %d\n", *p);
+	// (*p) = (*p) + j;
 }
 
 void	expand_n_join(char **line, int *p, int quote, t_list *env)
@@ -156,6 +160,8 @@ void	expand_n_join(char **line, int *p, int quote, t_list *env)
 
 	key = exp_get_key(*line, *p, quote);
 	value = exp_get_value(key, env);
+	if (!value)
+		return ;
 	copy_b4_meta(line, p);
 	copy_after_meta(line, p, value);
 }

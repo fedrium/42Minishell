@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:30:01 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/27 13:33:54 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/27 21:35:51 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,25 +36,27 @@ t_cleanse_vars	*init_cleanse(t_list *node)
 	return (cleanse_vars);
 }
 
-t_token	*get_token(char *line, int *p, t_list *env)
+t_token	*get_token(char **line, int *p, t_list *env)
 {
 	t_token	*token;
 	char	join[2];
 	int		quote;
 	int		squote;
+	int i = 0;
 
 	init_get_token(&quote, &squote, &token, &join);
-	while (line[*p] != ' ' || quote > 0 || squote > 0)
+	while ((*line)[*p] != ' ' || quote > 0 || squote > 0)
 	{
-		if (!line[*p])
+		if (!(*line)[*p])
 			break ;
-		if (line[*p] == 39 && quote < 0)
+		if ((*line)[*p] == 39 && quote < 0)
 			squote *= -1;
-		if (line[*p] == '"' && squote < 0)
+		if ((*line)[*p] == '"' && squote < 0)
 			quote *= -1;
-		if (line[*p] == '$' && squote < 0)
-			expand_n_join(&line, p, quote, env);
-		join[0] = line[*p];
+		if ((*line)[*p] == '$' && squote < 0)
+			expand_n_join(&(*line), p, quote, env);
+		// printf("(*line) in get_token: %s\n", (*line));
+		join[0] = (*line)[*p];
 		token->token = lexer_strjoin(token->token, join);
 		(*p) += 1;
 	}

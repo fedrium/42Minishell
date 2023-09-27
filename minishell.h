@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 16:19:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/27 13:30:35 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/27 21:33:38 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ void			init_get_token(int *quote, int *squote,
 					t_token **token, char (*join)[2]);
 t_cleanse_vars	*init_cleanse(t_list *node);
 t_list			*tokenize(char *line, t_list *head_env);
-t_token			*get_token(char *line, int *p, t_list *env);
+t_token			*get_token(char **line, int *p, t_list *env);
 void			cleanse(t_list *node, t_list *head_env);
 char			*lexer_strjoin(char *str1, char *str2);
 void expand_n_join(char **line, int *p, int quote, t_list *env);
@@ -200,7 +200,7 @@ int				redir_heredoc(t_list *head, t_list *start, int fd);
 void 			cntl_c(int num);
 void 			cheese(void);
 
-// memory cleaning
+// garbage collectors
 void 			free_unset(t_list *temp_env);
 void			free_getfile_norm(t_execve_vars *execve_vars);
 void			redir_rm(t_list **head, t_list *to_del);

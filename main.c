@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
+/*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 00:37:49 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/27 18:15:46 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/28 17:20:03 by cyu-xian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,11 +50,11 @@ void	executor(t_main_vars *main_vars)
 		if (main_vars->line && (*main_vars->line))
 			add_history(main_vars->line);
 		redir_check(main_vars->head_tokens);
-		organise_args(main_vars->head_tokens, &(main_vars->head_env),
-			main_vars);
 		unlink(".temp");
 		dup2(main_vars->out, 1);
 		dup2(main_vars->in, 0);
+		organise_args(main_vars->head_tokens, &(main_vars->head_env),
+			main_vars);
 	}
 }
 
@@ -62,6 +62,6 @@ void	exit_func(t_list *head_tokens, t_list *head_env, t_main_vars *main_vars)
 {
 	lst_free_env(head_env);
 	free(main_vars);
-	// system("leaks minishell");
+	system("leaks minishell");
 	exit(0);
 }

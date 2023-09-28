@@ -6,7 +6,7 @@
 /*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:30:01 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 16:56:33 by cyu-xian         ###   ########.fr       */
+/*   Updated: 2023/09/28 17:25:04 by cyu-xian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ void	copy_after_meta(char **line, int *p, char *value)
 		i++;
 		j++;
 	}
+	free (temp);
 	(*line)[i] = 0;
 }
 
@@ -101,4 +102,6 @@ void	expand_n_join(char **line, int *p, int quote, t_list *env)
 	value = exp_get_value(key, env);
 	copy_b4_meta(line, p);
 	copy_after_meta(line, p, value);
+	free (key);
+	free (value);
 }

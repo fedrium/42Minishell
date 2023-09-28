@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
+/*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 10:23:52 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 16:39:18 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/28 17:24:22 by cyu-xian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ t_list	*tokenize(char *line, t_list *head_env)
 			p++;
 		node = node->next;
 	}
+	free (line2);
 	rm_quote(head, head_env);
 	return (head);
 }
@@ -97,4 +98,5 @@ void	copy_b4_meta(char **line, int *p)
 		i++;
 	}
 	(*line)[i] = '\0';
+	free (temp);
 }

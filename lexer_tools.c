@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer_tools.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
+/*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:26:29 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 16:37:54 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/28 16:49:48 by cyu-xian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,8 @@ char	*exp_get_value(char *key, t_list *env)
 	t_list	*head_env;
 
 	head_env = env;
+	if (ft_strncmp(key, "?", 2) == 0)
+		return (ft_itoa(g_ercode));
 	while (head_env != NULL)
 	{
 		if (ft_strncmp(key, ((t_env *)head_env->content)->key,

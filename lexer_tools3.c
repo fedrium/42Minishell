@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer_tools3.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
+/*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:30:01 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 16:15:48 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/28 16:56:33 by cyu-xian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,8 @@ void	copy_after_meta(char **line, int *p, char *value)
 
 	i = 0;
 	j = 0;
+	if (!value)
+		return ;
 	temp = ft_strdup((*line));
 	free((*line));
 	*line = malloc(sizeof(char) * (ft_strlen(temp) + ft_strlen(value) + 1));
@@ -97,8 +99,6 @@ void	expand_n_join(char **line, int *p, int quote, t_list *env)
 
 	key = exp_get_key(*line, *p, quote);
 	value = exp_get_value(key, env);
-	if (!value)
-		return ;
 	copy_b4_meta(line, p);
 	copy_after_meta(line, p, value);
 }

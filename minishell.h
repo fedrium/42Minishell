@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
+/*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 16:19:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 16:15:01 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/28 16:44:40 by cyu-xian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,7 @@ char			is_special(t_list *node);
 int				can_move(char c, int *i, int *isq, int *idq);
 char			*get_tl_str(t_list *node);
 void			copy_after_meta(char **line, int *p, char *value);
+void			copy_b4_meta(char **line, int *p);
 
 // pwd
 void			pwd(void);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 16:19:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 18:43:38 by cyu-xian         ###   ########.fr       */
+/*   Updated: 2023/09/28 21:57:23 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,5 +210,6 @@ void			lst_free_one(t_list *node);
 void			lst_free_all(t_list *head);
 void			free_2dar(char **ar_2d);
 void			free_cp(t_cp *head);
+void			free_execve(t_execve_vars *execve_vars);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:19:59 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/22 00:03:46 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/28 22:11:25 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,8 @@ void	get_file_nopp(t_list *head_tokens, t_list *env)
 	t_execve_vars	*execve_vars;
 
 	execve_vars = init_get_file(head_tokens, env);
+	if (execve_vars == NULL)
+		return ;
 	while (execve_vars->path[execve_vars->i] != NULL)
 	{
 		if (execve_vars->cmd_arr[0][0] == '/')
@@ -73,9 +75,7 @@ void	get_file_nopp(t_list *head_tokens, t_list *env)
 	}
 	printf("command not found\n");
 	g_ercode = 127;
-	free_2dar(execve_vars->cmd_arr);
-	free_2dar(execve_vars->path);
-	free(execve_vars);
+	free_execve(execve_vars);
 }
 
 char	**convert_list(t_list *head_tokens)
@@ -97,4 +97,13 @@ char	**convert_list(t_list *head_tokens)
 		node = node->next;
 	}
 	return (cmd_arr);
+}
+
+void	free_execve(t_execve_vars *execve_vars)
+{
+	if (execve_vars->cmd_arr)
+		free_2dar(execve_vars->cmd_arr);
+	if (execve_vars->path)
+		free_2dar(execve_vars->path);
+	free(execve_vars);
 }

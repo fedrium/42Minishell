@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execve.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 13:34:12 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 19:51:30 by cyu-xian         ###   ########.fr       */
+/*   Updated: 2023/09/28 22:14:37 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,13 @@ t_execve_vars	*init_get_file(t_list *head_tokens, t_list *env)
 	execve_vars->pid = 1;
 	execve_vars->path = path_format(env);
 	execve_vars->cmd_arr = convert_list(head_tokens);
+	if (execve_vars->path == NULL)
+	{
+		printf("Minishell: %s: No such file or directory\n",
+			((t_token *)head_tokens->content)->token);
+		free_execve(execve_vars);
+		return (NULL);
+	}
 	return (execve_vars);
 }
 
@@ -85,11 +92,8 @@ void	get_file(t_list *head_tokens, t_list *env)
 	t_execve_vars	*execve_vars;
 
 	execve_vars = init_get_file(head_tokens, env);
-	if (execve_vars->path == NULL)
-	{
-		printf("Minishell: %s: No such file or directory\n", ((t_token *)head_tokens->content)->token);
+	if (execve_vars == NULL)
 		return ;
-	}
 	while (execve_vars->path[execve_vars->i] != NULL)
 	{
 		if (execve_vars->cmd_arr[0][0] == '/')
@@ -106,7 +110,5 @@ void	get_file(t_list *head_tokens, t_list *env)
 	}
 	printf("command not found\n");
 	g_ercode = 127;
-	free_2dar(execve_vars->cmd_arr);
-	free_2dar(execve_vars->path);
-	free(execve_vars);
+	free_execve(execve_vars);
 }

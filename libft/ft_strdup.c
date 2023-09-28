@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 11:20:08 by cyu-xian          #+#    #+#             */
-/*   Updated: 2023/09/26 16:17:34 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/28 16:06:17 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ char	*ft_strdup(const char *src)
 
 	i = 0;
 	len = ft_strlen(src);
-	if ((ptr = (char*)malloc(sizeof(char) * (len + 1))) == NULL)
+	ptr = malloc(sizeof(char) * (len + 1));
+	if (ptr == NULL)
 		return (NULL);
 	while (i < len)
 	{

@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/15 17:32:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/26 16:14:54 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/28 16:41:30 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,6 @@ void	add_env(t_list **head_env, t_list *head_tokens)
 	node = node->next;
 	while (node != NULL)
 	{
-		// if (export_syntax_check(node))
 		add_to_envlst(head_env, node, env);
 		node = node->next;
 	}

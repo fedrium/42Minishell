@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:35:36 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/25 19:29:53 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/28 16:42:33 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,13 @@ int	redir_heredoc(t_list *head, t_list *start, int fd)
 	return (fd);
 }
 
+void	put_line(int fd, char *line)
+{
+	write(fd, line, ft_strlen(line));
+	write(fd, "\n", 1);
+	free(line);
+}
+
 void	heredoc(char *delimeter)
 {
 	int		fd;
@@ -54,9 +61,7 @@ void	heredoc(char *delimeter)
 			free(line);
 			break ;
 		}
-		write(fd, line, ft_strlen(line));
-		write(fd, "\n", 1);
-		free(line);
+		put_line(fd, line);
 	}
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);

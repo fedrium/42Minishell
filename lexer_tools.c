@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:26:29 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/26 16:42:33 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/28 16:37:54 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,36 @@ void	expansion_get_value(t_list **tenv, char **key, char **value)
 		}
 		(*tenv) = (*tenv)->next;
 	}
+}
+
+char	*exp_get_key(char *line, int p, int quote)
+{
+	char	*key;
+	char	buffer[2];
+
+	p++;
+	buffer[1] = '\0';
+	key = ft_strdup("");
+	while (line[p] != '$' && (line[p] != ' ' && quote < 0) && line[p])
+	{
+		buffer[0] = line[p];
+		key = lexer_strjoin(key, buffer);
+		(p)++;
+	}
+	return (key);
+}
+
+char	*exp_get_value(char *key, t_list *env)
+{
+	t_list	*head_env;
+
+	head_env = env;
+	while (head_env != NULL)
+	{
+		if (ft_strncmp(key, ((t_env *)head_env->content)->key,
+				ft_strlen(key) + 1) == 0)
+			return (ft_strdup(((t_env *)head_env->content)->value));
+		head_env = head_env->next;
+	}
+	return (NULL);
 }

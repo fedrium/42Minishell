@@ -6,7 +6,7 @@
 /*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 13:34:12 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 17:19:14 by cyu-xian         ###   ########.fr       */
+/*   Updated: 2023/09/28 19:51:30 by cyu-xian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,11 @@ void	get_file(t_list *head_tokens, t_list *env)
 	t_execve_vars	*execve_vars;
 
 	execve_vars = init_get_file(head_tokens, env);
+	if (execve_vars->path == NULL)
+	{
+		printf("Minishell: %s: No such file or directory\n", ((t_token *)head_tokens->content)->token);
+		return ;
+	}
 	while (execve_vars->path[execve_vars->i] != NULL)
 	{
 		if (execve_vars->cmd_arr[0][0] == '/')

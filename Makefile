@@ -75,6 +75,7 @@ SRCS        := env.c \
 			   lexer_tools.c \
 			   lexer_tools2.c \
 			   lexer_tools3.c \
+			   lexer_tools4.c \
 			   piping_nopp.c \
 			   piping_tools.c \
 			   redir_tools.c \

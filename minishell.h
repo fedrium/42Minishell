@@ -6,7 +6,7 @@
 /*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 16:19:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 16:44:40 by cyu-xian         ###   ########.fr       */
+/*   Updated: 2023/09/28 18:43:38 by cyu-xian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ int				is_last_arg(t_list *head_tokens);
 char			is_special(t_list *node);
 int				can_move(char c, int *i, int *isq, int *idq);
 char			*get_tl_str(t_list *node);
-void			copy_after_meta(char **line, int *p, char *value);
+void			copy_after_meta(char **line, int *p, char *value, int *after);
 void			copy_b4_meta(char **line, int *p);
 
 // pwd

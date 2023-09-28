@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execve_tools.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
+/*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:21:52 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 15:53:40 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/28 19:39:46 by cyu-xian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,8 @@ char	**path_format(t_list *env)
 	char	*str;
 
 	str = getvalue(env, "PATH");
+	if (str == NULL)
+		return (NULL);
 	array = ft_split(str, ':');
 	return (array);
 }

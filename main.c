@@ -6,7 +6,7 @@
 /*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 00:37:49 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 17:20:03 by cyu-xian         ###   ########.fr       */
+/*   Updated: 2023/09/28 19:35:32 by cyu-xian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ void	exit_func(t_list *head_tokens, t_list *head_env, t_main_vars *main_vars)
 {
 	lst_free_env(head_env);
 	free(main_vars);
+	if (main_vars->line)
+		free(main_vars->line);
 	system("leaks minishell");
 	exit(0);
 }

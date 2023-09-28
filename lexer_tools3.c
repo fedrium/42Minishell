@@ -6,7 +6,7 @@
 /*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:30:01 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 17:25:04 by cyu-xian         ###   ########.fr       */
+/*   Updated: 2023/09/28 19:32:13 by cyu-xian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,6 @@ void	init_get_token(int *quote, int *squote, t_token **token,
 	(*token) = malloc(sizeof(t_token));
 	(*token)->token = (char *)malloc(sizeof(char));
 	(*token)->token[0] = '\0';
-}
-
-t_cleanse_vars	*init_cleanse(t_list *node)
-{
-	t_cleanse_vars	*cleanse_vars;
-
-	cleanse_vars = malloc(sizeof(t_cleanse_vars));
-	cleanse_vars->i = 0;
-	cleanse_vars->in_dquote = -1;
-	cleanse_vars->in_squote = -1;
-	cleanse_vars->temp = ((t_token *)node->content)->token;
-	cleanse_vars->join[1] = '\0';
-	cleanse_vars->new = ft_strdup("");
-	return (cleanse_vars);
 }
 
 t_token	*get_token(char **line, int *p, t_list *env)
@@ -63,7 +49,7 @@ t_token	*get_token(char **line, int *p, t_list *env)
 	return (token);
 }
 
-void	copy_after_meta(char **line, int *p, char *value)
+void	copy_after_meta(char **line, int *p, char *value, int *after)
 {
 	char	*temp;
 	int		i;
@@ -81,7 +67,6 @@ void	copy_after_meta(char **line, int *p, char *value)
 		(*line)[i] = temp[i];
 		i++;
 	}
-	(*line)[i] = 0;
 	while (value[j])
 	{
 		(*line)[i] = value[j];
@@ -90,6 +75,35 @@ void	copy_after_meta(char **line, int *p, char *value)
 	}
 	free (temp);
 	(*line)[i] = 0;
+	(*after) = (*p) + ft_strlen(value);
+}
+
+void	copy_remaining(char **line, char *ori, int after, int marker)
+{
+	char	*temp;
+	int		remaining;
+	int		i;
+
+	remaining = marker;
+	while (ori[remaining])
+		remaining++;
+	temp = ft_strdup((*line));
+	free ((*line));
+	(*line) = malloc(sizeof(char) * (after + remaining + 1));
+	i = 0;
+	while (temp[i])
+	{
+		(*line)[i] = temp[i];
+		i++;
+	}
+	while (ori[marker])
+	{
+		(*line)[i] = ori[marker];
+		i++;
+		marker++;
+	}
+	(*line)[i] = 0;
+	free(temp);
 }
 
 void	expand_n_join(char **line, int *p, int quote, t_list *env)
@@ -97,11 +111,16 @@ void	expand_n_join(char **line, int *p, int quote, t_list *env)
 	int		new_start;
 	char	*key;
 	char	*value;
+	char	*ori;
+	int		after;
 
+	ori = ft_strdup((*line));
 	key = exp_get_key(*line, *p, quote);
 	value = exp_get_value(key, env);
 	copy_b4_meta(line, p);
-	copy_after_meta(line, p, value);
+	copy_after_meta(line, p, value, &after);
+	copy_remaining(line, ori, after, (*p + ft_strlen(key) + 1));
 	free (key);
 	free (value);
+	free (ori);
 }

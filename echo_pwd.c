@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo_pwd.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
+/*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:19:03 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 15:41:14 by yalee            ###   ########.fr       */
+/*   Updated: 2023/09/28 17:47:38 by cyu-xian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,17 @@ void	echo(t_list *line)
 	node = node->next;
 	if (node != NULL && ft_strncmp(((t_token *)node->content)->token,
 			"-n", 3) == 0)
+	{
+		node = node->next;
+		printf("%s", ((t_token *)node->content)->token);
+		node = node->next;
+		while (node != NULL)
+		{
+			printf(" %s", ((t_token *)node->content)->token);
+			node = node->next;
+		}
 		return ;
+	}
 	while (node != NULL)
 	{
 		printf("%s ", ((t_token *)node->content)->token);

@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 16:19:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 21:57:23 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/01 17:17:17 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,7 @@ t_env			*new_env(char **splitted_env);
 
 // executor (piping, redirection, heredoc)
 t_main_vars		*init_basic(char **env);
-void			executor(t_main_vars *main_vars);
+void			executor(t_main_vars *main_vars, int *flag);
 // piping
 t_piping_vars	*init_pipes(t_list *head_tokens);
 void			split_args(t_list **segment, t_list **head_tokens);

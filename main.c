@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 00:37:49 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 19:35:32 by cyu-xian         ###   ########.fr       */
+/*   Updated: 2023/10/01 17:38:23 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,33 +28,49 @@ t_main_vars	*init_basic(char **env)
 int	main(int argc, char **argv, char **env)
 {
 	t_main_vars	*main_vars;
+	int			flag;
 
 	main_vars = init_basic(env);
+	flag = 0;
 	while (1)
 	{
+		if (flag == 1)
+		{
+			flag = 0;
+			continue;
+		}
 		sig(main_vars->head_tokens, main_vars->head_env);
 		main_vars->line = readline("Minishell$ ");
 		if (main_vars->line == NULL)
 			signulll_exit(main_vars);
 		main_vars->head_tokens = tokenize(main_vars->line, main_vars->head_env);
-		executor(main_vars);
+		executor(main_vars, &flag);
 		free(main_vars->line);
 	}
 }
 
-void	executor(t_main_vars *main_vars)
+void	executor(t_main_vars *main_vars, int *flag)
 {
 	check_head_tokens(main_vars->head_tokens, main_vars->line);
 	if (main_vars->line[0] != '\0' && !check_invalid(main_vars->head_tokens, 0))
 	{
 		if (main_vars->line && (*main_vars->line))
 			add_history(main_vars->line);
-		redir_check(main_vars->head_tokens);
-		unlink(".temp");
-		dup2(main_vars->out, 1);
-		dup2(main_vars->in, 0);
-		organise_args(main_vars->head_tokens, &(main_vars->head_env),
-			main_vars);
+		if (redir_check(main_vars->head_tokens))
+		{
+			(*flag) = 1;
+			organise_args(main_vars->head_tokens, &(main_vars->head_env),
+				main_vars);
+			unlink(".temp");
+			dup2(main_vars->out, 1);
+			dup2(main_vars->in, 0);
+		}
+		else
+		{
+			organise_args(main_vars->head_tokens, &(main_vars->head_env),
+				main_vars);
+			(*flag) = 0;
+		}
 	}
 }
 

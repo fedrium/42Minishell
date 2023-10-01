@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:35:21 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 16:34:59 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/01 17:34:41 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,5 +110,7 @@ int	redir_check(t_list *head_tokens)
 		dup2(fd, 0);
 		close(fd);
 	}
+	if (redir == 1 || redir == 2)
+		return (1);
 	return (0);
 }

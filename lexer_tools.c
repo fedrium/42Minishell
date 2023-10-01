@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer_tools.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:26:29 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 16:49:48 by cyu-xian         ###   ########.fr       */
+/*   Updated: 2023/10/01 16:37:49 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,14 @@ char	*exp_get_key(char *line, int p, int quote)
 	char	*key;
 	char	buffer[2];
 
+	
 	p++;
 	buffer[1] = '\0';
 	key = ft_strdup("");
-	while (line[p] != '$' && (line[p] != ' ' && quote < 0) && line[p])
+	while (line[p])
 	{
+		if (line[p] == '"' || (line[p] == ' ' && quote < 0) || line[p] == 39)
+			break ;
 		buffer[0] = line[p];
 		key = lexer_strjoin(key, buffer);
 		(p)++;

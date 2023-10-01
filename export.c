@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/15 17:32:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/10/01 23:20:19 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/02 00:56:51 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,32 +39,18 @@ int	export_syntax_check(t_list *node)
 	int		quote;
 	int		squote;
 
-	str = ((t_token *)node->content)->token;
 	quote = -1;
 	squote = -1;
+	str = ((t_token *)node->content)->token;
 	i = 0;
 	if (!ft_isalpha(str[0]))
 	{
 		printf("export syntax error!\n");
 		return (0);
 	}
-	while (str[i] != '=')
+	while (str[i] && str[i] != '=')
 	{
 		if (str[i] == ' ')
-		{
-			printf("export syntax error!\n");
-			return (0);
-		}
-		i++;
-	}
-	i++;
-	while (str[i])
-	{
-		if (str[i] == '"')
-			quote *= -1;
-		if (str[i] == 39)
-			squote *= -1;
-		if (str[i] == ' ' && (quote > 0 || squote > 0))
 		{
 			printf("export syntax error!\n");
 			return (0);
@@ -79,6 +65,7 @@ void	free_temp(t_env *temp, t_env *env)
 	free(temp->value);
 	temp->value = ft_strdup(env->value);
 	free(env->key);
+	free(env->value);
 	free(env);
 }
 
@@ -100,6 +87,7 @@ void	add_to_envlst(t_list **head_env, t_list *node, t_env *env)
 		if (ft_strncmp(temp->key, env->key, ft_strlen(env->key)) == 0)
 		{
 			free_temp(temp, env);
+			free(splitted_args);
 			return ;
 		}
 		node_env = node_env->next;

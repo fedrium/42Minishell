@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:31:49 by yalee             #+#    #+#             */
-/*   Updated: 2023/10/01 22:57:18 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/02 01:24:33 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,39 +94,32 @@ void	organise_args(t_list *head_tokens, t_list **head_env,
 	free(piping_vars);
 }
 
-void	run_functions(t_list *head_tokens, t_list **head_env,
+void	run_functions(t_list *h, t_list **e,
 	t_main_vars *main_vars)
 {
 	int	size;
 	int	flag;
 
-	size = ft_lstsize(head_tokens);
-	flag = redir_check(head_tokens, main_vars);
-	if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 5) == 0)
-		echo(head_tokens);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token,
-			"unset", 6) == 0)
-		unset(head_env, head_tokens, size);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "cd", 3) == 0)
-		cd(*head_env, head_tokens, size);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token,
-			"pwd", 4) == 0)
+	size = ft_lstsize(h);
+	flag = redir_check(h, main_vars);
+	if (ft_strncmp(((t_token *)h->content)->token, "echo", 5) == 0)
+		echo(h);
+	else if (ft_strncmp(((t_token *)h->content)->token, "unset", 6) == 0)
+		unset(e, h, size);
+	else if (ft_strncmp(((t_token *)h->content)->token, "cd", 3) == 0)
+		cd(*e, h, size);
+	else if (ft_strncmp(((t_token *)h->content)->token, "pwd", 4) == 0)
 		pwd();
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token,
-			"env", 4) == 0)
-		pr_env(*head_env);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token,
+	else if (ft_strncmp(((t_token *)h->content)->token, "env", 4) == 0)
+		pr_env(*e);
+	else if (ft_strncmp(((t_token *)h->content)->token,
 			"export", 7) == 0)
-		export(head_env, head_tokens);
-	else if (ft_strncmp(((t_token *)head_tokens->content)->token,
+		export(e, h);
+	else if (ft_strncmp(((t_token *)h->content)->token,
 			"exit", 5) == 0)
-		exit_func(head_tokens, *head_env, main_vars);
+		exit_func(h, *e, main_vars);
 	else
-		get_file(head_tokens, *head_env);
+		get_file(h, *e);
 	if (flag)
-	{
-		unlink(".temp");
-		dup2(main_vars->out, 1);
-		dup2(main_vars->in, 0);
-	}
+		cheese_norm(main_vars);
 }

@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:35:21 by yalee             #+#    #+#             */
-/*   Updated: 2023/10/01 22:59:22 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/02 01:46:14 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,6 @@ void	find_and_run_process(t_list **head, t_list **start, int *fd, int *redir)
 	else if (ft_strncmp((((t_token *)(*head)->content)->token), ">", 2) == 0)
 	{
 		(*redir) = 1;
-		dprintf(2, "head:\n");
-		print_tokens(*head);
-		dprintf(2, "start\n");
-		print_tokens(*start);
 		(*fd) = redir_rep((*head), (*start), (*fd));
 		(*head) = (*start);
 	}
@@ -110,15 +106,9 @@ int	redir_check(t_list *head_tokens, t_main_vars *main_vars)
 		head = head->next;
 	}
 	if (redir == 1)
-	{
-		dup2(fd, 1);
-		close(fd);
-	}
+		d2_fd(&fd, 1);
 	else if (redir == 2)
-	{
-		dup2(fd, 0);
-		close(fd);
-	}
+		d2_fd(&fd, 0);
 	if (redir == 1 || redir == 2)
 		return (1);
 	return (0);

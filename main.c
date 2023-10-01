@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 00:37:49 by yalee             #+#    #+#             */
-/*   Updated: 2023/10/01 23:57:29 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/02 01:41:13 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int	main(int argc, char **argv, char **env)
 		if (flag == 1)
 		{
 			flag = 0;
-			continue;
+			continue ;
 		}
 		sig(main_vars->head_tokens, main_vars->head_env);
 		main_vars->line = readline("Minishell$ ");
@@ -57,7 +57,7 @@ void	executor(t_main_vars *main_vars, int *flag)
 		if (main_vars->line && (*main_vars->line))
 			add_history(main_vars->line);
 		organise_args(main_vars->head_tokens, &(main_vars->head_env),
-				main_vars);
+			main_vars);
 	}
 }
 

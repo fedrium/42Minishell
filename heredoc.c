@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:35:36 by yalee             #+#    #+#             */
-/*   Updated: 2023/10/01 23:56:54 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/02 00:21:51 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,23 @@ void	put_line(int fd, char *line)
 	free(line);
 }
 
+void	do_heredoc(char *line, char *delimeter, int fd)
+{
+	line = readline("heredoc>");
+	if (line == NULL)
+	{
+		printf("here\n");
+		exit(0);
+	}
+	if (ft_strncmp(line, delimeter, ft_strlen(delimeter) + 1) == 0)
+	{
+		close(fd);
+		free(line);
+		exit(0);
+	}
+	put_line(fd, line);
+}
+
 void	heredoc(char *delimeter)
 {
 	int		fd;
@@ -53,25 +70,10 @@ void	heredoc(char *delimeter)
 	{
 		signal(SIGINT, cntl_c);
 		while (1)
-		{
-			line = readline("heredoc>");
-			if (line == NULL)
-			{
-				printf("here\n");
-				exit(0);
-			}
-			if (ft_strncmp(line, delimeter, ft_strlen(delimeter) + 1) == 0)
-			{
-				close(fd);
-				free(line);
-				exit(0);
-			}
-			put_line(fd, line);
-		}
+			do_heredoc(line, delimeter, fd);
 	}
 	else
 		waitpid(0, NULL, 0);
-		printf("waited\n");
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 }

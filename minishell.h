@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 16:19:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/10/01 20:20:11 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/02 01:45:35 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,15 @@ typedef struct s_piping_vars
 	int		num_processes;
 }		t_piping_vars;
 
+// struct for redir and heredoc
+typedef struct s_rdhd_vars
+{
+	t_list	*head;
+	t_list	*start;
+	int		fd;
+	int		redir;
+}		t_rdhd_vars;
+
 // signal handler
 void			sig(t_list *head_tokens, t_list *head_env);
 void			signal_handler(int num);
@@ -153,6 +162,8 @@ void			add_to_envlst(t_list **head_env, t_list *node, t_env *env);
 void			add_env(t_list **head_env, t_list *head_tokens);
 char			*find_smallest_key(t_list *head, char *smallest_key);
 int				print_output(t_list *head, char *smallest_key);
+int				export_check2(int i, char *str, int quote, int squote);
+
 // execve
 t_execve_vars	*init_get_file(t_list *head_tokens, t_list *env);
 char			*getvalue(t_list *env, char *key);
@@ -180,9 +191,9 @@ void			split_args(t_list **segment, t_list **head_tokens);
 void			organise_args(t_list *head_tokens, t_list **head_env,
 					t_main_vars *main_vars);
 t_cp			*make_cp(t_list *head_tokens, int *out, int *in);
-void			run_functions(t_list *head_tokens, t_list **head_env,
+void			run_functions(t_list *h, t_list **e,
 					t_main_vars *main_vars);
-void			run_functions_nopp(t_list *head_tokens, t_list **head_env,
+void			run_functions_nopp(t_list *h, t_list **e,
 					t_main_vars *main_vars);
 void			start_cp(t_piping_vars *piping_vars, t_list **head_env,
 					t_main_vars *main_vars);
@@ -200,6 +211,7 @@ int				redir_in(t_list *head, t_list *start, int fd);
 void			heredoc(char *delimeter);
 int				redir_heredoc(t_list *head, t_list *start, int fd);
 void			cntl_c(int num);
+void			d2_fd(int *fd, int i);
 
 // garbage collectors
 void			free_unset(t_list *temp_env);
@@ -212,5 +224,7 @@ void			free_2dar(char **ar_2d);
 void			free_cp(t_cp *head);
 void			free_execve(t_execve_vars *execve_vars);
 void			print_tokens(t_list *head_tokens);
-
+void			cheese_norm(t_main_vars *main_vars);
+void			cheese_norm2(t_list *head_tokens, t_list **head_env,
+					t_main_vars *main_vars, int size);
 #endif

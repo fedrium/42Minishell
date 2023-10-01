@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:25:22 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 16:02:50 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/02 00:17:23 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,32 @@ int	print_output(t_list *head, char *smallest_key)
 			node = node->next;
 	}
 	return (printed);
+}
+
+int	export_check2(int i, char *str, int quote, int squote)
+{
+	while (str[i] != '=')
+	{
+		if (str[i] == ' ')
+		{
+			printf("export syntax error!\n");
+			return (0);
+		}
+		i++;
+	}
+	i++;
+	while (str[i])
+	{
+		if (str[i] == '"')
+			quote *= -1;
+		if (str[i] == 39)
+			squote *= -1;
+		if (str[i] == ' ' && (quote > 0 || squote > 0))
+		{
+			printf("export syntax error!\n");
+			return (0);
+		}
+		i++;
+	}
+	return (1);
 }

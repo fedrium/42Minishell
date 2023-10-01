@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:36:38 by yalee             #+#    #+#             */
-/*   Updated: 2023/10/01 21:54:56 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/02 01:44:51 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,10 @@ void	ll_iter(t_list *head_tokens)
 		printf("line: %s\n", (((t_token *)head->content)->token));
 		head_tokens = head_tokens->next;
 	}
+}
+
+void	d2_fd(int *fd, int i)
+{
+	dup2((*fd), i);
+	close((*fd));
 }

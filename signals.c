@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/15 12:39:15 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 16:06:35 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/01 23:56:09 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	sig(t_list *head_tokens, t_list *head_env)
 void	cntl_c(int num)
 {
 	(void)num;
-	write(1, "\0", 1);
+	exit(0);
 }
 
 void	setatt(void)

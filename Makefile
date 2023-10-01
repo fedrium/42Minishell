@@ -6,7 +6,7 @@
 
 NAME        := minishell
 CC          := gcc
-FLAGS       := -Wall -Wextra -Werror -fsanitize=address -g3
+FLAGS       := -Wall -Wextra -Werror #-fsanitize=address -g3
 LIBS        := -L/usr/local/opt/readline/lib -I/usr/local/opt/readline/include
 LDLIBS      := -lreadline
 

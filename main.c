@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 00:37:49 by yalee             #+#    #+#             */
-/*   Updated: 2023/10/01 17:38:23 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/01 17:40:48 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ void	executor(t_main_vars *main_vars, int *flag)
 		}
 		else
 		{
+			dup2(main_vars->out, 1);
+			dup2(main_vars->in, 0);
 			organise_args(main_vars->head_tokens, &(main_vars->head_env),
 				main_vars);
 			(*flag) = 0;

@@ -31,6 +31,7 @@ libft
 main.c
 main.o
 minishell
+minishell.dSYM
 minishell.h
 misc.c
 misc.o
@@ -45,7 +46,9 @@ redir.o
 redir_tools.c
 redir_tools.o
 signals.c
+tata
 test
 test2
+token
 unset.c
 unset.o

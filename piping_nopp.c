@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   piping_nopp.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:34:32 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 19:34:45 by cyu-xian         ###   ########.fr       */
+/*   Updated: 2023/10/01 21:01:20 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	print_tokens(t_list *head_tokens)
 {
 	while (head_tokens != NULL)
 	{
-		dprintf(2, "%s\n", ((t_token *)head_tokens->content)->token);
+		dprintf(2, "token: %s$\n", ((t_token *)head_tokens->content)->token);
 		head_tokens = head_tokens->next;
 	}
 }
@@ -25,8 +25,10 @@ void	run_functions_nopp(t_list *head_tokens, t_list **head_env,
 	t_main_vars *main_vars)
 {
 	int	size;
+	int	flag;
 
 	size = ft_lstsize(head_tokens);
+	flag = redir_check(head_tokens, main_vars);
 	if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 5) == 0)
 		echo(head_tokens);
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token, "cd", 3) == 0)
@@ -46,5 +48,11 @@ void	run_functions_nopp(t_list *head_tokens, t_list **head_env,
 	else
 	{
 		get_file_nopp(head_tokens, *head_env);
+	}
+	if (flag)
+	{
+		unlink(".temp");
+		dup2(main_vars->out, 1);
+		dup2(main_vars->in, 0);
 	}
 }

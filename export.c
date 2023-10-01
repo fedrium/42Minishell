@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/15 17:32:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 16:41:30 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/01 23:20:19 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,26 +28,45 @@ void	export(t_list **head_env, t_list *head_tokens)
 		}
 	}
 	else
-		add_env(head_env, head_tokens);
+		if (export_syntax_check(head_tokens->next))
+			add_env(head_env, head_tokens);
 }
 
 int	export_syntax_check(t_list *node)
 {
 	char	*str;
 	int		i;
+	int		quote;
+	int		squote;
 
 	str = ((t_token *)node->content)->token;
+	quote = -1;
+	squote = -1;
 	i = 0;
 	if (!ft_isalpha(str[0]))
 	{
-		dprintf(2, "export syntax error!\n");
+		printf("export syntax error!\n");
 		return (0);
 	}
-	while (str[i])
+	while (str[i] != '=')
 	{
 		if (str[i] == ' ')
 		{
-			dprintf(2, "export syntax error!\n");
+			printf("export syntax error!\n");
+			return (0);
+		}
+		i++;
+	}
+	i++;
+	while (str[i])
+	{
+		if (str[i] == '"')
+			quote *= -1;
+		if (str[i] == 39)
+			squote *= -1;
+		if (str[i] == ' ' && (quote > 0 || squote > 0))
+		{
+			printf("export syntax error!\n");
 			return (0);
 		}
 		i++;

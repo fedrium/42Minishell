@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:31:49 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/21 23:52:56 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/01 22:57:18 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@ t_cp	*make_cp(t_list *head_tokens, int *out, int *in)
 		split_args(&cp_node->next->tokens, &head_tokens);
 		cp_node = cp_node->next;
 	}
-	ori_stdout = dup(STDOUT_FILENO);
-	ori_stdin = dup(STDIN_FILENO);
+	ori_stdout = dup(1);
+	ori_stdin = dup(0);
 	(*out) = ori_stdout;
 	(*in) = ori_stdin;
 	return (cp_head);
@@ -54,11 +54,11 @@ void	start_cp(t_piping_vars *piping_vars, t_list **head_env,
 	t_main_vars *main_vars)
 {
 	if (piping_vars->num_processes > 1)
-		dup2(piping_vars->child_processes->pipe[0], STDIN_FILENO);
+		dup2(piping_vars->child_processes->pipe[0], 0);
 	if (piping_vars->child_processes->next != NULL)
 	{
 		close(piping_vars->child_processes->next->pipe[0]);
-		dup2(piping_vars->child_processes->next->pipe[1], STDOUT_FILENO);
+		dup2(piping_vars->child_processes->next->pipe[1], 1);
 		close(piping_vars->child_processes->next->pipe[1]);
 	}
 	run_functions_nopp(piping_vars->child_processes->tokens,
@@ -98,8 +98,10 @@ void	run_functions(t_list *head_tokens, t_list **head_env,
 	t_main_vars *main_vars)
 {
 	int	size;
+	int	flag;
 
 	size = ft_lstsize(head_tokens);
+	flag = redir_check(head_tokens, main_vars);
 	if (ft_strncmp(((t_token *)head_tokens->content)->token, "echo", 5) == 0)
 		echo(head_tokens);
 	else if (ft_strncmp(((t_token *)head_tokens->content)->token,
@@ -121,4 +123,10 @@ void	run_functions(t_list *head_tokens, t_list **head_env,
 		exit_func(head_tokens, *head_env, main_vars);
 	else
 		get_file(head_tokens, *head_env);
+	if (flag)
+	{
+		unlink(".temp");
+		dup2(main_vars->out, 1);
+		dup2(main_vars->in, 0);
+	}
 }

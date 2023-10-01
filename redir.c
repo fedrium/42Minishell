@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:35:21 by yalee             #+#    #+#             */
-/*   Updated: 2023/10/01 17:34:41 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/01 22:59:22 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,11 @@ int	redir_rep(t_list *head, t_list *start, int fd)
 		close(fd);
 	fd = open(file_name, O_CREAT | O_TRUNC | O_WRONLY, 0777);
 	temp = head->next;
+	if (ft_strncmp((((t_token *)start->content)->token), ">", 2) == 0)
+	{
+		dprintf(2, "here\n");
+		return (0);
+	}
 	redir_rm(&start, head);
 	redir_rm(&start, temp);
 	return (fd);
@@ -68,6 +73,10 @@ void	find_and_run_process(t_list **head, t_list **start, int *fd, int *redir)
 	else if (ft_strncmp((((t_token *)(*head)->content)->token), ">", 2) == 0)
 	{
 		(*redir) = 1;
+		dprintf(2, "head:\n");
+		print_tokens(*head);
+		dprintf(2, "start\n");
+		print_tokens(*start);
 		(*fd) = redir_rep((*head), (*start), (*fd));
 		(*head) = (*start);
 	}
@@ -85,7 +94,7 @@ void	find_and_run_process(t_list **head, t_list **start, int *fd, int *redir)
 	}
 }
 
-int	redir_check(t_list *head_tokens)
+int	redir_check(t_list *head_tokens, t_main_vars *main_vars)
 {
 	t_list	*head;
 	t_list	*start;

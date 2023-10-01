@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo_pwd.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cyu-xian <cyu-xian@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:19:03 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/28 17:47:38 by cyu-xian         ###   ########.fr       */
+/*   Updated: 2023/10/01 23:34:08 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,26 +24,27 @@ void	pwd(void)
 void	echo(t_list *line)
 {
 	t_list	*node;
-
+	int		flag;
+	
+	flag = 0;
 	node = line;
 	node = node->next;
-	if (node != NULL && ft_strncmp(((t_token *)node->content)->token,
+	while (node)
+	{
+		if (ft_strncmp(((t_token *)node->content)->token,
 			"-n", 3) == 0)
-	{
+			flag = 1;
+		else
+			break ;
 		node = node->next;
+	}
+	while (node)
+	{
 		printf("%s", ((t_token *)node->content)->token);
-		node = node->next;
-		while (node != NULL)
-		{
-			printf(" %s", ((t_token *)node->content)->token);
-			node = node->next;
-		}
-		return ;
-	}
-	while (node != NULL)
-	{
-		printf("%s ", ((t_token *)node->content)->token);
+		if (!flag || (flag && node->next))
+			printf(" ");
 		node = node->next;
 	}
-	printf("\n");
+	if (!flag)
+		printf("\n");
 }

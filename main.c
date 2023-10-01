@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 00:37:49 by yalee             #+#    #+#             */
-/*   Updated: 2023/10/01 17:40:48 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/01 22:33:25 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,23 +56,8 @@ void	executor(t_main_vars *main_vars, int *flag)
 	{
 		if (main_vars->line && (*main_vars->line))
 			add_history(main_vars->line);
-		if (redir_check(main_vars->head_tokens))
-		{
-			(*flag) = 1;
-			organise_args(main_vars->head_tokens, &(main_vars->head_env),
+		organise_args(main_vars->head_tokens, &(main_vars->head_env),
 				main_vars);
-			unlink(".temp");
-			dup2(main_vars->out, 1);
-			dup2(main_vars->in, 0);
-		}
-		else
-		{
-			dup2(main_vars->out, 1);
-			dup2(main_vars->in, 0);
-			organise_args(main_vars->head_tokens, &(main_vars->head_env),
-				main_vars);
-			(*flag) = 0;
-		}
 	}
 }
 
@@ -82,6 +67,6 @@ void	exit_func(t_list *head_tokens, t_list *head_env, t_main_vars *main_vars)
 	free(main_vars);
 	if (main_vars->line)
 		free(main_vars->line);
-	system("leaks minishell");
+	// system("leaks minishell");
 	exit(0);
 }

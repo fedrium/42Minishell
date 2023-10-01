@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 16:19:10 by yalee             #+#    #+#             */
-/*   Updated: 2023/10/01 17:17:17 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/01 20:20:11 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,7 +191,7 @@ int				get_cp_size(t_cp *cp);
 void			iterate_list(t_piping_vars **piping_vars);
 // redirection and heredoc
 void			ll_iter(t_list *head_tokens);
-int				redir_check(t_list *head_tokens);
+int				redir_check(t_list *head_tokens, t_main_vars *main_vars);
 void			find_and_run_process(t_list **head, t_list **start,
 					int *fd, int *redir);
 int				redir_app(t_list *head, t_list *start, int fd);
@@ -211,5 +211,6 @@ void			lst_free_all(t_list *head);
 void			free_2dar(char **ar_2d);
 void			free_cp(t_cp *head);
 void			free_execve(t_execve_vars *execve_vars);
+void			print_tokens(t_list *head_tokens);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:27:47 by yalee             #+#    #+#             */
-/*   Updated: 2023/09/26 16:01:25 by yalee            ###   ########.fr       */
+/*   Updated: 2023/10/01 23:00:13 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,18 +41,21 @@ void	check_head_tokens(t_list *node, char *line)
 		((t_token *)node->content)->priority = -1;
 	if (ft_strncmp(get_tl_str(node), ">", 2) == 0)
 		((t_token *)node->content)->priority = -1;
-	if (ft_strncmp(get_tl_str(node), "<", 2) == 0)
-		((t_token *)node->content)->priority = -1;
 	if (ft_strncmp(get_tl_str(node), ">>", 3) == 0)
 		((t_token *)node->content)->priority = -1;
-	if (ft_strncmp(get_tl_str(node), "<<", 3) == 0)
-		((t_token *)node->content)->priority = -1;
+	// if (ft_strncmp(get_tl_str(node), "<<", 3) == 0)
+		// ((t_token *)node->content)->priority = -1;
 	if (ft_strncmp(get_tl_str(node), "&", 2) == 0)
 		((t_token *)node->content)->priority = -1;
 	if (ft_strncmp(get_tl_str(node), "||", 3) == 0)
 		((t_token *)node->content)->priority = -1;
 	if (ft_strncmp(get_tl_str(node), "&&", 3) == 0)
 		((t_token *)node->content)->priority = -1;
+	// if (ft_strncmp(get_tl_str(node), ">", 2) == 0)
+	// {
+	// 	lst_free_all(node);
+	// 	node = NULL;
+	// }
 }
 
 int	can_move(char c, int *i, int *isq, int *idq)
